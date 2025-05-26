@@ -870,10 +870,10 @@
                 </a>
               </li>
               <li class="sidebar-list-item active">
-                <a href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                  <span>Data Aset</span>
-                </a>
+                  <a href="{{ route('dashboard.index') }}">  {{-- Link ke halaman dashboard --}}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                      <span>Data Aset</span>
+                  </a>
               </li>
               <li class="sidebar-list-item">
                 <a href="#">
@@ -904,6 +904,8 @@
               </button>
             </div>
           </div>
+
+          {{-- KONTEN UTAMA APLIKASI (AREA FILTER DAN TABEL) --}}
           <div class="app-content">
             <div class="app-content-header">
               <h1 class="app-content-headerText">Data Aset</h1>
@@ -914,41 +916,62 @@
                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
                     </svg>
                 </button>
-                <button class="app-content-headerButton">+ Tambah Aset</button>
-                <!-- Tombol Logout bisa dipertimbangkan jika ada sistem auth nantinya -->
+                {{-- Tambahkan ID unik untuk tombol ini --}}
+                <button id="openAddAssetModalButton" class="app-content-headerButton">+ Tambah Aset</button>
                 <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
               </div>
             </div>
-            <div class="app-content-actions">
-              <input class="search-bar" placeholder="Cari No Asset ..." type="text">
-              <div class="app-content-actions-wrapper">
-                <div class="filter-button-wrapper">
-                  <button class="action-button filter jsFilter"><span>Filter</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
-                  <div class="filter-menu">
-                    <label>Perusahaan</label>
-                    <select>
-                      <option>Semua Perusahaan</option>
-                      <option>PT. ABC</option>
-                      <option>CV. XYZ</option>
-                    </select>
-                    <label>Jenis Barang</label>
-                    <select>
-                      <option>Semua Jenis</option>
-                      <option>Elektronik</option>
-                      <option>Furnitur</option>
-                    </select>
-                    <div class="filter-menu-buttons">
-                      <button class="filter-button reset">
-                        Reset
-                      </button>
-                      <button class="filter-button apply">
-                        Apply
-                      </button>
+
+            {{-- FORM FILTER MULAI DI SINI --}}
+            <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
+                <div class="app-content-actions"> {{-- Ini adalah container utama untuk search bar dan filter button wrapper --}}
+                    <input class="search-bar" placeholder="Cari No Asset ..." type="text" name="search_no_asset" value="{{ $searchNoAsset ?? old('search_no_asset') }}">
+                    <div class="app-content-actions-wrapper"> {{-- Ini wrapper untuk tombol filter --}}
+                        <div class="filter-button-wrapper">
+                            <button type="button" class="action-button filter jsFilter">
+                                <span>Filter</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            </button>
+                            <div class="filter-menu">
+                                <label for="filter_perusahaan">Perusahaan</label>
+                                <select name="filter_perusahaan" id="filter_perusahaan">
+                                    <option value="">Semua Perusahaan</option>
+                                    @if(isset($perusahaanOptions))
+                                        @foreach($perusahaanOptions as $perusahaan)
+                                            <option value="{{ $perusahaan }}" {{ (isset($filterPerusahaan) && $filterPerusahaan == $perusahaan) ? 'selected' : '' }}>
+                                                {{ $perusahaan }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+
+                                <label for="filter_jenis_barang">Jenis Barang</label>
+                                <select name="filter_jenis_barang" id="filter_jenis_barang">
+                                    <option value="">Semua Jenis Barang</option>
+                                     @if(isset($jenisBarangOptions))
+                                        @foreach($jenisBarangOptions as $jenis)
+                                            <option value="{{ $jenis }}" {{ (isset($filterJenisBarang) && $filterJenisBarang == $jenis) ? 'selected' : '' }}>
+                                                {{ $jenis }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+
+                                <div class="filter-menu-buttons">
+                                    <button type="button" class="filter-button reset" onclick="resetFilters()">
+                                        Reset
+                                    </button>
+                                    <button type="submit" class="filter-button apply">
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            </div>
+            </form>
+            {{-- FORM FILTER SELESAI DI SINI --}}
+
             <div class="products-area-wrapper tableView">
               <div class="products-header">
                 <div class="product-cell cell-no">No</div>
@@ -961,15 +984,18 @@
                 <div class="product-cell cell-aksi">Aksi</div>
               </div>
 
+              {{-- Pastikan variabel $barangs di-pass dari controller --}}
               @if(isset($barangs) && $barangs->count() > 0)
                 @foreach($barangs as $index => $barang)
                 <div class="products-row">
-                    <div class="product-cell cell-no">{{ $index + 1 }}</div>
+                    {{-- Menyesuaikan nomor urut dengan paginasi --}}
+                    <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
                     <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan }}">{{ $barang->perusahaan }}</div>
                     <div class="product-cell cell-jenis-barang" title="{{ $barang->jenis_barang }}">{{ $barang->jenis_barang }}</div>
                     <div class="product-cell cell-no-asset" title="{{ $barang->no_asset }}">{{ $barang->no_asset }}</div>
                     <div class="product-cell cell-merek" title="{{ $barang->merek }}">{{ $barang->merek }}</div>
-                    <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('Y-m-d') }}</div>
+                    {{-- Menggunakan format tanggal yang lebih umum dan Carbon untuk parsing --}}
+                    <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
                     <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
                     <div class="product-cell cell-aksi">
                         <button class="action-btn-table update-btn" onclick="alert('Update untuk ID: {{ $barang->id }} belum diimplementasikan')">Update</button>
@@ -983,181 +1009,229 @@
                 </div>
               @endif
             </div>
+
+            {{-- Tampilkan Link Paginasi --}}
+            @if (isset($barangs) && $barangs->hasPages())
+                <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center;">
+                    {{-- appends(request()->query()) penting agar filter tetap aktif saat paginasi --}}
+                    {{ $barangs->appends(request()->query())->links('pagination::bootstrap-4') }}
+                </div>
+            @endif
+
           </div>
+          {{-- AKHIR KONTEN UTAMA APLIKASI --}}
+
         </div>
       </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // === JAVASCRIPT UNTUK MODAL TAMBAH ASET ===
-        const addAssetModal = document.getElementById('addAssetModal');
-        const openAddAssetModalBtn = document.querySelector('.app-content-headerButton'); // Tombol "+ Tambah Aset"
-        const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
-        const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
+            // === MODAL TAMBAH ASET: Variabel dan Fungsi Dasar ===
+            const addAssetModal = document.getElementById('addAssetModal');
+            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton'); // Menggunakan ID yang baru ditambahkan
+            const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
+            const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
+            const addAssetForm = document.getElementById('addAssetForm');
+            const submitAddAssetBtn = document.getElementById('submitAddAssetBtn');
 
-        if (openAddAssetModalBtn && addAssetModal) {
-            openAddAssetModalBtn.addEventListener('click', () => {
-                addAssetModal.classList.add('show');
-                // Bersihkan form dan error messages setiap kali modal dibuka (opsional)
-                addAssetForm.reset();
-                clearValidationErrors();
-            });
-        }
-
-        function closeModal() {
-            if (addAssetModal) {
-                addAssetModal.classList.remove('show');
-            }
-        }
-
-        if (closeAddAssetModalBtn) {
-            closeAddAssetModalBtn.addEventListener('click', closeModal);
-        }
-        if (cancelAddAssetModalBtn) {
-            cancelAddAssetModalBtn.addEventListener('click', closeModal);
-        }
-
-        // Tutup modal jika klik di luar konten modal
-        if (addAssetModal) {
-            window.addEventListener('click', (event) => {
-                if (event.target == addAssetModal) {
-                    closeModal();
-                }
-            });
-        }
-
-        function clearValidationErrors() {
-            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-            document.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        }
-
-        function displayValidationErrors(errors) {
-            clearValidationErrors(); // Bersihkan error lama
-            for (const field in errors) {
-                const errorElement = document.getElementById(`${field}_error`);
-                const inputElement = document.getElementById(field);
-                if (errorElement) {
-                    errorElement.textContent = errors[field][0]; // Ambil pesan error pertama
-                }
-                if (inputElement) {
-                    inputElement.classList.add('is-invalid');
+            function openModalElement(modalElement, formToReset) {
+                if (modalElement) {
+                    modalElement.classList.add('show');
+                    if (formToReset) {
+                        formToReset.reset();
+                    }
+                    clearValidationErrors();
                 }
             }
-        }
-        // === AKHIR JAVASCRIPT MODAL ===
 
-        // === JAVASCRIPT UNTUK SUBMIT FORM TAMBAH ASET VIA AJAX ===
-        const addAssetForm = document.getElementById('addAssetForm');
-        const submitAddAssetBtn = document.getElementById('submitAddAssetBtn'); // Seleksi tombol submit di sini
+            function closeModalElement(modalElement) {
+                if (modalElement) {
+                    modalElement.classList.remove('show');
+                }
+            }
 
-        if (addAssetForm && submitAddAssetBtn) { // Pastikan kedua elemen ada sebelum menambahkan event listener
-            console.log("Form 'addAssetForm' dan tombol 'submitAddAssetBtn' ditemukan. Event listener akan dipasang."); // DEBUG
-            addAssetForm.addEventListener('submit', function(event) {
-                console.log("Form 'addAssetForm' di-submit!"); // DEBUG
-                event.preventDefault();
+            function clearValidationErrors() {
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                document.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            }
 
-                const formData = new FormData(addAssetForm); // Gunakan variabel form yang sudah didefinisikan
-
-                // Gunakan variabel submitAddAssetBtn yang sudah didefinisikan di luar
-                const originalButtonText = submitAddAssetBtn.textContent;
-                submitAddAssetBtn.textContent = 'Menyimpan...';
-                submitAddAssetBtn.disabled = true;
+            function displayValidationErrors(errors) {
                 clearValidationErrors();
+                for (const field in errors) {
+                    const errorElement = document.getElementById(`${field}_error`);
+                    const inputElement = document.getElementById(field);
+                    if (errorElement) {
+                        errorElement.textContent = errors[field][0];
+                    }
+                    if (inputElement) {
+                        inputElement.classList.add('is-invalid');
+                    }
+                }
+            }
 
-                fetch("{{ route('barang.store') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errData => { throw { status: response.status, body: errData }; })
-                                         .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
-                    }
-                    return response.json().then(data => ({ status: response.status, body: data }));
-                })
-                .then(({ status, body }) => {
-                    if (status === 201 && body.success) {
-                        alert(body.success);
-                        closeModal();
-                        addAssetForm.reset();
-                        window.location.reload();
-                    } else if (body.errors) {
-                        displayValidationErrors(body.errors);
-                    } else {
-                        alert(body.error || 'Terjadi kesalahan saat menyimpan data.');
-                        console.error('Server error response:', body);
-                    }
-                })
-                .catch(errorInfo => {
-                    if (errorInfo && errorInfo.body && errorInfo.body.errors) {
-                        console.warn("Validation errors caught in .catch:", errorInfo.body.errors);
-                        displayValidationErrors(errorInfo.body.errors);
-                    } else if (errorInfo && errorInfo.body && errorInfo.body.error) {
-                        alert(errorInfo.body.error);
-                        console.error('Server error caught in .catch:', errorInfo.body);
-                    } else {
-                        console.error('Error submitting form (catch block):', errorInfo);
-                        alert('Terjadi kesalahan koneksi atau server. Cek console.');
-                    }
-                })
-                .finally(() => {
-                    submitAddAssetBtn.textContent = originalButtonText;
-                    submitAddAssetBtn.disabled = false;
+            // === MODAL TAMBAH ASET: Event Listeners ===
+            if (openAddAssetModalButton && addAssetModal) {
+                openAddAssetModalButton.addEventListener('click', () => {
+                    openModalElement(addAssetModal, addAssetForm);
                 });
-            });
-        } else {
-            if (!addAssetForm) console.error("Form dengan ID 'addAssetForm' tidak ditemukan! Event listener AJAX tidak dipasang.");
-            if (!submitAddAssetBtn) console.error("Tombol dengan ID 'submitAddAssetBtn' tidak ditemukan! Event listener AJAX tidak dipasang.");
-        }
-        // === AKHIR JAVASCRIPT AJAX ===
-
-
-        // === JAVASCRIPT UNTUK FITUR DASHBOARD (FILTER, THEME SWITCH, BURGER) ===
-
-        const jsFilter = document.querySelector(".jsFilter");
-        if (jsFilter) {
-            jsFilter.addEventListener("click", function () {
-                const filterMenu = document.querySelector(".filter-menu");
-                if (filterMenu) filterMenu.classList.toggle("active");
-            });
-        }
-
-        var modeSwitch = document.querySelector('.mode-switch');
-        if (modeSwitch) {
-            modeSwitch.addEventListener('click', function () {
-                document.documentElement.classList.toggle('light');
-                modeSwitch.classList.toggle('active');
-                document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--app-bg');
-                document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--app-content-main-color');
-            });
-        }
-
-        // === JAVASCRIPT UNTUK TOMBOL BURGER ===
-        const burgerMenuButton = document.getElementById('burger-menu');
-        const sidebarElement = document.querySelector('.sidebar');
-
-        if (burgerMenuButton && sidebarElement) {
-            if (!sidebarElement.classList.contains('collapsed')) {
-                burgerMenuButton.classList.add('active');
-            } else {
-                 burgerMenuButton.classList.remove('active');
             }
 
-            burgerMenuButton.addEventListener('click', () => {
-                sidebarElement.classList.toggle('collapsed');
-                burgerMenuButton.classList.toggle('active');
-            });
+            if (closeAddAssetModalBtn && addAssetModal) {
+                closeAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
+            }
 
-        } else {
-            if (!burgerMenuButton) console.error('Tombol burger tidak ditemukan.');
-            if (!sidebarElement) console.error('Elemen sidebar tidak ditemukan.');
+            if (cancelAddAssetModalBtn && addAssetModal) {
+                cancelAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
+            }
+
+            if (addAssetModal) {
+                window.addEventListener('click', (event) => {
+                    if (event.target == addAssetModal) {
+                        closeModalElement(addAssetModal);
+                    }
+                });
+            }
+
+            // === MODAL TAMBAH ASET: Submit Form AJAX ===
+            if (addAssetForm && submitAddAssetBtn) {
+                addAssetForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(addAssetForm);
+                    const originalButtonText = submitAddAssetBtn.textContent;
+                    submitAddAssetBtn.textContent = 'Menyimpan...';
+                    submitAddAssetBtn.disabled = true;
+                    clearValidationErrors();
+
+                    fetch("{{ route('barang.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': formData.get('_token'), // CSRF token dari form
+                            'Accept': 'application/json',
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => { throw { status: response.status, body: errData }; })
+                                             .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
+                        }
+                        return response.json().then(data => ({ status: response.status, body: data }));
+                    })
+                    .then(({ status, body }) => {
+                        if (status === 201 && body.success) {
+                            alert(body.success);
+                            closeModalElement(addAssetModal);
+                            // addAssetForm.reset(); // Sudah di-reset saat membuka modal
+                            window.location.reload(); // Reload halaman untuk melihat data baru
+                        } else if (body.errors) {
+                            displayValidationErrors(body.errors);
+                        } else {
+                            alert(body.error || 'Terjadi kesalahan saat menyimpan data.');
+                            console.error('Server error response:', body);
+                        }
+                    })
+                    .catch(errorInfo => {
+                        if (errorInfo && errorInfo.body && errorInfo.body.errors) {
+                            displayValidationErrors(errorInfo.body.errors);
+                        } else if (errorInfo && errorInfo.body && errorInfo.body.error) {
+                            alert(errorInfo.body.error);
+                            console.error('Server error caught in .catch:', errorInfo.body);
+                        } else {
+                            console.error('Error submitting form (catch block):', errorInfo);
+                            alert('Terjadi kesalahan koneksi atau server. Silakan cek console browser (F12) untuk detail.');
+                        }
+                    })
+                    .finally(() => {
+                        submitAddAssetBtn.textContent = originalButtonText;
+                        submitAddAssetBtn.disabled = false;
+                    });
+                });
+            }
+
+
+            // === FITUR DASHBOARD: Filter Dropdown ===
+            const filterToggleButton = document.querySelector(".jsFilter"); // Tombol yang mentoggle filter menu
+            if (filterToggleButton) {
+                filterToggleButton.addEventListener("click", function () {
+                    // `this` adalah tombol .jsFilter yang diklik
+                    const filterButtonWrapper = this.closest('.filter-button-wrapper');
+                    if (filterButtonWrapper) {
+                        const filterMenu = filterButtonWrapper.querySelector(".filter-menu");
+                        if (filterMenu) {
+                            filterMenu.classList.toggle("active");
+                        } else {
+                            console.error("Elemen .filter-menu tidak ditemukan di dalam .filter-button-wrapper.");
+                        }
+                    } else {
+                        console.error("Elemen .filter-button-wrapper tidak ditemukan sebagai parent dari tombol filter.");
+                    }
+                });
+            } else {
+                console.warn("Tombol dengan kelas .jsFilter tidak ditemukan.");
+            }
+
+            // === FITUR DASHBOARD: Theme Switch ===
+            const modeSwitch = document.querySelector('.mode-switch');
+            if (modeSwitch) {
+                modeSwitch.addEventListener('click', function () {
+                    document.documentElement.classList.toggle('light');
+                    modeSwitch.classList.toggle('active');
+                    // Update background dan color body jika diperlukan, tergantung variabel CSS Anda
+                    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--app-bg');
+                    document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--app-content-main-color');
+                });
+            }
+
+            // === FITUR DASHBOARD: Burger Menu Sidebar ===
+            const burgerMenuButton = document.getElementById('burger-menu');
+            const sidebarElement = document.querySelector('.sidebar');
+            if (burgerMenuButton && sidebarElement) {
+                // Inisialisasi state tombol burger berdasarkan state sidebar saat halaman dimuat
+                if (!sidebarElement.classList.contains('collapsed')) {
+                    burgerMenuButton.classList.add('active');
+                } else {
+                    burgerMenuButton.classList.remove('active');
+                }
+
+                burgerMenuButton.addEventListener('click', () => {
+                    sidebarElement.classList.toggle('collapsed');
+                    burgerMenuButton.classList.toggle('active');
+                });
+            }
+
+            // === FITUR DASHBOARD: Auto Submit Search Bar on Enter ===
+            const searchBarInput = document.querySelector('.search-bar[name="search_no_asset"]');
+            if (searchBarInput) {
+                searchBarInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault(); // Mencegah submit form default jika search bar ada di dalam form lain
+                        const filterForm = document.getElementById('filterForm');
+                        if (filterForm) {
+                            filterForm.submit();
+                        }
+                    }
+                });
+            }
+
+        }); // Akhir dari DOMContentLoaded
+
+        // Fungsi resetFilters harus berada di global scope jika dipanggil dari onclick="resetFilters()" di HTML.
+        // Atau, Anda bisa menghapus onclick dari HTML dan menambahkan event listener di dalam DOMContentLoaded.
+        function resetFilters() {
+            const filterForm = document.getElementById('filterForm');
+            if (filterForm) {
+                const filterPerusahaanSelect = document.getElementById('filter_perusahaan');
+                const filterJenisBarangSelect = document.getElementById('filter_jenis_barang');
+                const searchBar = filterForm.querySelector('.search-bar[name="search_no_asset"]');
+
+                if(filterPerusahaanSelect) filterPerusahaanSelect.value = '';
+                if(filterJenisBarangSelect) filterJenisBarangSelect.value = '';
+                if(searchBar) searchBar.value = '';
+
+                filterForm.submit(); // Submit form untuk menerapkan filter yang sudah direset
+            }
         }
-        // === AKHIR JAVASCRIPT UNTUK TOMBOL BURGER ===
-
     </script>
 </body>
 </html>
