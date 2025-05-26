@@ -162,7 +162,7 @@
         /* === AKHIR CSS MODAL === */
 
         /* === CSS DASHBOARD === */
-        :root { 
+        :root {
           --app-bg: #101827;
           --sidebar: rgba(21, 30, 47,1);
           --sidebar-main-color: #fff;
@@ -182,7 +182,7 @@
           --sidebar-width-collapsed: 65px;
         }
 
-        html.light:root { 
+        html.light:root {
           --app-bg: #fff;
           --sidebar: #f3f6fd;
           --app-content-secondary-color: #f3f6fd;
@@ -195,33 +195,29 @@
         }
 
         html {
-            scroll-behavior: smooth; 
+            scroll-behavior: smooth;
         }
 
-        body { 
+        body {
           margin: 0;
-          padding: 0; 
-          overflow-y: auto; 
-          overflow-x: hidden; 
-          font-family: 'Poppins', sans-serif; 
-          background-color: var(--app-bg); 
-          color: var(--app-content-main-color); 
+          padding: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--app-bg);
+          color: var(--app-content-main-color);
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          box-sizing: border-box; 
-          letter-spacing: 1px; 
-          transition: background 0.2s ease; 
+          box-sizing: border-box;
+          letter-spacing: 1px;
+          transition: background 0.2s ease;
         }
-        
-        /* ID #dashboard-page tidak lagi diperlukan sebagai pembungkus utama jika hanya ada dashboard */
-        /* Anda bisa langsung menggunakan .app-container sebagai elemen root jika mau, atau biarkan jika tidak mengganggu */
-        #dashboard-page { /* Atau bisa juga langsung body yang diberi style ini */
+
+        #dashboard-page {
             width: 100%;
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            /* background-color: var(--app-bg);  Sudah di body */
-            /* color: var(--app-content-main-color); Sudah di body */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
         }
 
         .app-container {
@@ -231,8 +227,8 @@
           display: flex;
           overflow: hidden;
           box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-          max-width: 2000px; 
-          margin: 0 auto; 
+          max-width: 2000px;
+          margin: 0 auto;
         }
 
         .sidebar {
@@ -243,14 +239,14 @@
           background-color: var(--sidebar);
           display: flex;
           flex-direction: column;
-          transition: min-width 0.3s ease-in-out, 
-                      max-width 0.3s ease-in-out, 
-                      flex-basis 0.3s ease-in-out, 
-                      padding 0.3s ease-in-out, 
+          transition: min-width 0.3s ease-in-out,
+                      max-width 0.3s ease-in-out,
+                      flex-basis 0.3s ease-in-out,
+                      padding 0.3s ease-in-out,
                       opacity 0.3s ease-in-out;
           position: relative;
         }
-        .sidebar.collapsed { 
+        .sidebar.collapsed {
             min-width: var(--sidebar-width-collapsed);
             max-width: var(--sidebar-width-collapsed);
             flex-basis: var(--sidebar-width-collapsed);
@@ -259,7 +255,7 @@
         .sidebar.collapsed .sidebar-header .app-icon {
             margin-right: auto;
         }
-        
+
         .sidebar.collapsed .sidebar-header .app-icon svg {
           display: none;
         }
@@ -322,7 +318,7 @@
           padding: 10px 16px;
           color: var(--sidebar-link);
           text-decoration: none;
-          font-size: 14px; 
+          font-size: 14px;
           line-height: 24px;
           overflow: hidden;
           white-space: nowrap;
@@ -382,7 +378,7 @@
           object-fit: cover;
         }
         .account-info-name {
-          font-size: 14px; 
+          font-size: 14px;
           color: var(--sidebar-main-color);
           margin: 0 8px;
           overflow: hidden;
@@ -408,7 +404,6 @@
 
         .app-content {
           padding: 16px;
-          /* background-color: var(--app-bg);  Sudah di body atau #dashboard-page */
           height: 100%;
           flex: 1;
           max-height: 100%;
@@ -424,14 +419,14 @@
         }
         .app-content-headerText {
           color: var(--app-content-main-color);
-          font-size: 24px; 
+          font-size: 24px;
           line-height: 32px;
           margin: 0;
         }
         .app-content-headerButton {
           background-color: var(--action-color);
           color: #fff;
-          font-size: 14px; 
+          font-size: 14px;
           line-height: 24px;
           border: none;
           border-radius: 4px;
@@ -465,7 +460,7 @@
           background-color: var(--app-content-secondary-color);
           border: 1px solid var(--app-content-secondary-color);
           color: var(--app-content-main-color);
-          font-size: 14px; 
+          font-size: 14px;
           line-height: 24px;
           border-radius: 4px;
           padding: 0px 10px 0px 32px;
@@ -481,7 +476,7 @@
         html.light .search-bar {
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
         }
-        .search-bar::placeholder { color: var(--app-content-main-color); } 
+        .search-bar::placeholder { color: var(--app-content-main-color); }
         .search-bar:hover {
           border-color: var(--action-color-hover);
         }
@@ -498,9 +493,9 @@
           display: flex;
           align-items: center;
           color: var(--app-content-main-color);
-          font-size: 14px; 
+          font-size: 14px;
           margin-left: 8px;
-          padding: 0 8px; 
+          padding: 0 8px;
           cursor: pointer;
         }
         .action-button span { margin-right: 4px; }
@@ -521,11 +516,11 @@
           background-color: var(--app-content-secondary-color);
           position: absolute;
           top: calc(100% + 16px);
-          right: 0; 
+          right: 0;
           border-radius: 4px;
           padding: 8px;
           width: 220px;
-          z-index: 1000; 
+          z-index: 1000;
           box-shadow: var(--filter-shadow);
           visibility: hidden;
           opacity: 0;
@@ -534,13 +529,13 @@
         .filter-menu:before {
           content: '';
           position: absolute;
-          width: 0; 
-          height: 0; 
+          width: 0;
+          height: 0;
           border-left: 5px solid transparent;
           border-right: 5px solid transparent;
           border-bottom: 5px solid var(--app-content-secondary-color);
           bottom: 100%;
-          right: 10px; 
+          right: 10px;
         }
         .filter-menu.active {
           visibility: visible;
@@ -549,7 +544,7 @@
         }
         .filter-menu label {
           display: block;
-          font-size: 14px; 
+          font-size: 14px;
           color: var(--app-content-main-color);
           margin-bottom: 8px;
         }
@@ -585,7 +580,7 @@
           align-items: center;
           justify-content: space-between;
         }
-        .filter-button { 
+        .filter-button {
           border-radius: 2px;
           font-size: 12px;
           padding: 4px 8px;
@@ -603,13 +598,13 @@
         .products-area-wrapper {
           width: 100%;
           max-height: 100%;
-          overflow: auto; 
+          overflow: auto;
           padding: 0 4px;
         }
 
         .tableView .products-header,
         .tableView .products-row {
-          display: flex; 
+          display: flex;
         }
 
         .tableView .products-header {
@@ -633,16 +628,16 @@
         }
 
       .tableView .product-cell {
-        padding: 8px 12px; 
+        padding: 8px 12px;
         color: var(--app-content-main-color);
         font-size: 14px;
         display: flex;
         align-items: center;
-        white-space: nowrap;    
-        overflow: hidden;       
+        white-space: nowrap;
+        overflow: hidden;
         text-overflow: ellipsis;
       }
-        
+
         .tableView .product-cell.cell-no { flex: 0 0 40px; min-width: 40px; justify-content: center;}
         .tableView .product-cell.cell-perusahaan { flex: 1 1 100px; min-width: 100px; }
         .tableView .product-cell.cell-jenis-barang { flex: 1 1 120px; min-width: 120px; }
@@ -650,21 +645,21 @@
         .tableView .product-cell.cell-merek { flex: 1 1 200px; min-width: 200px; }
         .tableView .product-cell.cell-tgl-pengadaan { flex: 1 1 140px; min-width: 140px; }
         .tableView .product-cell.cell-serial-number { flex: 1 1 150px; min-width: 150px; }
-        .tableView .product-cell.cell-aksi { 
-            flex: 0 0 180px; 
-            min-width: 180px; 
-            justify-content: center; 
-            overflow: visible; 
+        .tableView .product-cell.cell-aksi {
+            flex: 0 0 180px;
+            min-width: 180px;
+            justify-content: center;
+            overflow: visible;
         }
 
-        .tableView .product-cell img { 
+        .tableView .product-cell img {
           width: 32px;
           height: 32px;
           border-radius: 6px;
           margin-right: 6px;
         }
-        
-        .tableView .sort-button { 
+
+        .tableView .sort-button {
           padding: 0;
           background-color: transparent;
           border: none;
@@ -677,7 +672,7 @@
         .tableView .sort-button:hover { color: var(--action-color); }
         .tableView .sort-button svg { width: 12px; }
         .tableView .cell-label {
-          display: none; 
+          display: none;
         }
 
         .status {
@@ -708,7 +703,7 @@
         .status.disabled:before {
           background-color: #59719d;
         }
-        
+
         .product-cell.cell-aksi .action-btn-table {
             padding: 6px 12px;
             margin: 0 4px;
@@ -720,7 +715,7 @@
             font-size: 13px;
             font-weight: 500;
             transition: all 0.2s ease-in-out;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
         .product-cell.cell-aksi .action-btn-table:hover {
             background-color: var(--action-color);
@@ -729,7 +724,7 @@
         .product-cell.cell-aksi .action-btn-table.update-btn {
         }
         .product-cell.cell-aksi .action-btn-table.detail-btn {
-            border-color: #5cb85c; 
+            border-color: #5cb85c;
             color: #5cb85c;
         }
         .product-cell.cell-aksi .action-btn-table.detail-btn:hover {
@@ -737,84 +732,7 @@
             color: #fff;
         }
 
-        .gridView {
-          display: flex;
-          flex-wrap: wrap;
-          margin: 0 -8px;
-        }
-        @media screen and (max-width: 520px) {
-          .gridView { margin: 0; }
-        }
-        .gridView .products-header {
-          display: none;
-        }
-        .gridView .products-row {
-          margin: 8px;
-          width: calc(25% - 16px);
-          background-color: var(--app-content-secondary-color);
-          padding: 8px;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: transform .2s;
-          position: relative;
-        }
-        .gridView .products-row:hover {
-          transform: scale(1.01);
-          box-shadow: var(--filter-shadow);
-        }
-        .gridView .products-row:hover .cell-more-button {
-          display: flex;
-        }
-        @media screen and (max-width: 1024px) {
-          .gridView .products-row { width: calc(33.3% - 16px); }
-        }
-        @media screen and (max-width: 820px) {
-          .gridView .products-row { width: calc(50% - 16px); }
-        }
-        @media screen and (max-width: 520px) {
-          .gridView .products-row { width: 100%; margin: 8px 0; }
-          .gridView .products-row:hover { transform: none; }
-        }
-        .gridView .products-row .cell-more-button {
-          border: none;
-          padding: 0;
-          border-radius: 4px;
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          z-index: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width:24px;
-          height: 24px;
-          background-color: rgba(16, 24, 39, 0.7);
-          color: #fff;
-          cursor: pointer;
-          display: none;
-        }
-        .gridView .product-cell {
-          color: var(--app-content-main-color);
-          font-size: 14px; 
-          margin-bottom: 8px;
-        }
-        .gridView .product-cell:not(.image) {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .gridView .product-cell.image span {
-          font-size: 18px;
-          line-height: 24px;
-        }
-        .gridView .product-cell img {
-          width: 100%;
-          height: 140px;
-          object-fit: cover;
-          border-radius: 4px;
-          margin-bottom: 16px;
-        }
-        .gridView .cell-label { opacity: 0.6; }
+        /* CSS untuk .gridView telah dihapus karena tidak digunakan lagi */
 
         /* === AKHIR CSS DASHBOARD === */
 
@@ -824,10 +742,10 @@
             border: none;
             cursor: pointer;
             padding: 8px;
-            display: flex; 
+            display: flex;
             flex-direction: column;
-            justify-content: space-around; 
-            width: 30px; 
+            justify-content: space-around;
+            width: 30px;
             height: 28px;
             z-index: 10;
             flex-shrink: 0;
@@ -836,8 +754,8 @@
         .burger-button span {
             display: block;
             width: 100%;
-            height: 3px; 
-            background-color: var(--app-content-main-color); 
+            height: 3px;
+            background-color: var(--app-content-main-color);
             border-radius: 3px;
             transition: all 0.3s ease-in-out;
         }
@@ -870,7 +788,7 @@
             <div class="modal-body">
                 <form id="addAssetForm">
                     @csrf <!-- Penting untuk keamanan form Laravel -->
-                    
+
                     <div class="form-group">
                         <label for="perusahaan">Perusahaan</label>
                         <select name="perusahaan" id="perusahaan" class="form-control" required>
@@ -901,7 +819,7 @@
                         <input type="text" name="no_asset" id="no_asset" class="form-control" required>
                         <div class="invalid-feedback" id="no_asset_error"></div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="merek">Merek</label> <!-- Mengganti 'No Barang' dengan 'Merek' -->
                         <input type="text" name="merek" id="merek" class="form-control" required>
@@ -923,7 +841,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelAddAssetModalBtn">Batal</button>
-                <button type="submit" class="btn btn-primary" form="addAssetForm" id="submitAddAssetBtn">Simpan Aset</button> 
+                <button type="submit" class="btn btn-primary" form="addAssetForm" id="submitAddAssetBtn">Simpan Aset</button>
             </div>
         </div>
     </div>
@@ -988,7 +906,7 @@
           </div>
           <div class="app-content">
             <div class="app-content-header">
-              <h1 class="app-content-headerText">Data Aset</h1> 
+              <h1 class="app-content-headerText">Data Aset</h1>
               <div style="margin-left: auto; display:flex; align-items:center;">
                 <button class="mode-switch" title="Switch Theme">
                     <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="24" height="24" viewBox="0 0 24 24">
@@ -996,24 +914,24 @@
                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
                     </svg>
                 </button>
-                <button class="app-content-headerButton">+ Tambah Aset</button> 
+                <button class="app-content-headerButton">+ Tambah Aset</button>
                 <!-- Tombol Logout bisa dipertimbangkan jika ada sistem auth nantinya -->
                 <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
               </div>
             </div>
             <div class="app-content-actions">
-              <input class="search-bar" placeholder="Cari No Asset ..." type="text"> 
+              <input class="search-bar" placeholder="Cari No Asset ..." type="text">
               <div class="app-content-actions-wrapper">
                 <div class="filter-button-wrapper">
                   <button class="action-button filter jsFilter"><span>Filter</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
                   <div class="filter-menu">
-                    <label>Perusahaan</label> 
+                    <label>Perusahaan</label>
                     <select>
                       <option>Semua Perusahaan</option>
                       <option>PT. ABC</option>
                       <option>CV. XYZ</option>
                     </select>
-                    <label>Jenis Barang</label> 
+                    <label>Jenis Barang</label>
                     <select>
                       <option>Semua Jenis</option>
                       <option>Elektronik</option>
@@ -1029,12 +947,6 @@
                     </div>
                   </div>
                 </div>
-                <button class="action-button list active" title="List View">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                </button>
-                <button class="action-button grid" title="Grid View">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </button>
               </div>
             </div>
             <div class="products-area-wrapper tableView">
@@ -1048,7 +960,7 @@
                 <div class="product-cell cell-serial-number">Serial Number</div>
                 <div class="product-cell cell-aksi">Aksi</div>
               </div>
-              
+
               @if(isset($barangs) && $barangs->count() > 0)
                 @foreach($barangs as $index => $barang)
                 <div class="products-row">
@@ -1071,11 +983,9 @@
                 </div>
               @endif
             </div>
-          </div> <!-- Penutup .app-content -->
-        </div> <!-- Penutup .app-container -->
-    </div> <!-- Penutup #dashboard-page -->
-
-    <!-- <div class="theme-btn-container"></div>  Hapus jika tidak ada fungsi tema login -->
+          </div>
+        </div>
+      </div>
 
     <script>
 
@@ -1144,7 +1054,7 @@
             console.log("Form 'addAssetForm' dan tombol 'submitAddAssetBtn' ditemukan. Event listener akan dipasang."); // DEBUG
             addAssetForm.addEventListener('submit', function(event) {
                 console.log("Form 'addAssetForm' di-submit!"); // DEBUG
-                event.preventDefault(); 
+                event.preventDefault();
 
                 const formData = new FormData(addAssetForm); // Gunakan variabel form yang sudah didefinisikan
 
@@ -1154,11 +1064,11 @@
                 submitAddAssetBtn.disabled = true;
                 clearValidationErrors();
 
-                fetch("{{ route('barang.store') }}", { 
+                fetch("{{ route('barang.store') }}", {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'), 
-                        'Accept': 'application/json', 
+                        'X-CSRF-TOKEN': formData.get('_token'),
+                        'Accept': 'application/json',
                     },
                     body: formData
                 })
@@ -1171,19 +1081,19 @@
                 })
                 .then(({ status, body }) => {
                     if (status === 201 && body.success) {
-                        alert(body.success); 
+                        alert(body.success);
                         closeModal();
                         addAssetForm.reset();
-                        window.location.reload(); 
-                    } else if (body.errors) { 
+                        window.location.reload();
+                    } else if (body.errors) {
                         displayValidationErrors(body.errors);
                     } else {
                         alert(body.error || 'Terjadi kesalahan saat menyimpan data.');
                         console.error('Server error response:', body);
                     }
                 })
-                .catch(errorInfo => { 
-                    if (errorInfo && errorInfo.body && errorInfo.body.errors) { 
+                .catch(errorInfo => {
+                    if (errorInfo && errorInfo.body && errorInfo.body.errors) {
                         console.warn("Validation errors caught in .catch:", errorInfo.body.errors);
                         displayValidationErrors(errorInfo.body.errors);
                     } else if (errorInfo && errorInfo.body && errorInfo.body.error) {
@@ -1206,7 +1116,7 @@
         // === AKHIR JAVASCRIPT AJAX ===
 
 
-        // === JAVASCRIPT UNTUK FITUR DASHBOARD (FILTER, VIEW MODE, THEME SWITCH, BURGER) ===
+        // === JAVASCRIPT UNTUK FITUR DASHBOARD (FILTER, THEME SWITCH, BURGER) ===
 
         const jsFilter = document.querySelector(".jsFilter");
         if (jsFilter) {
@@ -1216,35 +1126,11 @@
             });
         }
 
-        const gridViewBtn = document.querySelector(".grid");
-        const listViewBtn = document.querySelector(".list");
-        const productsWrapper = document.querySelector(".products-area-wrapper");
-
-        if (gridViewBtn && listViewBtn && productsWrapper) {
-            gridViewBtn.addEventListener("click", function () {
-                if (listViewBtn) listViewBtn.classList.remove("active");
-                gridViewBtn.classList.add("active");
-                productsWrapper.classList.add("gridView");
-                productsWrapper.classList.remove("tableView");
-            });
-
-            if (listViewBtn) { // Tambahkan pengecekan jika listViewBtn ada
-                listViewBtn.addEventListener("click", function () {
-                    listViewBtn.classList.add("active");
-                    if (gridViewBtn) gridViewBtn.classList.remove("active");
-                    productsWrapper.classList.remove("gridView");
-                    productsWrapper.classList.add("tableView");
-                });
-            }
-        }
-
         var modeSwitch = document.querySelector('.mode-switch');
         if (modeSwitch) {
-            modeSwitch.addEventListener('click', function () {                      
+            modeSwitch.addEventListener('click', function () {
                 document.documentElement.classList.toggle('light');
                 modeSwitch.classList.toggle('active');
-                // Tidak perlu cek dashboardPageDiv.style.display !== 'none' lagi
-                // karena dashboard selalu tampil
                 document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--app-bg');
                 document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--app-content-main-color');
             });
@@ -1255,20 +1141,15 @@
         const sidebarElement = document.querySelector('.sidebar');
 
         if (burgerMenuButton && sidebarElement) {
-            // Atur kondisi awal sidebar, misalnya terbuka
             if (!sidebarElement.classList.contains('collapsed')) {
                 burgerMenuButton.classList.add('active');
             } else {
-                // Jika ingin default collapsed, pastikan burger tidak active
                  burgerMenuButton.classList.remove('active');
             }
-            // Atau jika ingin default collapsed:
-            // sidebarElement.classList.add('collapsed');
-            // burgerMenuButton.classList.remove('active');
 
-                burgerMenuButton.addEventListener('click', () => {
+            burgerMenuButton.addEventListener('click', () => {
                 sidebarElement.classList.toggle('collapsed');
-                burgerMenuButton.classList.toggle('active'); 
+                burgerMenuButton.classList.toggle('active');
             });
 
         } else {
