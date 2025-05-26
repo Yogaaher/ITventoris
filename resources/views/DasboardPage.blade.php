@@ -923,7 +923,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelAddAssetModalBtn">Batal</button>
-                <button type="submit" class="btn btn-primary" form="addAssetForm">Simpan Aset</button>
+                <button type="submit" class="btn btn-primary" form="addAssetForm" id="submitAddAssetBtn">Simpan Aset</button> 
             </div>
         </div>
     </div>
@@ -1079,12 +1079,11 @@
 
     <script>
 
-                // === JAVASCRIPT UNTUK MODAL TAMBAH ASET ===
+        // === JAVASCRIPT UNTUK MODAL TAMBAH ASET ===
         const addAssetModal = document.getElementById('addAssetModal');
         const openAddAssetModalBtn = document.querySelector('.app-content-headerButton'); // Tombol "+ Tambah Aset"
         const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
         const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
-        const addAssetForm = document.getElementById('addAssetForm');
 
         if (openAddAssetModalBtn && addAssetModal) {
             openAddAssetModalBtn.addEventListener('click', () => {
@@ -1138,54 +1137,71 @@
         // === AKHIR JAVASCRIPT MODAL ===
 
         // === JAVASCRIPT UNTUK SUBMIT FORM TAMBAH ASET VIA AJAX ===
-        if (addAssetForm) {
-            addAssetForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Mencegah submit form tradisional
+        const addAssetForm = document.getElementById('addAssetForm');
+        const submitAddAssetBtn = document.getElementById('submitAddAssetBtn'); // Seleksi tombol submit di sini
 
-                const formData = new FormData(this);
-                const submitButton = this.querySelector('button[type="submit"]');
-                const originalButtonText = submitButton.textContent;
-                submitButton.textContent = 'Menyimpan...';
-                submitButton.disabled = true;
+        if (addAssetForm && submitAddAssetBtn) { // Pastikan kedua elemen ada sebelum menambahkan event listener
+            console.log("Form 'addAssetForm' dan tombol 'submitAddAssetBtn' ditemukan. Event listener akan dipasang."); // DEBUG
+            addAssetForm.addEventListener('submit', function(event) {
+                console.log("Form 'addAssetForm' di-submit!"); // DEBUG
+                event.preventDefault(); 
+
+                const formData = new FormData(addAssetForm); // Gunakan variabel form yang sudah didefinisikan
+
+                // Gunakan variabel submitAddAssetBtn yang sudah didefinisikan di luar
+                const originalButtonText = submitAddAssetBtn.textContent;
+                submitAddAssetBtn.textContent = 'Menyimpan...';
+                submitAddAssetBtn.disabled = true;
                 clearValidationErrors();
 
-
-                fetch("{{ route('barang.store') }}", { // Menggunakan URL dari route Laravel
+                fetch("{{ route('barang.store') }}", { 
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'), // CSRF token dari form
-                        'Accept': 'application/json', // Agar Laravel tahu kita mengharapkan JSON
+                        'X-CSRF-TOKEN': formData.get('_token'), 
+                        'Accept': 'application/json', 
                     },
                     body: formData
                 })
-                .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => { throw { status: response.status, body: errData }; })
+                                         .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
+                    }
+                    return response.json().then(data => ({ status: response.status, body: data }));
+                })
                 .then(({ status, body }) => {
                     if (status === 201 && body.success) {
-                        alert(body.success); // Atau gunakan notifikasi yang lebih baik
+                        alert(body.success); 
                         closeModal();
                         addAssetForm.reset();
-                        // TODO: Refresh tabel data aset di sini.
-                        // Cara termudah: window.location.reload();
-                        // Cara lebih baik: Ambil data baru via AJAX dan render ulang tabel.
-                        window.location.reload(); // Untuk sementara, reload halaman
-                    } else if (status === 422 && body.errors) {
-                        // Tampilkan error validasi
+                        window.location.reload(); 
+                    } else if (body.errors) { 
                         displayValidationErrors(body.errors);
                     } else {
-                        // Error lain dari server
                         alert(body.error || 'Terjadi kesalahan saat menyimpan data.');
-                        console.error('Server error:', body);
+                        console.error('Server error response:', body);
                     }
                 })
-                .catch(error => {
-                    console.error('Error submitting form:', error);
-                    alert('Terjadi kesalahan koneksi atau server.');
+                .catch(errorInfo => { 
+                    if (errorInfo && errorInfo.body && errorInfo.body.errors) { 
+                        console.warn("Validation errors caught in .catch:", errorInfo.body.errors);
+                        displayValidationErrors(errorInfo.body.errors);
+                    } else if (errorInfo && errorInfo.body && errorInfo.body.error) {
+                        alert(errorInfo.body.error);
+                        console.error('Server error caught in .catch:', errorInfo.body);
+                    } else {
+                        console.error('Error submitting form (catch block):', errorInfo);
+                        alert('Terjadi kesalahan koneksi atau server. Cek console.');
+                    }
                 })
                 .finally(() => {
-                    submitButton.textContent = originalButtonText;
-                    submitButton.disabled = false;
+                    submitAddAssetBtn.textContent = originalButtonText;
+                    submitAddAssetBtn.disabled = false;
                 });
             });
+        } else {
+            if (!addAssetForm) console.error("Form dengan ID 'addAssetForm' tidak ditemukan! Event listener AJAX tidak dipasang.");
+            if (!submitAddAssetBtn) console.error("Tombol dengan ID 'submitAddAssetBtn' tidak ditemukan! Event listener AJAX tidak dipasang.");
         }
         // === AKHIR JAVASCRIPT AJAX ===
 

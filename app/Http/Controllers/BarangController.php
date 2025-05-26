@@ -35,8 +35,7 @@ class BarangController extends Controller
                 'perusahaan' => $request->perusahaan,
                 'jenis_barang' => $request->jenis_barang,
                 'no_asset' => $request->no_asset,
-                'no_barang' => $request->merek, // Asumsi 'merek' disimpan ke field 'no_barang'
-                                               // atau jika field di DB adalah 'merek', gunakan 'merek' => $request->merek
+                'merek' => $request->merek,
                 'tgl_pengadaan' => $request->tgl_pengadaan,
                 'serial_number' => $request->serial_number,
             ]);
