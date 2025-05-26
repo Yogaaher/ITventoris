@@ -19,8 +19,7 @@ class BarangController extends Controller
             'perusahaan' => 'required|string|in:SCO,SCT,SCP,Migen',
             'jenis_barang' => 'required|string|in:Laptop,HP,PC/AIO,Printer,Proyektor',
             'no_asset' => 'required|string|max:255|unique:barang,no_asset',
-            'merek' => 'required|string|max:255', // Jika 'merek' menggantikan 'no_barang'
-            // 'no_barang' => 'required|string|max:255', // Jika Anda masih menggunakan 'no_barang'
+            'merek' => 'required|string|max:255',
             'tgl_pengadaan' => 'required|date',
             'serial_number' => 'required|string|max:255',
         ]);
@@ -30,7 +29,6 @@ class BarangController extends Controller
         }
 
         try {
-            // Sesuaikan field jika Anda menggunakan 'no_barang' bukan 'merek'
             Barang::create([
                 'perusahaan' => $request->perusahaan,
                 'jenis_barang' => $request->jenis_barang,
@@ -42,7 +40,6 @@ class BarangController extends Controller
 
             return response()->json(['success' => 'Aset berhasil ditambahkan!'], 201);
         } catch (\Exception $e) {
-            // Log error jika perlu: Log::error($e->getMessage());
             return response()->json(['error' => 'Gagal menyimpan aset. Silakan coba lagi.'], 500);
         }
     }
