@@ -598,8 +598,17 @@
         .products-area-wrapper {
           width: 100%;
           max-height: 100%;
-          overflow: auto;
+          overflow-x: auto;
+          overflow-y: hidden;
+          white-space: nowrap;
           padding: 0 4px;
+
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+          display: none;
         }
 
         .tableView .products-header,
