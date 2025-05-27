@@ -6,786 +6,1019 @@
     <title>Dashboard Aplikasi</title> <!-- Judul bisa diubah -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
 
-        /* === CSS MODAL TAMBAH ASET === */
-        .modal {
-            display: none; /* Sembunyikan secara default */
-            position: fixed; /* Tetap di viewport */
-            z-index: 1050; /* Di atas elemen lain */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; /* Scroll jika konten panjang */
-            background-color: rgba(0,0,0,0.5); /* Latar belakang semi-transparan */
-            justify-content: center; /* Pusatkan modal secara horizontal */
-            align-items: center; /* Pusatkan modal secara vertikal */
-        }
+      /* === CSS MODAL TAMBAH ASET (DARI DASHBOARD ANDA) === */
+.modal { /* Ini untuk modal TAMBAH ASET */
+    display: none;
+    position: fixed;
+    z-index: 1050; /* Lebih rendah dari modal detail jika perlu tumpang tindih */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
 
-        .modal.show {
-            display: flex; /* Tampilkan modal */
-        }
+.modal.show {
+    display: flex;
+}
 
-        .modal-content {
-            background-color: var(--app-content-secondary-color); /* Warna dari tema dashboard Anda */
-            color: var(--app-content-main-color);
-            margin: auto;
-            padding: 25px;
-            border: 1px solid var(--table-border);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 600px; /* Lebar maksimal modal */
-            box-shadow: var(--filter-shadow);
-            position: relative;
-        }
+.modal-content { /* Ini untuk modal TAMBAH ASET */
+    background-color: var(--app-content-secondary-color);
+    color: var(--app-content-main-color);
+    margin: auto;
+    padding: 25px;
+    border: 1px solid var(--table-border);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--filter-shadow);
+    position: relative;
+}
 
-        html.light .modal-content {
-            background-color: #fff; /* Warna untuk light mode */
-            border-color: #ddd;
-        }
+html.light .modal-content {
+    background-color: #fff;
+    border-color: #ddd;
+}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--table-border);
-            margin-bottom: 20px;
-        }
+.modal-header { /* Ini untuk modal TAMBAH ASET */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--table-border);
+    margin-bottom: 20px;
+}
 
-        html.light .modal-header {
-            border-bottom-color: #eee;
-        }
+html.light .modal-header {
+    border-bottom-color: #eee;
+}
 
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin: 0;
-        }
+.modal-title { /* Ini untuk modal TAMBAH ASET */
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
 
-        .close-button {
-            color: var(--app-content-main-color);
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-        html.light .close-button {
-            color: #555;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            /* color: red; */
-            text-decoration: none;
-        }
+/* Tombol close untuk modal TAMBAH ASET */
+#addAssetModal .close-button { /* Lebih spesifik untuk modal tambah aset */
+    color: var(--app-content-main-color);
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 5px;
+}
+html.light #addAssetModal .close-button {
+    color: #555;
+}
+#addAssetModal .close-button:hover,
+#addAssetModal .close-button:focus {
+    text-decoration: none;
+}
 
-        .modal-body form label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
+.modal-body form label { /* Ini untuk modal TAMBAH ASET */
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
 
-        .modal-body form input[type="text"],
-        .modal-body form input[type="date"],
-        .modal-body form select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid var(--table-border);
-            border-radius: 4px;
-            background-color: var(--app-bg); /* Sesuaikan dengan input dashboard */
-            color: var(--app-content-main-color);
-            box-sizing: border-box;
-        }
-        html.light .modal-body form input[type="text"],
-        html.light .modal-body form input[type="date"],
-        html.light .modal-body form select {
-            background-color: #fff;
-            border-color: #ccc;
-        }
+.modal-body form input[type="text"],
+.modal-body form input[type="date"],
+.modal-body form select { /* Ini untuk modal TAMBAH ASET */
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--table-border);
+    border-radius: 4px;
+    background-color: var(--app-bg);
+    color: var(--app-content-main-color);
+    box-sizing: border-box;
+}
+html.light .modal-body form input[type="text"],
+html.light .modal-body form input[type="date"],
+html.light .modal-body form select {
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.modal-body form input:focus,
+.modal-body form select:focus { /* Ini untuk modal TAMBAH ASET */
+    border-color: var(--action-color);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(40, 105, 255, 0.25); /* Ganti RGB jika --action-color berbeda */
+}
+
+.modal-footer { /* Ini untuk modal TAMBAH ASET */
+    padding-top: 15px;
+    border-top: 1px solid var(--table-border);
+    margin-top: 20px;
+    text-align: right;
+}
+html.light .modal-footer {
+    border-top-color: #eee;
+}
+
+.modal-footer .btn { /* Ini untuk modal TAMBAH ASET */
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 10px;
+}
+.modal-footer .btn-primary {
+    background-color: var(--action-color);
+    color: white;
+}
+.modal-footer .btn-primary:hover {
+    background-color: var(--action-color-hover);
+}
+.modal-footer .btn-secondary {
+    background-color: var(--filter-reset);
+    color: white;
+}
+html.light .modal-footer .btn-secondary {
+    background-color: #6c757d;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: .25rem;
+}
+input.is-invalid, select.is-invalid {
+    border-color: #dc3545 !important;
+}
+/* === AKHIR CSS MODAL TAMBAH ASET === */
 
 
-        .modal-body form input:focus,
-        .modal-body form select:focus {
-            border-color: var(--action-color);
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(var(--action-color), 0.25); /* Ganti jika var(--action-color) tidak bisa langsung dipakai di rgba */
-        }
+/* === CSS DASHBOARD (BAGIAN UTAMA) === */
+:root {
+  /* Variabel dari Dashboard */
+  --app-bg: #101827;
+  --sidebar: rgba(21, 30, 47,1);
+  --sidebar-main-color: #fff;
+  --table-border: #1a2131;
+  --table-header: #1a2131;
+  --app-content-main-color: #fff; /* Teks utama di konten dashboard */
+  --sidebar-link: #fff;
+  --sidebar-active-link: #1d283c;
+  --sidebar-hover-link: #1a2539;
+  --action-color: #2869ff;
+  --action-color-hover: #6291fd;
+  --app-content-secondary-color: #1d283c; /* Background sekunder/konten di dashboard */
+  --filter-reset: #2c394f;
+  --filter-shadow: rgba(16, 24, 39, 0.8) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  --sidebar-width-expanded: 200px;
+  --sidebar-width-collapsed: 65px;
 
-        .modal-footer {
-            padding-top: 15px;
-            border-top: 1px solid var(--table-border);
-            margin-top: 20px;
-            text-align: right;
-        }
-        html.light .modal-footer {
-            border-top-color: #eee;
-        }
+  /* Variabel dari Modal Detail AWAL (digabungkan) */
+  --color-neutral-light: #b0b5b8;       /* Untuk teks/border netral di modal detail */
+  --color-neutral-medium: #545e61;     /* Untuk teks/border netral lebih gelap di modal detail */
+  --color-modal-background: #394144;  /* Background utama modal detail (dark mode) */
+  --color-text-light: #fff;           /* Teks utama di modal detail (dark mode), bisa sama dengan --app-content-main-color */
+  --color-accent: #36d3b4;            /* Warna aksen (hijau toska) di modal detail */
+  --color-button-secondary: #6c757d; /* Tombol sekunder di modal detail */
+}
 
-        .modal-footer .btn {
-            padding: 10px 20px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            margin-left: 10px;
-        }
-        .modal-footer .btn-primary {
-            background-color: var(--action-color);
-            color: white;
-        }
-        .modal-footer .btn-primary:hover {
-            background-color: var(--action-color-hover);
-        }
-        .modal-footer .btn-secondary {
-            background-color: var(--filter-reset); /* Atau warna lain */
-            color: white;
-        }
-        html.light .modal-footer .btn-secondary {
-            background-color: #6c757d;
-        }
+html.light:root {
+  /* Variabel Dashboard Light Mode */
+  --app-bg: #fff;
+  --sidebar: #f3f6fd;
+  --app-content-secondary-color: #f3f6fd;
+  --app-content-main-color: #1f1c2e; /* Teks utama di konten dashboard (light mode) */
+  --sidebar-link: #1f1c2e;
+  --sidebar-hover-link: rgba(195, 207, 244, 0.5);
+  --sidebar-active-link: rgba(195, 207, 244, 1);
+  --sidebar-main-color: #1f1c2e;
+  --filter-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
-        /* Untuk pesan error validasi (opsional, styling bisa disesuaikan) */
-        .invalid-feedback {
-            color: #dc3545; /* Warna merah untuk error */
-            font-size: 0.875em;
-            margin-top: .25rem;
-        }
-        input.is-invalid, select.is-invalid {
-            border-color: #dc3545 !important;
-        }
-        /* === AKHIR CSS MODAL === */
+  /* Sesuaikan variabel modal detail untuk light mode */
+  --color-modal-background: #ffffff;      /* Background modal detail (light mode) */
+  --color-text-light: #212529;        /* Teks utama di modal detail (light mode) */
+  --color-neutral-light: #6c757d;      /* Teks/border netral di modal detail (light mode) */
+  --color-neutral-medium: #495057;     /* Teks/border netral lebih gelap di modal detail (light mode) */
+  /* --color-accent tetap sama atau bisa diubah jika perlu kontras berbeda */
+  /* --color-button-secondary tetap sama atau bisa diubah */
+}
 
-        /* === CSS DASHBOARD === */
-        :root {
-          --app-bg: #101827;
-          --sidebar: rgba(21, 30, 47,1);
-          --sidebar-main-color: #fff;
-          --table-border: #1a2131;
-          --table-header: #1a2131;
-          --app-content-main-color: #fff;
-          --sidebar-link: #fff;
-          --sidebar-active-link: #1d283c;
-          --sidebar-hover-link: #1a2539;
-          --action-color: #2869ff;
-          --action-color-hover: #6291fd;
-          --app-content-secondary-color: #1d283c;
-          --filter-reset: #2c394f;
-          --filter-shadow: rgba(16, 24, 39, 0.8) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-          /* Tambahkan variabel untuk lebar sidebar */
-          --sidebar-width-expanded: 200px;
-          --sidebar-width-collapsed: 65px;
-        }
+/* CSS Global Dashboard (pertahankan ini) */
+html {
+    box-sizing: border-box;
+    font-size: 62.5%; /* 1rem = 10px */
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-        html.light:root {
-          --app-bg: #fff;
-          --sidebar: #f3f6fd;
-          --app-content-secondary-color: #f3f6fd;
-          --app-content-main-color: #1f1c2e;
-          --sidebar-link: #1f1c2e;
-          --sidebar-hover-link: rgba(195, 207, 244, 0.5);
-          --sidebar-active-link: rgba(195, 207, 244, 1);
-          --sidebar-main-color: #1f1c2e;
-          --filter-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-        }
+*, *::before, *::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
 
-        html {
-            scroll-behavior: smooth;
-        }
+body {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif; /* Font utama dashboard */
+  font-size: 1.6rem; /* Default font size 16px */
+  background-color: var(--app-bg);
+  color: var(--app-content-main-color); /* Warna teks default untuk body dari dashboard */
+  letter-spacing: 1px;
+  transition: background 0.2s ease;
+}
 
-        body {
-          margin: 0;
-          padding: 0;
-          overflow-y: auto;
-          overflow-x: hidden;
-          font-family: 'Poppins', sans-serif;
-          background-color: var(--app-bg);
-          color: var(--app-content-main-color);
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          box-sizing: border-box;
-          letter-spacing: 1px;
-          transition: background 0.2s ease;
-        }
+#dashboard-page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+.app-container {
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  box-shadow: var(--filter-shadow); /* Menggunakan variabel shadow dari dashboard */
+  max-width: 2000px;
+  margin: 0 auto;
+}
 
-        #dashboard-page {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-        }
+.sidebar {
+  flex-basis: var(--sidebar-width-expanded);
+  max-width: var(--sidebar-width-expanded);
+  min-width: var(--sidebar-width-expanded); /* Diubah agar konsisten */
+  flex-shrink: 0;
+  background-color: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  transition: min-width 0.3s ease-in-out,
+              max-width 0.3s ease-in-out,
+              flex-basis 0.3s ease-in-out,
+              padding 0.3s ease-in-out,
+              opacity 0.3s ease-in-out;
+  position: relative;
+}
+.sidebar.collapsed {
+    min-width: var(--sidebar-width-collapsed);
+    max-width: var(--sidebar-width-collapsed);
+    flex-basis: var(--sidebar-width-collapsed);
+}
+.sidebar.collapsed .sidebar-header .app-icon {
+    margin-right: auto;
+}
+.sidebar.collapsed .sidebar-header .app-icon svg {
+  display: none;
+}
+.sidebar.collapsed .sidebar-list-item a span {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: -10px;
+}
+.sidebar.collapsed .sidebar-list-item a {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+.sidebar.collapsed .sidebar-list-item a svg {
+    margin-right: 0;
+}
+.sidebar.collapsed .account-info-name,
+.sidebar.collapsed .account-info-more {
+    display: none;
+}
+.sidebar.collapsed .account-info {
+    justify-content: center;
+}
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+}
+.sidebar.collapsed .sidebar-header .app-icon {
+    display: none;
+}
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  min-height: 50px; /* Dari dashboard */
+}
+.app-icon {
+  color: var(--sidebar-main-color);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.app-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.sidebar-list {
+  list-style-type: none;
+  padding: 0;
+}
+.sidebar-list-item {
+  position: relative;
+  margin-bottom: 4px;
+}
+.sidebar-list-item a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  color: var(--sidebar-link);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sidebar-list-item a span {
+    transition: opacity 0.2s ease-in-out 0.1s, width 0.2s ease-in-out 0.1s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.sidebar-list-item svg {
+  margin-right: 8px;
+  flex-shrink: 0;
+  transition: margin-right 0.3s ease-in-out;
+}
+.sidebar-list-item:hover {
+  background-color: var(--sidebar-hover-link);
+}
+.sidebar-list-item.active {
+  background-color: var(--sidebar-active-link);
+}
+.sidebar-list-item.active:before {
+  content: '';
+  position: absolute;
+  right: 0;
+  background-color: var(--action-color);
+  height: 100%;
+  width: 4px;
+}
+.mode-switch {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: var(--app-content-main-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 8px;
+  cursor: pointer;
+}
+.mode-switch .moon {
+  fill: var(--app-content-main-color);
+}
+.mode-switch.active .moon {
+  fill: none;
+}
+.account-info {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  margin-top: auto;
+}
+.account-info-picture {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.account-info-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.account-info-name {
+  font-size: 14px;
+  color: var(--sidebar-main-color);
+  margin: 0 8px;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-info-more {
+  color: var(--sidebar-main-color);
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  margin-left: auto;
+}
+.app-content {
+  padding: 16px;
+  /* height: 100%; */ /* Bisa menyebabkan masalah jika flex-grow digunakan */
+  flex: 1;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* Konten utama bisa scroll vertikal jika perlu */
+}
+.app-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.app-content-headerText {
+  color: var(--app-content-main-color);
+  font-size: 24px;
+  line-height: 32px;
+  margin: 0;
+}
+.app-content-headerButton {
+  background-color: var(--action-color);
+  color: #fff;
+  font-size: 14px;
+  line-height: 24px;
+  border: none;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 16px;
+  transition: .2s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.app-content-headerButton:hover {
+  background-color: var(--action-color-hover);
+}
+.app-content-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 4px;
+}
+.app-content-actions-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+@media screen and (max-width: 520px) {
+  .app-content-actions { flex-direction: column; }
+  .app-content-actions .search-bar { max-width: 100%; order: 2; }
+  .app-content-actions .app-content-actions-wrapper { padding-bottom: 16px; order: 1; }
+}
+.search-bar {
+  background-color: var(--app-content-secondary-color);
+  border: 1px solid var(--app-content-secondary-color);
+  color: var(--app-content-main-color);
+  font-size: 14px;
+  line-height: 24px;
+  border-radius: 4px;
+  padding: 0px 10px 0px 32px;
+  height: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-size: 16px;
+  background-repeat: no-repeat;
+  background-position: left 10px center;
+  width: 100%;
+  max-width: 320px;
+  transition: .2s;
+}
+html.light .search-bar {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+}
+.search-bar::placeholder { color: var(--app-content-main-color); }
+.search-bar:hover {
+  border-color: var(--action-color-hover);
+}
+.search-bar:focus {
+  outline: none;
+  border-color: var(--action-color);
+}
+.action-button { /* Untuk tombol filter, dll. di dashboard */
+  border-radius: 4px;
+  height: 32px;
+  background-color: var(--app-content-secondary-color);
+  border: 1px solid var(--app-content-secondary-color);
+  display: flex;
+  align-items: center;
+  color: var(--app-content-main-color);
+  font-size: 14px;
+  margin-left: 8px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+.action-button span { margin-right: 4px; }
+.action-button:hover {
+  border-color: var(--action-color-hover);
+}
+.action-button:focus, .action-button.active {
+  outline: none;
+  color: var(--action-color);
+  border-color: var(--action-color);
+}
+.filter-button-wrapper {
+  position: relative;
+}
+.filter-menu {
+  background-color: var(--app-content-secondary-color);
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  border-radius: 4px;
+  padding: 8px;
+  width: 220px;
+  z-index: 1000; /* Pastikan ini di bawah z-index modal jika filter terbuka di belakang modal */
+  box-shadow: var(--filter-shadow);
+  visibility: hidden;
+  opacity: 0;
+  transition: .2s;
+}
+.filter-menu:before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--app-content-secondary-color);
+  bottom: 100%;
+  right: 10px;
+}
+.filter-menu.active {
+  visibility: visible;
+  opacity: 1;
+  top: calc(100% + 8px);
+}
+.filter-menu label {
+  display: block;
+  font-size: 14px;
+  color: var(--app-content-main-color);
+  margin-bottom: 8px;
+}
+.filter-menu select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  padding: 8px 24px 8px 8px;
+  background-position: right 4px center;
+  border: 1px solid var(--app-content-main-color);
+  border-radius: 4px;
+  color: var(--app-content-main-color);
+  font-size: 12px;
+  background-color: transparent;
+  margin-bottom: 16px;
+  width: 100%;
+}
+.filter-menu select option { font-size: 14px; }
+html.light .filter-menu select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.filter-menu select:hover {
+  border-color: var(--action-color-hover);
+}
+.filter-menu select:focus, .filter-menu select.active {
+  outline: none;
+  color: var(--action-color);
+  border-color: var(--action-color);
+}
+.filter-menu-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.filter-button {
+  border-radius: 2px;
+  font-size: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+}
+.filter-button.apply {
+  background-color: var(--action-color);
+}
+.filter-button.reset {
+  background-color: var(--filter-reset);
+}
+.products-area-wrapper {
+  width: 100%;
+  max-height: 100%; /* Memastikan tabel tidak melebihi kontainer */
+  overflow: auto; /* Memungkinkan scroll pada tabel jika kontennya besar */
+  padding: 0 4px;
+}
+.products-area-wrapper.tableView { /* Pastikan class ini ada pada wrapper tabel */
+  display: flex;
+  flex-direction: column; /* Header dan row akan bertumpuk vertikal */
+}
+.tableView .products-header {
+  display: flex; /* Baris header */
+  align-items: center;
+  border-radius: 4px; /* Menggunakan variabel untuk header tabel */
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Agar header tetap di atas saat scroll */
+}
+.tableView .products-row {
+  display: flex; /* Setiap baris data */
+  align-items: center;
+  border-radius: 4px;
+}
+.tableView .products-row:hover {
+  box-shadow: var(--filter-shadow);
+  background-color: var(--app-content-secondary-color);
+}
+.tableView .products-row .cell-more-button {
+  display: none; /* Jika ada, biasanya untuk tampilan mobile */
+}
+.tableView .product-cell {
+  padding: 8px 12px;
+  color: var(--app-content-main-color);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap; /* Mencegah teks wrap */
+  overflow: hidden; /* Sembunyikan teks yang berlebih */
+  text-overflow: ellipsis; /* Tampilkan "..." jika teks berlebih */
+}
+.tableView .product-cell.cell-no { flex: 0 0 40px; min-width: 40px; justify-content: center;}
+.tableView .product-cell.cell-perusahaan { flex: 1 1 100px; min-width: 100px; }
+.tableView .product-cell.cell-jenis-barang { flex: 1 1 120px; min-width: 120px; }
+.tableView .product-cell.cell-no-asset { flex: 1 1 180px; min-width: 180px; }
+.tableView .product-cell.cell-merek { flex: 1 1 200px; min-width: 200px; }
+.tableView .product-cell.cell-tgl-pengadaan { flex: 1 1 140px; min-width: 140px; }
+.tableView .product-cell.cell-serial-number { flex: 1 1 150px; min-width: 150px; }
+.tableView .product-cell.cell-aksi {
+    flex: 0 0 180px; /* Cukupkan lebar untuk dua tombol */
+    min-width: 180px;
+    justify-content: center;
+    overflow: visible; /* Agar tombol tidak terpotong */
+}
+.tableView .product-cell img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+.tableView .sort-button {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--app-content-main-color);
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+}
+.tableView .sort-button:hover { color: var(--action-color); }
+.tableView .sort-button svg { width: 12px; }
+.tableView .cell-label {
+  display: none; /* Biasanya untuk tampilan mobile */
+}
+.status {
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.status:before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.status.active {
+  color: #2ba972;
+  background-color: rgba(43, 169, 114, 0.2);
+}
+.status.active:before {
+  background-color: #2ba972;
+}
+.status.disabled {
+  color: #59719d;
+  background-color: rgba(89, 113, 157, 0.2);
+}
+.status.disabled:before {
+  background-color: #59719d;
+}
+/* Tombol aksi di dalam tabel */
+.product-cell.cell-aksi .action-btn-table {
+    padding: 6px 12px;
+    margin: 0 4px;
+    border: 1px solid var(--action-color);
+    background-color: transparent;
+    color: var(--action-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap; /* Agar teks tombol tidak wrap */
+}
+.product-cell.cell-aksi .action-btn-table:hover {
+    background-color: var(--action-color);
+    color: #fff;
+}
+.product-cell.cell-aksi .action-btn-table.update-btn {
+    /* Style khusus jika ada */
+}
+.product-cell.cell-aksi .action-btn-table.detail-btn {
+    border-color: #5cb85c; /* Warna hijau untuk tombol detail di tabel */
+    color: #5cb85c;
+}
+.product-cell.cell-aksi .action-btn-table.detail-btn:hover {
+    background-color: #5cb85c;
+    color: #fff;
+}
+/* === AKHIR CSS DASHBOARD === */
 
-        .app-container {
-          border-radius: 4px;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          overflow: hidden;
-          box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-          max-width: 2000px;
-          margin: 0 auto;
-        }
+/* === CSS SPESIFIK UNTUK MODAL DETAIL === */
+#deviceInfoModal.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1051; /* Pastikan lebih tinggi dari modal tambah aset */
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
 
-        .sidebar {
-          flex-basis: var(--sidebar-width-expanded);
-          max-width: var(--sidebar-width-expanded);
-          min-width: 200px;
-          flex-shrink: 0;
-          background-color: var(--sidebar);
-          display: flex;
-          flex-direction: column;
-          transition: min-width 0.3s ease-in-out,
-                      max-width 0.3s ease-in-out,
-                      flex-basis 0.3s ease-in-out,
-                      padding 0.3s ease-in-out,
-                      opacity 0.3s ease-in-out;
-          position: relative;
-        }
-        .sidebar.collapsed {
-            min-width: var(--sidebar-width-collapsed);
-            max-width: var(--sidebar-width-collapsed);
-            flex-basis: var(--sidebar-width-collapsed);
-        }
+#deviceInfoModal .modal-content-wrapper.device-entry-info-modal {
+    background-color: var(--color-modal-background);
+    border-radius: 1rem;
+    width: 65rem;
+    max-width: calc(100vw - 4rem);
+    max-height: calc(100vh - 4rem);
+    overflow: hidden; /* Wrapper tidak scroll, body-nya yang scroll */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    color: var(--color-text-light);
+}
 
-        .sidebar.collapsed .sidebar-header .app-icon {
-            margin-right: auto;
-        }
+#deviceInfoModal .morph-modal-container {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    padding: 2.5rem;
+    flex-grow: 1;
+    overflow: hidden; /* Container tidak scroll */
+}
 
-        .sidebar.collapsed .sidebar-header .app-icon svg {
-          display: none;
-        }
-        .sidebar.collapsed .sidebar-list-item a span {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            margin-left: -10px;
-        }
-        .sidebar.collapsed .sidebar-list-item a {
-            justify-content: center;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .sidebar.collapsed .sidebar-list-item a svg {
-            margin-right: 0;
-        }
-        .sidebar.collapsed .account-info-name,
-        .sidebar.collapsed .account-info-more {
-            display: none;
-        }
-        .sidebar.collapsed .account-info {
-            justify-content: center;
-        }
-        .sidebar.collapsed .sidebar-header {
-            justify-content: center;
-        }
-        .sidebar.collapsed .sidebar-header .app-icon {
-            display: none;
-        }
+#deviceInfoModal .morph-modal-title {
+    flex: 0 0 auto;
+    padding-bottom: 1.5rem;
+    border-bottom: 0.1rem solid var(--color-neutral-medium);
+    font-size: 2.2rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+#deviceInfoModal .morph-modal-title .fa {
+    margin-right: 1rem;
+}
 
-        .sidebar-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 16px;
-          min-height: 50px;
-        }
-        .app-icon {
-          color: var(--sidebar-main-color);
-          transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .app-icon svg {
-          width: 24px;
-          height: 24px;
-        }
-        .sidebar-list {
-          list-style-type: none;
-          padding: 0;
-        }
-        .sidebar-list-item {
-          position: relative;
-          margin-bottom: 4px;
-        }
-        .sidebar-list-item a {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          padding: 10px 16px;
-          color: var(--sidebar-link);
-          text-decoration: none;
-          font-size: 14px;
-          line-height: 24px;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-        .sidebar-list-item a span {
-            transition: opacity 0.2s ease-in-out 0.1s, width 0.2s ease-in-out 0.1s;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .sidebar-list-item svg { margin-right: 8px; flex-shrink: 0; transition: margin-right 0.3s ease-in-out; }
-        .sidebar-list-item:hover { background-color: var(--sidebar-hover-link); }
-        .sidebar-list-item.active { background-color: var(--sidebar-active-link);}
-        .sidebar-list-item.active:before {
-          content: '';
-          position: absolute;
-          right: 0;
-          background-color: var(--action-color);
-          height: 100%;
-          width: 4px;
-        }
+/* Tombol close di modal DETAIL */
+#deviceInfoModal .btn-close {
+    background: none;
+    border: none;
+    color: var(--color-neutral-light);
+    font-size: 2.8rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+}
+#deviceInfoModal .btn-close:hover {
+    color: var(--color-text-light);
+}
 
-        .mode-switch {
-          background-color: transparent;
-          border: none;
-          padding: 0;
-          color: var(--app-content-main-color);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-left: auto;
-          margin-right: 8px;
-          cursor: pointer;
-        }
-        .mode-switch .moon {
-          fill: var(--app-content-main-color);
-        }
-        .mode-switch.active .moon {
-          fill: none;
-        }
+#deviceInfoModal .morph-modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto; /* Ini yang akan scroll */
+    font-size: 1.5rem;
+}
 
-        .account-info {
-          display: flex;
-          align-items: center;
-          padding: 16px;
-          margin-top: auto;
-        }
-        .account-info-picture {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          overflow: hidden;
-          flex-shrink: 0;
-        }
-        .account-info-picture img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .account-info-name {
-          font-size: 14px;
-          color: var(--sidebar-main-color);
-          margin: 0 8px;
-          overflow: hidden;
-          max-width: 100%;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .account-info-more {
-          color: var(--sidebar-main-color);
-          padding: 0;
-          border: none;
-          background-color: transparent;
-          margin-left: auto;
-        }
+#deviceInfoModal .device-details-info-header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 0.1rem solid var(--color-neutral-medium);
+}
 
-        .app-icon {
-          color: var(--sidebar-main-color);
-        }
-        .app-icon svg {
-          width: 24px;
-          height: 24px;
-        }
+#deviceInfoModal .device-image {
+    margin-right: 2rem;
+    color: var(--color-accent);
+    font-size: 5rem;
+}
 
-        .app-content {
-          padding: 16px;
-          height: 100%;
-          flex: 1;
-          max-height: 100%;
-          display: flex;
-          flex-direction: column;
-          overflow-x: hidden;
-        }
-        .app-content-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 4px;
-        }
-        .app-content-headerText {
-          color: var(--app-content-main-color);
-          font-size: 24px;
-          line-height: 32px;
-          margin: 0;
-        }
-        .app-content-headerButton {
-          background-color: var(--action-color);
-          color: #fff;
-          font-size: 14px;
-          line-height: 24px;
-          border: none;
-          border-radius: 4px;
-          height: 32px;
-          padding: 0 16px;
-          transition: .2s;
-          cursor: pointer;
-          flex-shrink: 0;
-        }
-        .app-content-headerButton:hover {
-          background-color: var(--action-color-hover);
-        }
-        .app-content-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 16px 4px;
-        }
-        .app-content-actions-wrapper {
-          display: flex;
-          align-items: center;
-          margin-left: auto;
-        }
-        @media screen and (max-width: 520px) {
-          .app-content-actions { flex-direction: column; }
-          .app-content-actions .search-bar { max-width: 100%; order: 2; }
-          .app-content-actions .app-content-actions-wrapper { padding-bottom: 16px; order: 1; }
-        }
+#deviceInfoModal .device-label {
+    display: flex;
+    flex-direction: column;
+}
 
-        .search-bar {
-          background-color: var(--app-content-secondary-color);
-          border: 1px solid var(--app-content-secondary-color);
-          color: var(--app-content-main-color);
-          font-size: 14px;
-          line-height: 24px;
-          border-radius: 4px;
-          padding: 0px 10px 0px 32px;
-          height: 32px;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
-          background-size: 16px;
-          background-repeat: no-repeat;
-          background-position: left 10px center;
-          width: 100%;
-          max-width: 320px;
-          transition: .2s;
-        }
-        html.light .search-bar {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
-        }
-        .search-bar::placeholder { color: var(--app-content-main-color); }
-        .search-bar:hover {
-          border-color: var(--action-color-hover);
-        }
-        .search-bar:focus {
-          outline: none;
-          border-color: var(--action-color);
-        }
+#deviceInfoModal .device-name,
+#deviceInfoModal .device-online-status {
+    display: block;
+}
 
-        .action-button {
-          border-radius: 4px;
-          height: 32px;
-          background-color: var(--app-content-secondary-color);
-          border: 1px solid var(--app-content-secondary-color);
-          display: flex;
-          align-items: center;
-          color: var(--app-content-main-color);
-          font-size: 14px;
-          margin-left: 8px;
-          padding: 0 8px;
-          cursor: pointer;
-        }
-        .action-button span { margin-right: 4px; }
-        .action-button:hover {
-          border-color: var(--action-color-hover);
-        }
-        .action-button:focus, .action-button.active {
-          outline: none;
-          color: var(--action-color);
-          border-color: var(--action-color);
-        }
+#deviceInfoModal .device-name {
+    font-size: 2rem;
+    font-weight: 500;
+}
 
-        .filter-button-wrapper {
-          position: relative;
-        }
+#deviceInfoModal .device-online-status {
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--color-neutral-light);
+}
 
-        .filter-menu {
-          background-color: var(--app-content-secondary-color);
-          position: absolute;
-          top: calc(100% + 16px);
-          right: 0;
-          border-radius: 4px;
-          padding: 8px;
-          width: 220px;
-          z-index: 1000;
-          box-shadow: var(--filter-shadow);
-          visibility: hidden;
-          opacity: 0;
-          transition: .2s;
-        }
-        .filter-menu:before {
-          content: '';
-          position: absolute;
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-bottom: 5px solid var(--app-content-secondary-color);
-          bottom: 100%;
-          right: 10px;
-        }
-        .filter-menu.active {
-          visibility: visible;
-          opacity: 1;
-          top: calc(100% + 8px);
-        }
-        .filter-menu label {
-          display: block;
-          font-size: 14px;
-          color: var(--app-content-main-color);
-          margin-bottom: 8px;
-        }
-        .filter-menu select {
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          padding: 8px 24px 8px 8px;
-          background-position: right 4px center;
-          border: 1px solid var(--app-content-main-color);
-          border-radius: 4px;
-          color: var(--app-content-main-color);
-          font-size: 12px;
-          background-color: transparent;
-          margin-bottom: 16px;
-          width: 100%;
-        }
-        .filter-menu select option { font-size: 14px; }
-        html.light .filter-menu select {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-        }
-        .filter-menu select:hover {
-          border-color: var(--action-color-hover);
-        }
-        .filter-menu select:focus, .filter-menu select.active {
-          outline: none;
-          color: var(--action-color);
-          border-color: var(--action-color);
-        }
+#deviceInfoModal .asset-detail-content .info-section {
+    margin-bottom: 2rem;
+}
+#deviceInfoModal .asset-detail-content .info-section:last-child {
+    margin-bottom: 0;
+}
 
-        .filter-menu-buttons {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .filter-button {
-          border-radius: 2px;
-          font-size: 12px;
-          padding: 4px 8px;
-          cursor: pointer;
-          border: none;
-          color: #fff;
-        }
-        .filter-button.apply {
-          background-color: var(--action-color);
-        }
-        .filter-button.reset {
-          background-color: var(--filter-reset);
-        }
+#deviceInfoModal .asset-detail-content .info-item {
+    display: flex;
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+}
 
-        .products-area-wrapper {
-          width: 100%;
-          max-height: 100%;
-          overflow-x: auto;
-          overflow-y: hidden;
-          white-space: nowrap;
-          padding: 0 4px;
+#deviceInfoModal .asset-detail-content .info-item dt {
+    font-weight: 600;
+    min-width: 160px;
+    padding-right: 1rem;
+    flex-shrink: 0;
+    color: inherit; /* Mengambil warna dari parent (.modal-content-wrapper) */
+}
 
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
+#deviceInfoModal .asset-detail-content .info-item dd {
+    color: var(--color-neutral-light);
+    word-break: break-word;
+    flex-grow: 1;
+}
 
-        .scroll-container::-webkit-scrollbar {
-          display: none;
-        }
+#deviceInfoModal .asset-detail-content hr.separator {
+    border: none;
+    border-top: 1px solid var(--color-neutral-medium);
+    margin: 2.5rem 0;
+}
 
-        .tableView .products-header,
-        .tableView .products-row {
-          display: flex;
-        }
+#deviceInfoModal .asset-detail-content .action-buttons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+}
 
-        .tableView .products-header {
-          align-items: center;
-          border-radius: 4px;
-          background-color: var(--app-content-secondary-color);
-          position: sticky;
-          top: 0;
-          z-index: 10;
-        }
-        .tableView .products-row {
-          align-items: center;
-          border-radius: 4px;
-        }
-        .tableView .products-row:hover {
-          box-shadow: var(--filter-shadow);
-          background-color: var(--app-content-secondary-color);
-        }
-        .tableView .products-row .cell-more-button {
-          display: none;
-        }
+#deviceInfoModal .asset-detail-content .btn-action {
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
 
-      .tableView .product-cell {
-        padding: 8px 12px;
-        color: var(--app-content-main-color);
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+#deviceInfoModal .asset-detail-content .btn-action.btn-detail {
+    background-color: var(--color-accent);
+    color: var(--color-modal-background); /* Warna teks kontras dengan background tombol */
+}
+#deviceInfoModal .asset-detail-content .btn-action.btn-detail:hover {
+    background-color: #2cbda2;
+}
 
-        .tableView .product-cell.cell-no { flex: 0 0 40px; min-width: 40px; justify-content: center;}
-        .tableView .product-cell.cell-perusahaan { flex: 1 1 100px; min-width: 100px; }
-        .tableView .product-cell.cell-jenis-barang { flex: 1 1 120px; min-width: 120px; }
-        .tableView .product-cell.cell-no-asset { flex: 1 1 180px; min-width: 180px; }
-        .tableView .product-cell.cell-merek { flex: 1 1 200px; min-width: 200px; }
-        .tableView .product-cell.cell-tgl-pengadaan { flex: 1 1 140px; min-width: 140px; }
-        .tableView .product-cell.cell-serial-number { flex: 1 1 150px; min-width: 150px; }
-        .tableView .product-cell.cell-aksi {
-            flex: 0 0 180px;
-            min-width: 180px;
-            justify-content: center;
-            overflow: visible;
-        }
+#deviceInfoModal .asset-detail-content .btn-action.btn-update {
+    background-color: var(--color-button-secondary);
+    color: var(--color-text-light); /* Warna teks kontras dengan background tombol */
+}
+#deviceInfoModal .asset-detail-content .btn-action.btn-update:hover {
+    background-color: #5a6268;
+}
 
-        .tableView .product-cell img {
-          width: 32px;
-          height: 32px;
-          border-radius: 6px;
-          margin-right: 6px;
-        }
+#deviceInfoModal .asset-detail-content .keterangan-text {
+    white-space: pre-line;
+    line-height: 1.7;
+}
+/* === AKHIR CSS MODAL DETAIL === */
 
-        .tableView .sort-button {
-          padding: 0;
-          background-color: transparent;
-          border: none;
-          cursor: pointer;
-          color: var(--app-content-main-color);
-          margin-left: 4px;
-          display: flex;
-          align-items: center;
-        }
-        .tableView .sort-button:hover { color: var(--action-color); }
-        .tableView .sort-button svg { width: 12px; }
-        .tableView .cell-label {
-          display: none;
-        }
 
-        .status {
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          padding: 4px 8px;
-          font-size: 12px;
-        }
-        .status:before {
-          content: '';
-          width: 4px;
-          height: 4px;
-          border-radius: 50%;
-          margin-right: 4px;
-        }
-        .status.active {
-          color: #2ba972;
-          background-color: rgba(43, 169, 114, 0.2);
-        }
-        .status.active:before {
-          background-color: #2ba972;
-        }
-        .status.disabled {
-          color: #59719d;
-          background-color: rgba(89, 113, 157, 0.2);
-        }
-        .status.disabled:before {
-          background-color: #59719d;
-        }
+/* === CSS UNTUK TOMBOL BURGER === */
+.burger-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 28px;
+    z-index: 10; /* Pastikan di atas elemen lain jika perlu */
+    flex-shrink: 0;
+}
 
-        .product-cell.cell-aksi .action-btn-table {
-            padding: 6px 12px;
-            margin: 0 4px;
-            border: 1px solid var(--action-color);
-            background-color: transparent;
-            color: var(--action-color);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            white-space: nowrap;
-        }
-        .product-cell.cell-aksi .action-btn-table:hover {
-            background-color: var(--action-color);
-            color: #fff;
-        }
-        .product-cell.cell-aksi .action-btn-table.update-btn {
-        }
-        .product-cell.cell-aksi .action-btn-table.detail-btn {
-            border-color: #5cb85c;
-            color: #5cb85c;
-        }
-        .product-cell.cell-aksi .action-btn-table.detail-btn:hover {
-            background-color: #5cb85c;
-            color: #fff;
-        }
+.burger-button span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--app-content-main-color); /* Warna garis burger */
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
 
-        /* CSS untuk .gridView telah dihapus karena tidak digunakan lagi */
-
-        /* === AKHIR CSS DASHBOARD === */
-
-        /* === CSS UNTUK TOMBOL BURGER === */
-        .burger-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 30px;
-            height: 28px;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-
-        .burger-button span {
-            display: block;
-            width: 100%;
-            height: 3px;
-            background-color: var(--app-content-main-color);
-            border-radius: 3px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Animasi X untuk burger button */
-        .burger-button.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-        .burger-button.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .burger-button.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-        /* === AKHIR CSS UNTUK TOMBOL BURGER === */
+/* Animasi X untuk burger button */
+.burger-button.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.burger-button.active span:nth-child(2) {
+    opacity: 0;
+}
+.burger-button.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+/* === AKHIR CSS UNTUK TOMBOL BURGER === */
 
     </style>
 </head>
 <body>
 
-<!-- =================================== -->
+    {{-- =================================== --}}
+    {{--        MODAL DETAIL ASET (DARI FILE MODAL ANDA, DENGAN ID UNTUK DATA DINAMIS) --}}
+    {{-- =================================== --}}
+    <div id="deviceInfoModal" class="modal-overlay">
+        <div class="modal-content-wrapper device-entry-info-modal">
+            <div class="morph-modal-container">
+                <div class="morph-modal-title">
+                    <span><i class="fas fa-info-circle"></i> Detail Perangkat</span>
+                    {{-- Tombol close untuk modal detail, berikan ID unik --}}
+                    <button id="closeDetailModalButton" class="btn-close" aria-label="Tutup modal">×</button>
+                </div>
+                <div class="morph-modal-body">
+                    <div class="device-details-info-header">
+                        <i id="modalDeviceImage" class="device-image fas fa-desktop"></i>
+                        <div class="device-label">
+                            <span class="device-name" id="modalDeviceName">Nama Perangkat</span>
+                            <span class="device-online-status" id="modalDeviceType">Jenis Barang</span>
+                        </div>
+                    </div>
+                    <div class="asset-detail-content">
+                        <div class="info-section">
+                            <dl class="info-item"><dt>No:</dt><dd id="modalNo">_</dd></dl>
+                            <dl class="info-item"><dt>Perusahaan:</dt><dd id="modalPerusahaan">_</dd></dl>
+                            <dl class="info-item"><dt>No Asset:</dt><dd id="modalNoAsset">_</dd></dl>
+                            <dl class="info-item"><dt>Tgl. Pengadaan:</dt><dd id="modalTglPengadaan">_</dd></dl>
+                            <dl class="info-item"><dt>Serial Number:</dt><dd id="modalSerialNumber">_</dd></dl>
+                        </div>
+                        <hr class="separator">
+                        <div class="info-section">
+                            <dl class="info-item"><dt>User:</dt><dd id="modalUser">_</dd></dl>
+                            <dl class="info-item"><dt>Tgl. Penyerahan:</dt><dd id="modalTglPenyerahan">_</dd></dl>
+                            <dl class="info-item"><dt>Tgl. Pengembalian:</dt><dd id="modalTglPengembalian">_</dd></dl>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-detail" onclick="alert('Detail User belum diimplementasikan')">
+                                    <i class="fas fa-user-circle"></i> Detail User
+                                </button>
+                                <button class="btn-action btn-update" onclick="alert('Update Aset dari modal detail belum diimplementasikan')">
+                                    <i class="fas fa-edit"></i> Update Aset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                             <dl class="info-item"><dt>Status:</dt><dd id="modalStatus">_</dd></dl>
+                             <dl class="info-item"><dt>Keterangan:</dt><dd id="modalKeterangan" class="keterangan-text">_</dd></dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- AKHIR MODAL DETAIL ASET --}}
+
+
+    <!-- =================================== -->
     <!--        MODAL TAMBAH ASET           -->
     <!-- =================================== -->
     <div id="addAssetModal" class="modal">
@@ -1008,7 +1241,7 @@
                     <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
                     <div class="product-cell cell-aksi">
                         <button class="action-btn-table update-btn" onclick="alert('Update untuk ID: {{ $barang->id }} belum diimplementasikan')">Update</button>
-                        <button class="action-btn-table detail-btn" onclick="alert('Detail untuk ID: {{ $barang->id }} belum diimplementasikan')">Detail</button>
+                        <button class="action-btn-table detail-btn" onclick="openDetailModal({{ $barang->id }})">Detail</button>
                     </div>
                 </div>
                 @endforeach
@@ -1019,7 +1252,6 @@
               @endif
             </div>
 
-            {{-- Tampilkan Link Paginasi --}}
             @if (isset($barangs) && $barangs->hasPages())
                 <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center;">
                     {{-- appends(request()->query()) penting agar filter tetap aktif saat paginasi --}}
@@ -1033,16 +1265,22 @@
         </div>
       </div>
 
+    {{-- ... (Bagian HTML Anda di atas) ... --}}
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
             // === MODAL TAMBAH ASET: Variabel dan Fungsi Dasar ===
             const addAssetModal = document.getElementById('addAssetModal');
-            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton'); // Menggunakan ID yang baru ditambahkan
+            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton');
             const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
             const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
             const addAssetForm = document.getElementById('addAssetForm');
             const submitAddAssetBtn = document.getElementById('submitAddAssetBtn');
+
+            // Variabel untuk Modal Detail (digunakan oleh event listener di DOMContentLoaded)
+            const detailModalOverlayElement = document.getElementById('deviceInfoModal'); // Ganti nama agar tidak konflik
+            const closeDetailModalButtonElement = document.getElementById('closeDetailModalButton'); // Ganti nama
 
             function openModalElement(modalElement, formToReset) {
                 if (modalElement) {
@@ -1115,7 +1353,7 @@
                     fetch("{{ route('barang.store') }}", {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': formData.get('_token'), // CSRF token dari form
+                            'X-CSRF-TOKEN': formData.get('_token'),
                             'Accept': 'application/json',
                         },
                         body: formData
@@ -1131,8 +1369,7 @@
                         if (status === 201 && body.success) {
                             alert(body.success);
                             closeModalElement(addAssetModal);
-                            // addAssetForm.reset(); // Sudah di-reset saat membuka modal
-                            window.location.reload(); // Reload halaman untuk melihat data baru
+                            window.location.reload();
                         } else if (body.errors) {
                             displayValidationErrors(body.errors);
                         } else {
@@ -1158,12 +1395,10 @@
                 });
             }
 
-
             // === FITUR DASHBOARD: Filter Dropdown ===
-            const filterToggleButton = document.querySelector(".jsFilter"); // Tombol yang mentoggle filter menu
+            const filterToggleButton = document.querySelector(".jsFilter");
             if (filterToggleButton) {
                 filterToggleButton.addEventListener("click", function () {
-                    // `this` adalah tombol .jsFilter yang diklik
                     const filterButtonWrapper = this.closest('.filter-button-wrapper');
                     if (filterButtonWrapper) {
                         const filterMenu = filterButtonWrapper.querySelector(".filter-menu");
@@ -1186,7 +1421,6 @@
                 modeSwitch.addEventListener('click', function () {
                     document.documentElement.classList.toggle('light');
                     modeSwitch.classList.toggle('active');
-                    // Update background dan color body jika diperlukan, tergantung variabel CSS Anda
                     document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--app-bg');
                     document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--app-content-main-color');
                 });
@@ -1196,13 +1430,11 @@
             const burgerMenuButton = document.getElementById('burger-menu');
             const sidebarElement = document.querySelector('.sidebar');
             if (burgerMenuButton && sidebarElement) {
-                // Inisialisasi state tombol burger berdasarkan state sidebar saat halaman dimuat
                 if (!sidebarElement.classList.contains('collapsed')) {
                     burgerMenuButton.classList.add('active');
                 } else {
                     burgerMenuButton.classList.remove('active');
                 }
-
                 burgerMenuButton.addEventListener('click', () => {
                     sidebarElement.classList.toggle('collapsed');
                     burgerMenuButton.classList.toggle('active');
@@ -1214,7 +1446,7 @@
             if (searchBarInput) {
                 searchBarInput.addEventListener('keypress', function(event) {
                     if (event.key === 'Enter') {
-                        event.preventDefault(); // Mencegah submit form default jika search bar ada di dalam form lain
+                        event.preventDefault();
                         const filterForm = document.getElementById('filterForm');
                         if (filterForm) {
                             filterForm.submit();
@@ -1223,10 +1455,155 @@
                 });
             }
 
-        }); // Akhir dari DOMContentLoaded
+            // === MODAL DETAIL ASET: Event Listeners untuk menutup modal ===
+            if (closeDetailModalButtonElement) { // Menggunakan variabel dengan _element
+                closeDetailModalButtonElement.addEventListener('click', () => {
+                    if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
+                        detailModalOverlayElement.style.display = 'none';
+                    }
+                });
+            }
 
-        // Fungsi resetFilters harus berada di global scope jika dipanggil dari onclick="resetFilters()" di HTML.
-        // Atau, Anda bisa menghapus onclick dari HTML dan menambahkan event listener di dalam DOMContentLoaded.
+            if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
+                detailModalOverlayElement.addEventListener('click', function(event) {
+                    if (event.target === detailModalOverlayElement) { // Menggunakan variabel dengan _element
+                        if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
+                            detailModalOverlayElement.style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && detailModalOverlayElement && detailModalOverlayElement.style.display === 'flex') { // Menggunakan variabel dengan _element
+                    if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
+                        detailModalOverlayElement.style.display = 'none';
+                    }
+                }
+            }); // Kurung kurawal penutup event keydown ada di sini
+
+        }); // <<<<---- INI ADALAH AKHIR DARI BLOK document.addEventListener('DOMContentLoaded')
+
+        // ==============================================================================
+        // FUNGSI-FUNGSI DI BAWAH INI HARUS BERADA DI LUAR DOMContentLoaded
+        // AGAR DAPAT DIAKSES SECARA GLOBAL OLEH atribut onclick="" DI HTML
+        // ==============================================================================
+
+        function openDetailModal(barangId) {
+            const detailModalOverlay = document.getElementById('deviceInfoModal'); // Variabel ini lokal untuk fungsi ini
+            if (!detailModalOverlay) {
+                console.error('Modal detail element (deviceInfoModal) not found!');
+                return;
+            }
+
+            // Semua const untuk elemen modal HARUS di dalam fungsi ini
+            const modalDeviceName = document.getElementById('modalDeviceName');
+            const modalDeviceType = document.getElementById('modalDeviceType');
+            const modalNo = document.getElementById('modalNo');
+            const modalPerusahaan = document.getElementById('modalPerusahaan');
+            const modalNoAsset = document.getElementById('modalNoAsset');
+            const modalTglPengadaan = document.getElementById('modalTglPengadaan');
+            const modalSerialNumber = document.getElementById('modalSerialNumber');
+            const modalUser = document.getElementById('modalUser');
+            const modalTglPenyerahan = document.getElementById('modalTglPenyerahan');
+            const modalTglPengembalian = document.getElementById('modalTglPengembalian');
+            const modalStatus = document.getElementById('modalStatus');
+            const modalKeterangan = document.getElementById('modalKeterangan');
+            const deviceImage = document.getElementById('modalDeviceImage');
+
+            // Validasi elemen modal
+            if (!modalDeviceName || !modalDeviceType || !modalNo || !modalPerusahaan || !modalNoAsset ||
+                !modalTglPengadaan || !modalSerialNumber || !modalUser || !modalTglPenyerahan ||
+                !modalTglPengembalian || !modalStatus || !modalKeterangan || !deviceImage) {
+                console.error('One or more modal content elements are missing. Check their IDs.');
+                alert('Kesalahan konfigurasi: Elemen modal tidak lengkap.');
+                return;
+            }
+
+            // Reset dan tampilkan loading
+            modalDeviceName.textContent = 'Memuat...';
+            modalDeviceType.textContent = '_';
+            modalNo.textContent = '_';
+            modalPerusahaan.textContent = '_';
+            modalNoAsset.textContent = '_';
+            modalTglPengadaan.textContent = '_';
+            modalSerialNumber.textContent = '_';
+            modalUser.textContent = '_';
+            modalTglPenyerahan.textContent = '_';
+            modalTglPengembalian.textContent = '_';
+            modalStatus.innerHTML = '_';
+            modalKeterangan.textContent = '_';
+            deviceImage.className = 'device-image fas fa-spinner fa-spin';
+
+            // Fetch data (semua ini juga harus di dalam fungsi)
+            fetch(`/barang/detail/${barangId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        // Coba dapatkan detail error dari body jika response JSON
+                        return response.json().then(errData => {
+                            throw { status: response.status, body: errData, message: `HTTP error! status: ${response.status}` };
+                        }).catch(() => { // Jika body bukan JSON atau parsing gagal
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.barang) {
+                        const barang = data.barang;
+                        const track = data.track;
+
+                        modalDeviceName.textContent = barang.merek || 'N/A';
+                        modalDeviceType.textContent = barang.jenis_barang || 'N/A';
+                        modalNo.textContent = barang.id || 'N/A';
+                        modalPerusahaan.textContent = barang.perusahaan || 'N/A';
+                        modalNoAsset.textContent = barang.no_asset || 'N/A';
+                        modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
+                        modalSerialNumber.textContent = barang.serial_number || 'N/A';
+
+                        if (track) {
+                            modalUser.textContent = `${track.username || 'N/A'}`;
+                            modalTglPenyerahan.textContent = formatDate(track.tanggal_awal);
+                            modalTglPengembalian.textContent = track.tanggal_akhir ? formatDate(track.tanggal_akhir) : '-';
+                        } else {
+                            modalUser.textContent = '-';
+                            modalTglPenyerahan.textContent = '-';
+                            modalTglPengembalian.textContent = '-';
+                        }
+
+                        modalStatus.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${barang.status || 'Aktif (Digunakan)'}</span>`;
+                        modalKeterangan.textContent = barang.keterangan || 'Tidak ada keterangan.';
+
+                        let iconClass = 'fas fa-desktop';
+                        if (barang.jenis_barang === 'Laptop') iconClass = 'fas fa-laptop';
+                        else if (barang.jenis_barang === 'HP') iconClass = 'fas fa-mobile-alt';
+                        else if (barang.jenis_barang === 'Printer') iconClass = 'fas fa-print';
+                        else if (barang.jenis_barang === 'Proyektor') iconClass = 'fas fa-video';
+                        deviceImage.className = `device-image ${iconClass}`;
+
+                        detailModalOverlay.style.display = 'flex';
+                    } else {
+                        const errorMessage = data.error || 'Data tidak ditemukan atau format respons salah.';
+                        alert(errorMessage);
+                        console.error('Server response error:', errorMessage, data);
+                        modalDeviceName.textContent = 'Error'; // Atau biarkan Memuat...
+                        deviceImage.className = 'device-image fas fa-exclamation-triangle';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching detail barang:', error);
+                    let displayError = 'Gagal mengambil detail barang. Cek konsol (F12).';
+                    if (error.body && error.body.error) { // Jika error dari then(response.json())
+                        displayError = error.body.error;
+                    } else if (error.message) { // Jika error dari new Error()
+                        displayError = error.message;
+                    }
+                    alert(displayError);
+                    modalDeviceName.textContent = 'Gagal memuat.'; // Atau biarkan Memuat...
+                    deviceImage.className = 'device-image fas fa-exclamation-triangle';
+                });
+        } // <<<<---- AKHIR DARI FUNGSI openDetailModal
+
         function resetFilters() {
             const filterForm = document.getElementById('filterForm');
             if (filterForm) {
@@ -1238,7 +1615,23 @@
                 if(filterJenisBarangSelect) filterJenisBarangSelect.value = '';
                 if(searchBar) searchBar.value = '';
 
-                filterForm.submit(); // Submit form untuk menerapkan filter yang sudah direset
+                filterForm.submit();
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    console.warn("Invalid date string received for formatting:", dateString);
+                    return dateString;
+                }
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('id-ID', options);
+            } catch (e) {
+                console.error("Error formatting date:", dateString, e);
+                return dateString;
             }
         }
     </script>

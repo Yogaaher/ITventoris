@@ -6,3 +6,4 @@ use App\Http\Controllers\BarangController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
+Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
