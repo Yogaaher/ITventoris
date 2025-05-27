@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Track;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller; 
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -45,5 +47,33 @@ class DashboardController extends Controller
 
         // Kirim data ke view
         return view('DasboardPage', compact('barangs', 'perusahaanOptions', 'jenisBarangOptions', 'filterPerusahaan', 'filterJenisBarang', 'searchNoAsset'));
+    }
+
+    public function getDetailBarang(Request $request, $id)
+    {
+        try {
+            $barang = Barang::find($id);
+
+            if (!$barang) {
+                return response()->json(['error' => 'Data barang tidak ditemukan.'], 404);
+            }
+
+            // Mengambil track user terbaru berdasarkan tanggal_awal (penyerahan)
+            // dan pastikan hanya track yang masih aktif (tanggal_ahir masih null atau di masa depan)
+            // atau ambil saja yang paling terakhir berdasarkan tanggal_awal
+            $latestTrack = Track::where('no_asset', $barang->no_asset)
+                                ->orderBy('tanggal_awal', 'desc') // Urutkan berdasarkan tanggal awal terbaru
+                                ->first();
+
+            return response()->json([
+                'success' => true,
+                'barang' => $barang,
+                'track' => $latestTrack
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error fetching detail barang: " . $e->getMessage());
+            return response()->json(['error' => 'Terjadi kesalahan saat mengambil data.'], 500);
+        }
     }
 }
