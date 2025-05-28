@@ -925,6 +925,130 @@ html.light .filter-menu select {
 /* === AKHIR CSS MODAL DETAIL === */
 
 
+/* === CSS TAMBAHAN UNTUK MODAL HISTORY USER === */
+#userHistoryModal.modal-overlay { /* Targetkan ID dan class bersama-sama */
+    display: none; /* Awalnya display: none, dikontrol oleh JS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Latar belakang overlay standar */
+    z-index: 1052; /* LEBIH TINGGI DARI deviceInfoModal (1051) dan addAssetModal (1050) */
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem; /* Samakan dengan deviceInfoModal jika diinginkan */
+    overflow: auto; /* Tambahkan jika kontennya bisa lebih tinggi dari viewport */
+}
+
+/* Konten wrapper modal history, sama seperti deviceInfoModal */
+#userHistoryModal .modal-content-wrapper.device-entry-info-modal {
+    background-color: var(--color-modal-background);
+    border-radius: 0.8rem;
+    width: 90%; /* Atau sesuaikan jika perlu ukuran berbeda */
+    max-width: 55rem;
+    max-height: calc(100vh - 8rem);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    color: var(--color-text-light);
+}
+
+/* Kontainer morph modal di dalam history, sama seperti deviceInfoModal */
+#userHistoryModal .morph-modal-container {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    padding: 2rem;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Judul modal history, sama seperti deviceInfoModal */
+#userHistoryModal .morph-modal-title {
+    flex: 0 0 auto;
+    padding-bottom: 1rem;
+    border-bottom: 0.1rem solid var(--color-neutral-medium);
+    font-size: 1.8rem; /* Ukuran bisa disesuaikan */
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+#userHistoryModal .morph-modal-title .fa {
+    margin-right: 0.8rem;
+    font-size: 1.7rem;
+}
+
+/* Tombol close modal history, sama seperti deviceInfoModal */
+#userHistoryModal .btn-close {
+    background: none;
+    border: none;
+    color: var(--color-neutral-light);
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    line-height: 1;
+}
+#userHistoryModal .btn-close:hover {
+    color: var(--color-text-light);
+}
+
+/* Body modal history, sama seperti deviceInfoModal */
+#userHistoryModal .morph-modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    font-size: 1.4rem; /* Ukuran bisa disesuaikan */
+}
+
+/* Style tabel di dalam modal history (yang sudah Anda buat sebelumnya) */
+#userHistoryModal .morph-modal-body p:first-child { /* Target paragraf SN */
+    margin-bottom: 1rem; /* Sesuaikan margin bawahnya */
+    font-size: 1.3rem; /* Perkecil font-size untuk info SN */
+}
+
+#userHistoryModal .morph-modal-body p:first-child strong {
+    font-weight: 600; /* Pastikan SN tetap bold */
+}
+
+/* Style tabel di dalam modal history (yang sudah Anda buat sebelumnya) */
+#userHistoryModal .products-area-wrapper {
+    /* margin-top: 1.5rem; -- Dihapus */
+    max-height: 280px; /* << UBAH INI: Batasi tinggi tabel agar muat di modal yg lebih kecil, misal dari 350px ke 280px */
+    border-radius: 0.4rem; /* Bisa sedikit lebih kecil */
+}
+
+#userHistoryModal .products-header,
+#userHistoryModal .products-row {
+    font-size: 1.3rem; /* Bisa disesuaikan agar muat lebih banyak info */
+    /* background-color: transparent; Ganti jika ingin beda dari tabel utama */
+}
+#userHistoryModal .product-cell {
+    padding: 6px 8px; /* Sesuaikan padding sel */
+    /* border-bottom: 1px solid var(--table-border); */ /* Jika ingin garis antar baris */
+}
+/* Definisikan lebar kolom untuk tabel history */
+#userHistoryModal .product-cell.cell-history-user { flex: 1 1 130px; min-width: 100px; }
+#userHistoryModal .product-cell.cell-history-tgl-awal { flex: 1 1 110px; min-width: 90px; }
+#userHistoryModal .product-cell.cell-history-tgl-akhir { flex: 1 1 110px; min-width: 90px; }
+#userHistoryModal .product-cell.cell-history-status { flex: 1 1 90px; min-width: 80px; }
+#userHistoryModal .product-cell.cell-history-keterangan { flex: 2 1 180px; min-width: 130px; white-space: normal; }
+
+/* Pastikan header tabel di modal history tetap terlihat saat scroll kontennya */
+#userHistoryModal #userHistoryTableHeader {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-modal-background); /* Sesuaikan dengan background modal Anda */
+    z-index: 1; /* Agar di atas konten row */
+}
+html.light #userHistoryModal #userHistoryTableHeader {
+    background-color: var(--color-modal-background); /* Pastikan ini juga diatur untuk light mode */
+}
+/* === AKHIR CSS MODAL HISTORY USER === */
+
+
 /* === CSS UNTUK TOMBOL BURGER === */
 .burger-button {
     background: none;
@@ -998,7 +1122,7 @@ html.light .filter-menu select {
                             <dl class="info-item"><dt>Tgl. Penyerahan:</dt><dd id="modalTglPenyerahan">_</dd></dl>
                             <dl class="info-item"><dt>Tgl. Pengembalian:</dt><dd id="modalTglPengembalian">_</dd></dl>
                             <div class="action-buttons">
-                                <button class="btn-action btn-detail" onclick="alert('Detail User belum diimplementasikan')">
+                                <button class="btn-action btn-detail" id="triggerUserHistoryModalButton">
                                     <i class="fas fa-user-circle"></i> Detail User
                                 </button>
                                 <button class="btn-action btn-update" onclick="alert('Update Aset dari modal detail belum diimplementasikan')">
@@ -1017,6 +1141,50 @@ html.light .filter-menu select {
     </div>
     {{-- AKHIR MODAL DETAIL ASET --}}
 
+    {{-- ================================================================ --}}
+    {{-- MODAL BARU: HISTORY PENGGUNA BERDASARKAN SERIAL NUMBER           --}}
+    {{-- ================================================================ --}}
+    <div id="userHistoryModal" class="modal-overlay" style="display: none;"> {{-- Awalnya display: none --}}
+        <div class="modal-content-wrapper device-entry-info-modal"> {{-- Menggunakan class yang sama untuk styling --}}
+            <div class="morph-modal-container">
+                <div class="morph-modal-title">
+                    <span><i class="fas fa-history"></i> Riwayat Pengguna Aset</span>
+                    {{-- Tombol close untuk modal history, berikan ID unik --}}
+                    <button id="closeUserHistoryModalButton" class="btn-close" aria-label="Tutup modal">×</button>
+                </div>
+                <div class="morph-modal-body">
+                    <p style="margin-bottom: 1rem;">Serial Number: <strong id="historyModalSerialNumber">_</strong></p>
+                    
+                    {{-- Kontainer untuk tabel history --}}
+                    <div class="products-area-wrapper tableView" id="userHistoryTableContainer" style="max-height: 350px; overflow-y: auto; border: 1px solid var(--color-neutral-medium); border-radius: 0.5rem;">
+                        {{-- Header Tabel History --}}
+                        <div class="products-header" id="userHistoryTableHeader" style="position: sticky; top: 0; background-color: var(--color-modal-background); z-index:1;">
+                            {{-- Kolom akan ditambahkan oleh JavaScript atau bisa didefinisikan di sini --}}
+                            {{-- Contoh:
+                            <div class="product-cell cell-history-user">Pengguna</div>
+                            <div class="product-cell cell-history-tgl-awal">Tgl. Penyerahan</div>
+                            <div class="product-cell cell-history-tgl-akhir">Tgl. Pengembalian</div>
+                            <div class="product-cell cell-history-status">Status</div>
+                            --}}
+                        </div>
+                        {{-- Baris Data History akan diisi oleh JavaScript --}}
+                        <div id="userHistoryTableBody">
+                            {{-- Contoh data row (akan digenerate JS):
+                            <div class="products-row">
+                                <div class="product-cell cell-history-user">Nama User</div>
+                                <div class="product-cell cell-history-tgl-awal">01-01-2023</div>
+                                <div class="product-cell cell-history-tgl-akhir">31-12-2023</div>
+                                <div class="product-cell cell-history-status">Dikembalikan</div>
+                            </div>
+                            --}}
+                            <p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- AKHIR MODAL HISTORY PENGGUNA --}}
 
     <!-- =================================== -->
     <!--        MODAL TAMBAH ASET           -->
@@ -1474,6 +1642,33 @@ html.light .filter-menu select {
                 });
             }
 
+
+             // === MODAL HISTORY USER: Variabel dan Event Listeners ===
+            const userHistoryModalElement = document.getElementById('userHistoryModal');
+            const closeUserHistoryModalButtonElement = document.getElementById('closeUserHistoryModalButton');
+
+            if (closeUserHistoryModalButtonElement && userHistoryModalElement) {
+                closeUserHistoryModalButtonElement.addEventListener('click', () => {
+                    userHistoryModalElement.style.display = 'none';
+                });
+            }
+
+            if (userHistoryModalElement) {
+                userHistoryModalElement.addEventListener('click', function(event) {
+                    if (event.target === userHistoryModalElement) {
+                        userHistoryModalElement.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Tambahkan listener untuk tombol Escape pada modal history user
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && userHistoryModalElement && userHistoryModalElement.style.display === 'flex') {
+                    userHistoryModalElement.style.display = 'none';
+                }
+            });
+
+
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' && detailModalOverlayElement && detailModalOverlayElement.style.display === 'flex') { // Menggunakan variabel dengan _element
                     if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
@@ -1574,6 +1769,20 @@ html.light .filter-menu select {
                         modalStatus.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${track.status || 'N/A'}</span>`;
                         modalKeterangan.textContent = `${track.keterangan || 'Tidak ada keterangan.'}` ;
                         
+                        const triggerHistoryButton = document.getElementById('triggerUserHistoryModalButton');
+                        if (triggerHistoryButton && barang.serial_number) {
+                            // Penting: Hapus event listener lama jika ada untuk mencegah penumpukan
+                            const newTriggerHistoryButton = triggerHistoryButton.cloneNode(true);
+                            triggerHistoryButton.parentNode.replaceChild(newTriggerHistoryButton, triggerHistoryButton);
+                            
+                            newTriggerHistoryButton.addEventListener('click', () => {
+                                openUserHistoryModal(barang.serial_number);
+                            });
+                        } else if (triggerHistoryButton) {
+                            // Jika tidak ada serial number, mungkin nonaktifkan tombol atau beri pesan
+                            triggerHistoryButton.disabled = true; 
+                            triggerHistoryButton.title = "Serial number tidak tersedia untuk histori";
+                        }
 
                         let iconClass = 'fas fa-desktop';
                         if (barang.jenis_barang === 'Laptop') iconClass = 'fas fa-laptop';
@@ -1606,6 +1815,72 @@ html.light .filter-menu select {
                 });
         } // <<<<---- AKHIR DARI FUNGSI openDetailModal
 
+
+        function openUserHistoryModal(serialNumber) {
+        const historyModal = document.getElementById('userHistoryModal');
+        const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
+        const historyTableBodyEl = document.getElementById('userHistoryTableBody'); // Target untuk baris data
+        const historyTableHeaderEl = document.getElementById('userHistoryTableHeader'); // Target untuk header tabel
+
+        if (!historyModal || !historyModalSerialNumberEl || !historyTableBodyEl || !historyTableHeaderEl) {
+            console.error("Satu atau lebih elemen modal history tidak ditemukan. Periksa ID.");
+            alert("Kesalahan: Komponen modal history tidak lengkap.");
+            return;
+        }
+
+        historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
+        historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>'; // Pesan loading
+        historyTableHeaderEl.innerHTML = ''; // Kosongkan header dulu
+
+        historyModal.style.display = 'flex';
+
+        // Panggil endpoint baru untuk mendapatkan data history (buat endpoint ini di controller nanti)
+        fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                historyTableHeaderEl.innerHTML = `
+                    <div class="product-cell cell-history-user">Pengguna</div>
+                    <div class="product-cell cell-history-tgl-awal">Tgl. Penyerahan</div>
+                    <div class="product-cell cell-history-tgl-akhir">Tgl. Pengembalian</div>
+                    <div class="product-cell cell-history-status">Status</div>
+                    <div class="product-cell cell-history-keterangan">Keterangan</div>
+                `; // Set header tabel
+
+                if (data.success && data.history && data.history.length > 0) {
+                    let tableRowsHTML = '';
+                    // Data diurutkan ASC (terlama ke terbaru) oleh controller
+                    data.history.forEach(item => {
+                        tableRowsHTML += `
+                            <div class="products-row">
+                                <div class="product-cell cell-history-user" title="${item.username || '-'}">${item.username || '-'}</div>
+                                <div class="product-cell cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</div>
+                                <div class="product-cell cell-history-tgl-akhir">${item.tanggal_akhir ? formatDate(item.tanggal_akhir) : '-'}</div>
+                                <div class="product-cell cell-history-status" title="${item.status || '-'}">${item.status || '-'}</div>
+                                <div class="product-cell cell-history-keterangan" title="${item.keterangan || '-'}">${item.keterangan || '-'}</div>
+                            </div>`;
+                    });
+                    historyTableBodyEl.innerHTML = tableRowsHTML;
+                } else if (data.history && data.history.length === 0) {
+                    historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Tidak ada riwayat pengguna untuk serial number ini.</p>';
+                } else {
+                    historyTableBodyEl.innerHTML = `<p style="padding: 15px; text-align: center; color: red;">Gagal memuat riwayat: ${data.error || 'Format data tidak sesuai.'}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user history:', error);
+                historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: red;">Terjadi kesalahan saat mengambil data riwayat. Cek konsol (F12).</p>';
+                // Jika ada pesan error spesifik dari server
+                if (error && error.error) {
+                    historyTableBodyEl.innerHTML += `<br><small>${error.error}</small>`;
+                }
+            });
+        }
+
         function resetFilters() {
             const filterForm = document.getElementById('filterForm');
             if (filterForm) {
@@ -1636,6 +1911,8 @@ html.light .filter-menu select {
                 return dateString;
             }
         }
+
+
     </script>
 </body>
 </html>

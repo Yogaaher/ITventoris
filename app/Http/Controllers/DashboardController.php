@@ -76,4 +76,32 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan saat mengambil data.'], 500);
         }
     }
+
+    public function getUserHistoryBySerialNumber(Request $request, $serial_number)
+    {
+        try {
+            // Cari semua entri track berdasarkan serial_number, urutkan berdasarkan tanggal_awal (ASC: dari terlama ke terbaru)
+            $history = Track::where('serial_number', $serial_number)
+                            ->orderBy('tanggal_awal', 'asc') // Mengurutkan dari yang paling lama
+                            ->get(); // Ambil semua data yang cocok
+
+            if ($history->isEmpty()) {
+                // Jika tidak ada history, kembalikan array kosong untuk history
+                return response()->json([
+                    'success' => true, // Operasi berhasil, tapi tidak ada data
+                    'history' => []
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'history' => $history
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error fetching user history for SN {$serial_number}: " . $e->getMessage());
+            // Kembalikan response error yang jelas
+            return response()->json(['success' => false, 'error' => 'Terjadi kesalahan server saat mengambil riwayat pengguna.'], 500);
+        }
+    }
 }
