@@ -1571,8 +1571,9 @@ html.light .filter-menu select {
                             modalTglPengembalian.textContent = '-';
                         }
 
-                        modalStatus.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${barang.status || 'Aktif (Digunakan)'}</span>`;
-                        modalKeterangan.textContent = barang.keterangan || 'Tidak ada keterangan.';
+                        modalStatus.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${track.status || 'N/A'}</span>`;
+                        modalKeterangan.textContent = `${track.keterangan || 'Tidak ada keterangan.'}` ;
+                        
 
                         let iconClass = 'fas fa-desktop';
                         if (barang.jenis_barang === 'Laptop') iconClass = 'fas fa-laptop';
