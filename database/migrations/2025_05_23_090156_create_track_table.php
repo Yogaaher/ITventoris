@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('track', function (Blueprint $table) {
         $table->id();
-        $table->string('no_asset');
+        $table->string('serial_number');
         $table->string('username');
         $table->enum('status', ['digunakan', 'diperbaiki', 'dipindah', 'non aktif']);
         $table->text('keterangan');
         $table->date('tanggal_awal');
         $table->date('tanggal_ahir')->nullable();
         $table->timestamps();
-        $table->foreign('no_asset')->references('no_asset')->on('barang')->onDelete('cascade');
+        $table->foreign('serial_number')->references('serial_number')->on('barang')->onDelete('cascade');
     });
     }
 

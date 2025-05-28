@@ -1580,6 +1580,7 @@ html.light .filter-menu select {
                         else if (barang.jenis_barang === 'HP') iconClass = 'fas fa-mobile-alt';
                         else if (barang.jenis_barang === 'Printer') iconClass = 'fas fa-print';
                         else if (barang.jenis_barang === 'Proyektor') iconClass = 'fas fa-video';
+                        else if (barang.jenis_barang === 'Others') iconClass = 'fas fa-box-open';
                         deviceImage.className = `device-image ${iconClass}`;
 
                         detailModalOverlay.style.display = 'flex';

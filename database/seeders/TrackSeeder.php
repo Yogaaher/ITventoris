@@ -47,7 +47,7 @@ class TrackSeeder extends Seeder
                 };
 
                 DB::table('track')->insert([
-                    'no_asset' => $barang->no_asset,
+                    'serial_number' => $barang->serial_number,
                     'username' => $username,
                     'status' => $status,
                     'keterangan' => $keterangan,

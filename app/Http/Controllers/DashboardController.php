@@ -61,7 +61,7 @@ class DashboardController extends Controller
             // Mengambil track user terbaru berdasarkan tanggal_awal (penyerahan)
             // dan pastikan hanya track yang masih aktif (tanggal_ahir masih null atau di masa depan)
             // atau ambil saja yang paling terakhir berdasarkan tanggal_awal
-            $latestTrack = Track::where('no_asset', $barang->no_asset)
+            $latestTrack = Track::where('serial_number', $barang->serial_number)
                                 ->orderBy('tanggal_awal', 'desc') // Urutkan berdasarkan tanggal awal terbaru
                                 ->first();
 

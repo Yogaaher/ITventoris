@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('barang', function (Blueprint $table) {
         $table->id();
         $table->enum('perusahaan', ['SCO', 'SCT', 'SCP', 'Migen']);
-        $table->enum('jenis_barang', ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor']);
-        $table->string('no_asset')->unique();
+        $table->enum('jenis_barang', ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor', 'Others']);
+        $table->string('no_asset');
         $table->string('merek');
         $table->date('tgl_pengadaan');
-        $table->string('serial_number');
+        $table->string('serial_number')->unique();
         $table->timestamps();
     });
     }

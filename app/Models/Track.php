@@ -10,7 +10,7 @@ class Track extends Model
     protected $table = 'track';
 
     protected $fillable = [
-        'no_asset',
+        'serial_number',
         'username',
         'status',
         'keterangan',
@@ -21,6 +21,6 @@ class Track extends Model
     // Relasi ke tabel barang (1 track → 1 barang)
     public function barang()
     {
-        return $this->belongsTo(Barang::class, 'no_asset', 'no_asset');
+        return $this->belongsTo(Barang::class, 'serial_number', 'serial_number');
     }
 }
