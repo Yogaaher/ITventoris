@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->string('serial_number');
         $table->string('username');
-        $table->enum('status', ['digunakan', 'diperbaiki', 'dipindah', 'non aktif']);
+        $table->enum('status', ['digunakan', 'diperbaiki', 'dipindah', 'non aktif','tersedia']);
         $table->text('keterangan');
         $table->date('tanggal_awal');
         $table->date('tanggal_ahir')->nullable();

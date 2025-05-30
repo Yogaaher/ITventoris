@@ -631,10 +631,7 @@ html.light .filter-menu select {
   align-items: center;
   border-radius: 4px;
 }
-.tableView .products-row:hover {
-  box-shadow: var(--filter-shadow);
-  background-color: var(--app-content-secondary-color);
-}
+
 .tableView .products-row .cell-more-button {
   display: none; /* Jika ada, biasanya untuk tampilan mobile */
 }
@@ -946,8 +943,8 @@ html.light .filter-menu select {
     background-color: var(--color-modal-background);
     border-radius: 0.8rem;
     width: 90%; /* Atau sesuaikan jika perlu ukuran berbeda */
-    max-width: 55rem;
-    max-height: calc(100vh - 8rem);
+    max-width: 60rem;
+    max-height: calc(100vh - 6rem);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1013,36 +1010,66 @@ html.light .filter-menu select {
     font-weight: 600; /* Pastikan SN tetap bold */
 }
 
-/* Style tabel di dalam modal history (yang sudah Anda buat sebelumnya) */
-#userHistoryModal .products-area-wrapper {
-    /* margin-top: 1.5rem; -- Dihapus */
-    max-height: 280px; /* << UBAH INI: Batasi tinggi tabel agar muat di modal yg lebih kecil, misal dari 350px ke 280px */
-    border-radius: 0.4rem; /* Bisa sedikit lebih kecil */
+#userHistoryModal .user-history-table-wrapper {
+    max-height: 350px; /* Sesuaikan tinggi maksimal sesuai kebutuhan modal */
+    overflow-y: auto;
+    overflow-x: auto; /* Aktifkan jika tabel bisa lebih lebar dari wrapper */
+    border: 1px solid var(--color-neutral-medium);
+    border-radius: 0.5rem;
 }
 
-#userHistoryModal .products-header,
-#userHistoryModal .products-row {
-    font-size: 1.3rem; /* Bisa disesuaikan agar muat lebih banyak info */
-    /* background-color: transparent; Ganti jika ingin beda dari tabel utama */
+#userHistoryModal .user-history-table {
+    width: 100%;
+    border-collapse: collapse; /* Penting untuk border antar sel */
+    /* Font size akan diwarisi dari .morph-modal-body (1.4rem) atau bisa diatur spesifik */
 }
-#userHistoryModal .product-cell {
-    padding: 6px 8px; /* Sesuaikan padding sel */
-    /* border-bottom: 1px solid var(--table-border); */ /* Jika ingin garis antar baris */
-}
-/* Definisikan lebar kolom untuk tabel history */
-#userHistoryModal .product-cell.cell-history-user { flex: 1 1 130px; min-width: 100px; }
-#userHistoryModal .product-cell.cell-history-tgl-awal { flex: 1 1 110px; min-width: 90px; }
-#userHistoryModal .product-cell.cell-history-tgl-akhir { flex: 1 1 110px; min-width: 90px; }
-#userHistoryModal .product-cell.cell-history-status { flex: 1 1 90px; min-width: 80px; }
-#userHistoryModal .product-cell.cell-history-keterangan { flex: 2 1 180px; min-width: 130px; white-space: normal; }
 
-/* Pastikan header tabel di modal history tetap terlihat saat scroll kontennya */
-#userHistoryModal #userHistoryTableHeader {
+#userHistoryModal .user-history-table th,
+#userHistoryModal .user-history-table td {
+    padding: 8px 12px; /* Padding sel yang lebih nyaman */
+    border-bottom: 1px solid var(--table-border);
+    text-align: left; /* Default untuk th dan td */
+    vertical-align: top; /* Selaras atas, berguna untuk konten multi-baris */
+    line-height: 1.5; /* Keterbacaan yang lebih baik */
+}
+
+#userHistoryModal .user-history-table th {
+    font-weight: 600;
+    background-color: var(--color-modal-background); /* Untuk sticky header */
+    /* white-space: nowrap; /* Opsional: agar teks header tidak wrap */
+}
+
+/* Styling kolom spesifik (gunakan width atau min-width) */
+#userHistoryModal .user-history-table .cell-history-user {
+    min-width: 120px;
+}
+#userHistoryModal .user-history-table .cell-history-tgl-awal,
+#userHistoryModal .user-history-table .cell-history-tgl-akhir {
+    min-width: 170px;
+    white-space: nowrap; /* Tanggal biasanya tidak di-wrap */
+}
+#userHistoryModal .user-history-table .cell-history-status {
+    min-width: 100px;
+    white-space: nowrap;
+}
+#userHistoryModal .user-history-table .cell-history-keterangan {
+    min-width: 200px;
+    white-space: normal; /* Izinkan teks keterangan untuk wrap */
+    word-break: break-word; /* Pecah kata jika terlalu panjang */
+}
+
+/* Pastikan header tabel (thead > th) tetap terlihat saat scroll */
+#userHistoryModal .user-history-table thead th { /* Lebih spesifik untuk sel header */
     position: sticky;
     top: 0;
-    background-color: var(--color-modal-background); /* Sesuaikan dengan background modal Anda */
-    z-index: 1; /* Agar di atas konten row */
+    z-index: 1; /* Di atas konten tbody saat scroll */
+    /* background-color sudah diatur di atas untuk th secara umum */
 }
+
+html.light #userHistoryModal .user-history-table thead th {
+    background-color: var(--color-modal-background); /* Pastikan variabel ini benar untuk light mode */
+}
+
 html.light #userHistoryModal #userHistoryTableHeader {
     background-color: var(--color-modal-background); /* Pastikan ini juga diatur untuk light mode */
 }
@@ -1118,9 +1145,9 @@ html.light #userHistoryModal #userHistoryTableHeader {
                         </div>
                         <hr class="separator">
                         <div class="info-section">
-                            <dl class="info-item"><dt>User:</dt><dd id="modalUser">_</dd></dl>
-                            <dl class="info-item"><dt>Tgl. Penyerahan:</dt><dd id="modalTglPenyerahan">_</dd></dl>
-                            <dl class="info-item"><dt>Tgl. Pengembalian:</dt><dd id="modalTglPengembalian">_</dd></dl>
+                            <dl class="info-item"><dt>Pengguna</dt><dd id="modalUser">_</dd></dl>
+                            <dl class="info-item"><dt>Penyerahan:</dt><dd id="modalTglPenyerahan">_</dd></dl>
+                            <dl class="info-item"><dt>Pengembalian:</dt><dd id="modalTglPengembalian">_</dd></dl>
                             <div class="action-buttons">
                                 <button class="btn-action btn-detail" id="triggerUserHistoryModalButton">
                                     <i class="fas fa-user-circle"></i> Detail User
@@ -1155,30 +1182,19 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 <div class="morph-modal-body">
                     <p style="margin-bottom: 1rem;">Serial Number: <strong id="historyModalSerialNumber">_</strong></p>
                     
-                    {{-- Kontainer untuk tabel history --}}
-                    <div class="products-area-wrapper tableView" id="userHistoryTableContainer" style="max-height: 350px; overflow-y: auto; border: 1px solid var(--color-neutral-medium); border-radius: 0.5rem;">
-                        {{-- Header Tabel History --}}
-                        <div class="products-header" id="userHistoryTableHeader" style="position: sticky; top: 0; background-color: var(--color-modal-background); z-index:1;">
-                            {{-- Kolom akan ditambahkan oleh JavaScript atau bisa didefinisikan di sini --}}
-                            {{-- Contoh:
-                            <div class="product-cell cell-history-user">Pengguna</div>
-                            <div class="product-cell cell-history-tgl-awal">Tgl. Penyerahan</div>
-                            <div class="product-cell cell-history-tgl-akhir">Tgl. Pengembalian</div>
-                            <div class="product-cell cell-history-status">Status</div>
-                            --}}
-                        </div>
-                        {{-- Baris Data History akan diisi oleh JavaScript --}}
-                        <div id="userHistoryTableBody">
-                            {{-- Contoh data row (akan digenerate JS):
-                            <div class="products-row">
-                                <div class="product-cell cell-history-user">Nama User</div>
-                                <div class="product-cell cell-history-tgl-awal">01-01-2023</div>
-                                <div class="product-cell cell-history-tgl-akhir">31-12-2023</div>
-                                <div class="product-cell cell-history-status">Dikembalikan</div>
-                            </div>
-                            --}}
-                            <p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>
-                        </div>
+                    {{-- Kontainer PEMBUNGKUS untuk tabel history (untuk scrolling) --}}
+                    <div class="user-history-table-wrapper">
+                        <table class="user-history-table" id="userHistoryTableContainer"> <!-- ID ini bisa berguna untuk styling tabelnya sendiri -->
+                            <thead id="userHistoryTableHeader">
+                                {{-- Header akan diisi oleh JavaScript --}}
+                            </thead>
+                            <tbody id="userHistoryTableBody">
+                                {{-- Baris Data History akan diisi oleh JavaScript --}}
+                                <tr>
+                                    <td colspan="5" style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1843,42 +1859,45 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 return response.json();
             })
             .then(data => {
-                historyTableHeaderEl.innerHTML = `
-                    <div class="product-cell cell-history-user">Pengguna</div>
-                    <div class="product-cell cell-history-tgl-awal">Tgl. Penyerahan</div>
-                    <div class="product-cell cell-history-tgl-akhir">Tgl. Pengembalian</div>
-                    <div class="product-cell cell-history-status">Status</div>
-                    <div class="product-cell cell-history-keterangan">Keterangan</div>
-                `; // Set header tabel
+                    // Set header tabel (dalam <tr> di dalam <thead>)
+                    historyTableHeaderEl.innerHTML = `
+                        <tr>
+                            <th class="cell-history-user">Pengguna</th>
+                            <th class="cell-history-tgl-awal">Penyerahan</th>
+                            <th class="cell-history-tgl-akhir">Pengembalian</th>
+                            <th class="cell-history-status">Status</th>
+                            <th class="cell-history-keterangan">Keterangan</th>
+                        </tr>
+                    `;
 
-                if (data.success && data.history && data.history.length > 0) {
-                    let tableRowsHTML = '';
-                    // Data diurutkan ASC (terlama ke terbaru) oleh controller
-                    data.history.forEach(item => {
-                        tableRowsHTML += `
-                            <div class="products-row">
-                                <div class="product-cell cell-history-user" title="${item.username || '-'}">${item.username || '-'}</div>
-                                <div class="product-cell cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</div>
-                                <div class="product-cell cell-history-tgl-akhir">${item.tanggal_akhir ? formatDate(item.tanggal_akhir) : '-'}</div>
-                                <div class="product-cell cell-history-status" title="${item.status || '-'}">${item.status || '-'}</div>
-                                <div class="product-cell cell-history-keterangan" title="${item.keterangan || '-'}">${item.keterangan || '-'}</div>
-                            </div>`;
-                    });
-                    historyTableBodyEl.innerHTML = tableRowsHTML;
-                } else if (data.history && data.history.length === 0) {
-                    historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Tidak ada riwayat pengguna untuk serial number ini.</p>';
-                } else {
-                    historyTableBodyEl.innerHTML = `<p style="padding: 15px; text-align: center; color: red;">Gagal memuat riwayat: ${data.error || 'Format data tidak sesuai.'}</p>`;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user history:', error);
-                historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: red;">Terjadi kesalahan saat mengambil data riwayat. Cek konsol (F12).</p>';
-                // Jika ada pesan error spesifik dari server
-                if (error && error.error) {
-                    historyTableBodyEl.innerHTML += `<br><small>${error.error}</small>`;
-                }
-            });
+                    if (data.success && data.history && data.history.length > 0) {
+                        let tableRowsHTML = '';
+                        data.history.forEach(item => {
+                            tableRowsHTML += `
+                                <tr>
+                                    <td class="cell-history-user" title="${item.username || '-'}">${item.username || '-'}</td>
+                                    <td class="cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</td>
+                                    <td class="cell-history-tgl-akhir">${item.tanggal_akhir ? formatDate(item.tanggal_akhir) : '-'}</td>
+                                    <td class="cell-history-status" title="${item.status || '-'}">${item.status || '-'}</td>
+                                    <td class="cell-history-keterangan" title="${item.keterangan || '-'}">${item.keterangan || '-'}</td>
+                                </tr>`;
+                        });
+                        historyTableBodyEl.innerHTML = tableRowsHTML;
+                    } else if (data.history && data.history.length === 0) {
+                        historyTableBodyEl.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Tidak ada riwayat pengguna untuk serial number ini.</td></tr>';
+                    } else {
+                        historyTableBodyEl.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: red;">Gagal memuat riwayat: ${data.error || 'Format data tidak sesuai.'}</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user history:', error);
+                    let errorMessage = '<tr><td colspan="5" style="padding: 15px; text-align: center; color: red;">Terjadi kesalahan saat mengambil data riwayat. Cek konsol (F12).';
+                    if (error && error.error) {
+                        errorMessage += `<br><small>${error.error}</small>`;
+                    }
+                    errorMessage += '</td></tr>';
+                    historyTableBodyEl.innerHTML = errorMessage;
+                });
         }
 
         function resetFilters() {
