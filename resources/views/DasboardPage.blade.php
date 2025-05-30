@@ -1073,6 +1073,46 @@ html.light #userHistoryModal .user-history-table thead th {
 html.light #userHistoryModal #userHistoryTableHeader {
     background-color: var(--color-modal-background); /* Pastikan ini juga diatur untuk light mode */
 }
+
+#userHistoryModal .history-info-list {
+    margin-bottom: 1.5rem; /* Jarak sebelum tabel */
+    font-size: 1.3rem; /* Sesuaikan ukuran font jika perlu */
+}
+
+#userHistoryModal .history-info-item {
+    display: flex; /* Membuat dt dan dd sejajar */
+    margin-bottom: 0.6rem; /* Jarak antar item info */
+    line-height: 1.5;
+}
+
+#userHistoryModal .history-info-item dt {
+    min-width: 120px; /* Lebar minimum untuk label, sesuaikan */
+    flex-shrink: 0; /* Mencegah label menyusut */
+    padding-right: 5px; /* Jarak antara label dan titik dua (opsional) */
+    color: var(--color-neutral-light); /* Warna label */
+    font-weight: 500; /* Sedikit bold untuk label */
+    position: relative; /* Untuk posisi titik dua */
+}
+
+/* Menambahkan titik dua setelah label dt secara otomatis */
+#userHistoryModal .history-info-item dt::after {
+    content: ":";
+    position: absolute;
+    right: 0;
+}
+
+
+#userHistoryModal .history-info-item dd {
+    flex-grow: 1; /* Membuat nilai mengambil sisa ruang */
+    margin-left: 0; /* Reset margin default dd */
+    word-break: break-word; /* Agar nilai yang panjang bisa wrap */
+    padding-left: 8px;
+}
+
+#userHistoryModal .history-info-item dd strong {
+    color: var(--color-text-light); /* Warna teks utama modal untuk nilai */
+    font-weight: 600;
+}
 /* === AKHIR CSS MODAL HISTORY USER === */
 
 
@@ -1180,7 +1220,17 @@ html.light #userHistoryModal #userHistoryTableHeader {
                     <button id="closeUserHistoryModalButton" class="btn-close" aria-label="Tutup modal">×</button>
                 </div>
                 <div class="morph-modal-body">
-                    <p style="margin-bottom: 1rem;">Serial Number: <strong id="historyModalSerialNumber">_</strong></p>
+
+                    <dl class="history-info-list">
+                        <div class="history-info-item">
+                            <dt>Perangkat</dt>
+                            <dd><strong id="historyModalDeviceName">_</strong></dd>
+                        </div>
+                        <div class="history-info-item">
+                            <dt>Serial Number</dt>
+                            <dd><strong id="historyModalSerialNumber">_</strong></dd>
+                        </div>
+                    </dl>
                     
                     {{-- Kontainer PEMBUNGKUS untuk tabel history (untuk scrolling) --}}
                     <div class="user-history-table-wrapper">
@@ -1790,9 +1840,10 @@ html.light #userHistoryModal #userHistoryTableHeader {
                             // Penting: Hapus event listener lama jika ada untuk mencegah penumpukan
                             const newTriggerHistoryButton = triggerHistoryButton.cloneNode(true);
                             triggerHistoryButton.parentNode.replaceChild(newTriggerHistoryButton, triggerHistoryButton);
+                            const deviceFullName = `${barang.merek || ''} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
                             
                             newTriggerHistoryButton.addEventListener('click', () => {
-                                openUserHistoryModal(barang.serial_number);
+                                openUserHistoryModal(barang.serial_number, deviceFullName   );
                             });
                         } else if (triggerHistoryButton) {
                             // Jika tidak ada serial number, mungkin nonaktifkan tombol atau beri pesan
@@ -1832,18 +1883,20 @@ html.light #userHistoryModal #userHistoryTableHeader {
         } // <<<<---- AKHIR DARI FUNGSI openDetailModal
 
 
-        function openUserHistoryModal(serialNumber) {
+        function openUserHistoryModal(serialNumber,deviceName) {
         const historyModal = document.getElementById('userHistoryModal');
         const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
+        const historyModalDeviceNameEl = document.getElementById('historyModalDeviceName');
         const historyTableBodyEl = document.getElementById('userHistoryTableBody'); // Target untuk baris data
         const historyTableHeaderEl = document.getElementById('userHistoryTableHeader'); // Target untuk header tabel
 
-        if (!historyModal || !historyModalSerialNumberEl || !historyTableBodyEl || !historyTableHeaderEl) {
+        if (!historyModal || !historyModalSerialNumberEl || !historyModalDeviceNameEl || !historyTableBodyEl || !historyTableHeaderEl) {
             console.error("Satu atau lebih elemen modal history tidak ditemukan. Periksa ID.");
             alert("Kesalahan: Komponen modal history tidak lengkap.");
             return;
         }
 
+        historyModalDeviceNameEl.textContent = deviceName || 'Tidak Diketahui';
         historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
         historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>'; // Pesan loading
         historyTableHeaderEl.innerHTML = ''; // Kosongkan header dulu
