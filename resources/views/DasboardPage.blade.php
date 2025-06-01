@@ -544,6 +544,18 @@ body {
   cursor: pointer;
   flex-shrink: 0;
 }
+.app-content-header-actions-right {
+    display: flex;
+    align-items: center; /* Pastikan tombol sejajar vertikal */
+    /* margin-left: auto; Tidak perlu jika .app-content-header sudah space-between */
+}
+.app-content-header-actions-right .mode-switch.action-button {
+    margin-right: 8px;
+}
+.app-content-header-actions-right .mode-switch.action-button svg {
+    width: 18px;
+    height: 18px;
+}
 .app-content-headerButton:hover {
   background-color: var(--action-color-hover);
 }
@@ -557,6 +569,41 @@ body {
   display: flex;
   align-items: center;
   margin-left: auto;
+}
+.app-content-actions .search-bar {
+  flex-grow: 1;
+  max-width: none;
+  margin-right: 8px;
+}
+.app-content-actions-buttons {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.app-content-actions .action-button.add-asset-btn {
+  background-color: var(--action-color); */
+  color: white; */
+}
+.app-content-actions .action-button.add-asset-btn svg {
+  margin-right: 4px;
+}
+.app-content-actions .action-button.add-asset-btn i.fas {
+  margin-right: 4px;
+}
+@media screen and (max-width: 768px) {
+  .app-content-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px; /* Jarak vertikal antar elemen */
+  }
+  .app-content-actions .search-bar {
+    order: 1; /* Search bar di atas */
+  }
+  .app-content-actions-buttons {
+    order: 2; /* Tombol-tombol di bawah */
+    justify-content: flex-start; /* Mulai dari kiri */
+  }
 }
 @media screen and (max-width: 520px) {
   .app-content-actions { flex-direction: column; }
@@ -1453,60 +1500,63 @@ html.light #userHistoryModal #userHistoryTableHeader {
             </div>
           </div>
 
-          {{-- KONTEN UTAMA APLIKASI (AREA FILTER DAN TABEL) --}}
-          <div class="app-content">
-            <div class="app-content-header">
-              <h1 class="app-content-headerText">Data Aset</h1>
-              <div style="margin-left: auto; display:flex; align-items:center;">
-                <button class="mode-switch" title="Switch Theme">
-                    <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="24" height="24" viewBox="0 0 24 24">
-                    <defs></defs>
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
-                    </svg>
-                </button>
-                {{-- Tambahkan ID unik untuk tombol ini --}}
-                <button id="openAddAssetModalButton" class="app-content-headerButton">+ Tambah Aset</button>
-                <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
-              </div>
+        {{-- KONTEN UTAMA APLIKASI (AREA FILTER DAN TABEL) --}}
+        <div class="app-content">
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">Data Aset Inventaris</h1>
+            {{-- Tombol Mode dan Logout dipindahkan ke sini dan dibungkus --}}
+            <div class="app-content-header-actions-right"> {{-- Wrapper baru untuk tombol kanan atas --}}
+            <button class="mode-switch action-button" title="Switch Theme"> {{-- Tambahkan class action-button --}}
+                <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" height="20" viewBox="0 0 24 24"> {{-- Ukuran ikon bisa disesuaikan --}}
+                <defs></defs>
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                </svg>
+            </button>
+            <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
             </div>
+        </div>
 
-              {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
-            <div class="inventory-summary-container">
-                @php
-                    // Definisikan ikon untuk setiap tipe agar mudah di-loop
-                    $typeIcons = [
-                        'Laptop' => 'fas fa-laptop',
-                        'HP' => 'fas fa-mobile-alt',
-                        'PC/AIO' => 'fas fa-desktop',
-                        'Printer' => 'fas fa-print',
-                        'Proyektor' => 'fas fa-video', // Font Awesome 5
-                        'Others' => 'fas fa-boxes' // Font Awesome 5 for 'archive' or 'boxes'
-                    ];
-                @endphp
-
-                @foreach($inventorySummary as $type => $count)
-                    <div class="summary-box">
-                        <div class="summary-box-icon">
-                            <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i> {{-- Fallback icon --}}
-                        </div>
-                        <div class="summary-box-type">{{ $type }}</div>
-                        <div class="summary-box-count">{{ $count }}</div>
+            {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
+        <div class="inventory-summary-container">
+            @php
+                $typeIcons = [
+                    'Laptop' => 'fas fa-laptop',
+                    'HP' => 'fas fa-mobile-alt',
+                    'PC/AIO' => 'fas fa-desktop',
+                    'Printer' => 'fas fa-print',
+                    'Proyektor' => 'fas fa-video',
+                    'Others' => 'fas fa-boxes'
+                ];
+            @endphp
+            @foreach($inventorySummary as $type => $count)
+                <div class="summary-box">
+                    <div class="summary-box-icon">
+                        <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i>
                     </div>
-                @endforeach
-            </div>
-            {{-- +++ AKHIR BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
+                    <div class="summary-box-type">{{ $type }}</div>
+                    <div class="summary-box-count">{{ $count }}</div>
+                </div>
+            @endforeach
+        </div>
+        {{-- +++ AKHIR BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
 
-            {{-- FORM FILTER MULAI DI SINI --}}
-            <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
-                <div class="app-content-actions"> {{-- Ini adalah container utama untuk search bar dan filter button wrapper --}}
-                    <input class="search-bar" placeholder="Cari No Asset ..." type="text" name="search_no_asset" value="{{ $searchNoAsset ?? old('search_no_asset') }}">
-                    <div class="app-content-actions-wrapper"> {{-- Ini wrapper untuk tombol filter --}}
-                        <div class="filter-button-wrapper">
-                            <button type="button" class="action-button filter jsFilter">
-                                <span>Filter</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                            </button>
-                            <div class="filter-menu">
+        {{-- FORM FILTER DAN TOMBOL AKSI --}}
+        <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
+            <div class="app-content-actions">
+                <input class="search-bar" placeholder="Cari No Asset ..." type="text" name="search_no_asset" value="{{ $searchNoAsset ?? old('search_no_asset') }}">
+                
+                {{-- Tombol aksi (Tambah & Filter) dipindahkan ke sini --}}
+                <div class="app-content-actions-buttons">
+                    <button type="button" id="openAddAssetModalButton" class="action-button add-asset-btn" title="Tambah Aset">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Tambah Asset</span>
+                    </button>
+                    <div class="filter-button-wrapper">
+                        <button type="button" class="action-button filter jsFilter" title="Filter">
+                            <span>Filter</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        </button>
+                         <div class="filter-menu">
                                 <label for="filter_perusahaan">Perusahaan</label>
                                 <select name="filter_perusahaan" id="filter_perusahaan">
                                     <option value="">Semua Perusahaan</option>
@@ -1544,7 +1594,7 @@ html.light #userHistoryModal #userHistoryTableHeader {
                     </div>
                 </div>
             </form>
-            {{-- FORM FILTER SELESAI DI SINI --}}
+        {{-- FORM FILTER SELESAI DI SINI --}}
 
             <div class="products-area-wrapper tableView">
               <div class="products-header">
@@ -1761,17 +1811,34 @@ html.light #userHistoryModal #userHistoryTableHeader {
             // === FITUR DASHBOARD: Burger Menu Sidebar ===
             const burgerMenuButton = document.getElementById('burger-menu');
             const sidebarElement = document.querySelector('.sidebar');
-            if (burgerMenuButton && sidebarElement) {
-                if (!sidebarElement.classList.contains('collapsed')) {
-                    burgerMenuButton.classList.add('active');
-                } else {
-                    burgerMenuButton.classList.remove('active');
-                }
-                burgerMenuButton.addEventListener('click', () => {
-                    sidebarElement.classList.toggle('collapsed');
-                    burgerMenuButton.classList.toggle('active');
-                });
+            const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsed'; 
+
+    function initializeSidebarState() {
+        if (burgerMenuButton && sidebarElement) {
+            const isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+            if (isCollapsed) {
+                sidebarElement.classList.add('collapsed');
+                burgerMenuButton.classList.remove('active'); // Burger tidak aktif jika sidebar collapsed
+            } else {
+                sidebarElement.classList.remove('collapsed');
+                burgerMenuButton.classList.add('active'); // Burger aktif jika sidebar expanded
             }
+        }
+    }
+
+    initializeSidebarState(); // Panggil fungsi ini saat DOM siap
+        // Event listener untuk tombol burger
+        if (burgerMenuButton && sidebarElement) {
+            burgerMenuButton.addEventListener('click', () => {
+                sidebarElement.classList.toggle('collapsed');
+                burgerMenuButton.classList.toggle('active');
+                if (sidebarElement.classList.contains('collapsed')) {
+                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'true');
+                } else {
+                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'false');
+                }
+            });
+        }
 
             // === FITUR DASHBOARD: Auto Submit Search Bar on Enter ===
             const searchBarInput = document.querySelector('.search-bar[name="search_no_asset"]');
