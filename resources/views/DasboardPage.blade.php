@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Aplikasi</title> <!-- Judul bisa diubah -->
+    <title>ITventory</title> <!-- Judul bisa diubah -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-
+    <link rel="icon" href="{{ asset('img/Scuto-logo.svg') }}" type="image/x-icon">
     <style>
 
       /* === CSS MODAL TAMBAH ASET (DARI DASHBOARD ANDA) === */
@@ -160,6 +160,59 @@ input.is-invalid, select.is-invalid {
 }
 /* === AKHIR CSS MODAL TAMBAH ASET === */
 
+/* === CSS UNTUK SUMMARY BOX INVENTARIS === */
+.inventory-summary-container {
+    display: flex;
+    flex-wrap: wrap; /* Agar box turun ke baris baru jika tidak muat */
+    gap: 16px; /* Jarak antar box */
+    margin-bottom: 20px; /* Jarak ke elemen di bawahnya */
+    padding: 0 4px; /* Samakan dengan padding products-area-wrapper */
+}
+
+.summary-box {
+    background-color: var(--app-content-secondary-color); /* Warna background dari tema */
+    color: var(--app-content-main-color); /* Warna teks dari tema */
+    padding: 20px 15px;
+    border-radius: 8px; /* Samakan dengan elemen lain */
+    text-align: center;
+    flex: 1 1 150px; /* flex-grow, flex-shrink, flex-basis. Biarkan tumbuh, bisa menyusut, basis minimal 150px */
+    min-width: 120px; /* Lebar minimal box */
+    box-shadow: var(--filter-shadow); /* Bayangan seperti filter */
+    transition: transform 0.2s ease-in-out;
+}
+
+.summary-box:hover {
+    transform: translateY(-10px); /* Efek hover sedikit naik */
+}
+
+html.light .summary-box {
+    background-color: #f9f9f9; /* Warna background light mode, bisa disesuaikan */
+    border: 1px solid #eee;
+}
+
+.summary-box-icon {
+    font-size: 2.8rem; /* Ukuran ikon */
+    margin-bottom: 10px;
+    color: var(--action-color); /* Warna ikon, bisa disesuaikan */
+}
+
+html.light .summary-box-icon {
+    color: var(--action-color); /* Pastikan warna ikon juga bagus di light mode */
+}
+
+
+.summary-box-type {
+    font-size: 1.4rem; /* Ukuran teks tipe barang */
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: capitalize; /* Opsional: agar huruf depan besar */
+}
+
+.summary-box-count {
+    font-size: 2.4rem; /* Ukuran angka count */
+    font-weight: bold;
+}
+/* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
 
 /* === CSS DASHBOARD (BAGIAN UTAMA) === */
 :root {
@@ -277,10 +330,18 @@ body {
     flex-basis: var(--sidebar-width-collapsed);
 }
 .sidebar.collapsed .sidebar-header .app-icon {
-    margin-right: auto;
+    opacity: 0;
+    transform: scale(0);
+    width: auto;
+    overflow: hidden;
+    margin-right: 0; 
 }
 .sidebar.collapsed .sidebar-header .app-icon svg {
-  display: none;
+    opacity: 0;
+    transform: scale(0);
+    width: auto;
+    overflow: hidden;
+    margin-right: 0; 
 }
 .sidebar.collapsed .sidebar-list-item a span {
     opacity: 0;
@@ -315,15 +376,41 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  min-height: 50px; /* Dari dashboard */
+  min-height: 50px;
+  margin-bottom: 20px;
+  margin-top: 5px;
 }
 .app-icon {
   color: var(--sidebar-main-color);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  overflow: hidden;
+  transition: opacity 0.2s ease-in-out 0.1s,
+              transform 0.2s ease-in-out 0.1s,
+              width 0.2s ease-in-out 0.1s;
+}
+.app-icon .app-logo-svg {
+  width: 30px;
+  height: 30px;
+  color: var(--sidebar-app-icon-color);
+  transition: color 0.3s;
+  flex-shrink: 0;
 }
 .app-icon svg {
   width: 24px;
   height: 24px;
+}
+.app-name-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out 0.1s, width 0.2s ease-in-out 0.1s;
 }
 .sidebar-list {
   list-style-type: none;
@@ -438,9 +525,11 @@ body {
 }
 .app-content-headerText {
   color: var(--app-content-main-color);
-  font-size: 24px;
+  font-size: 30px;
   line-height: 32px;
   margin: 0;
+  padding-bottom: 20px;
+  padding-top: 10px;
 }
 .app-content-headerButton {
   background-color: var(--action-color);
@@ -1330,7 +1419,8 @@ html.light #userHistoryModal #userHistoryTableHeader {
           <div class="sidebar"> <!-- Akan diberi class .collapsed oleh JS -->
             <div class="sidebar-header">
               <div class="app-icon">
-                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M507.606 371.054a187.217 187.217 0 00-23.051-19.606c-17.316 19.999-37.648 36.808-60.572 50.041-35.508 20.505-75.893 31.452-116.875 31.711 21.762 8.776 45.224 13.38 69.396 13.38 49.524 0 96.084-19.286 131.103-54.305a15 15 0 004.394-10.606 15.028 15.028 0 00-4.395-10.615zM27.445 351.448a187.392 187.392 0 00-23.051 19.606C1.581 373.868 0 377.691 0 381.669s1.581 7.793 4.394 10.606c35.019 35.019 81.579 54.305 131.103 54.305 24.172 0 47.634-4.604 69.396-13.38-40.985-.259-81.367-11.206-116.879-31.713-22.922-13.231-43.254-30.04-60.569-50.039zM103.015 375.508c24.937 14.4 53.928 24.056 84.837 26.854-53.409-29.561-82.274-70.602-95.861-94.135-14.942-25.878-25.041-53.917-30.063-83.421-14.921.64-29.775 2.868-44.227 6.709-6.6 1.576-11.507 7.517-11.507 14.599 0 1.312.172 2.618.512 3.885 15.32 57.142 52.726 100.35 96.309 125.509zM324.148 402.362c30.908-2.799 59.9-12.454 84.837-26.854 43.583-25.159 80.989-68.367 96.31-125.508.34-1.267.512-2.573.512-3.885 0-7.082-4.907-13.023-11.507-14.599-14.452-3.841-29.306-6.07-44.227-6.709-5.022 29.504-15.121 57.543-30.063 83.421-13.588 23.533-42.419 64.554-95.862 94.134zM187.301 366.948c-15.157-24.483-38.696-71.48-38.696-135.903 0-32.646 6.043-64.401 17.945-94.529-16.394-9.351-33.972-16.623-52.273-21.525-8.004-2.142-16.225 2.604-18.37 10.605-16.372 61.078-4.825 121.063 22.064 167.631 16.325 28.275 39.769 54.111 69.33 73.721zM324.684 366.957c29.568-19.611 53.017-45.451 69.344-73.73 26.889-46.569 38.436-106.553 22.064-167.631-2.145-8.001-10.366-12.748-18.37-10.605-18.304 4.902-35.883 12.176-52.279 21.529 11.9 30.126 17.943 61.88 17.943 94.525.001 64.478-23.58 111.488-38.702 135.912zM266.606 69.813c-2.813-2.813-6.637-4.394-10.615-4.394a15 15 0 00-10.606 4.394c-39.289 39.289-66.78 96.005-66.78 161.231 0 65.256 27.522 121.974 66.78 161.231 2.813 2.813 6.637 4.394 10.615 4.394s7.793-1.581 10.606-4.394c39.248-39.247 66.78-95.96 66.78-161.231.001-65.256-27.511-121.964-66.78-161.231z"/></svg>
+                <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
+                <span class="app-name-text">ITventory</span>
               </div>
               <button id="burger-menu" class="burger-button" title="Toggle Sidebar">
                 <span></span>
@@ -1340,39 +1430,21 @@ html.light #userHistoryModal #userHistoryTableHeader {
             </div>
             <ul class="sidebar-list">
               <li class="sidebar-list-item">
-                <a href="#">
+                <a href="{{ route('dashboard.index') }}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                  <span>Home</span>
+                  <span>Dashboard</span>
                 </a>
               </li>
-              <li class="sidebar-list-item active">
-                  <a href="{{ route('dashboard.index') }}">  {{-- Link ke halaman dashboard --}}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                      <span>Data Aset</span>
+              <li class="sidebar-list-item">
+                  <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>User Manage</span>
                   </a>
-              </li>
-              <li class="sidebar-list-item">
-                <a href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                  <span>Statistics</span>
-                </a>
-              </li>
-              <li class="sidebar-list-item">
-                <a href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-inbox"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-                  <span>Inbox</span>
-                </a>
-              </li>
-              <li class="sidebar-list-item">
-                <a href="#">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                  <span>Notifications</span>
-                </a>
               </li>
             </ul>
             <div class="account-info">
               <div class="account-info-picture">
-                <img src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="Account">
+                <img src="{{ asset('img/Logo-scuto.png') }}" alt="Account">
               </div>
               <div class="account-info-name">Monica G.</div>
               <button class="account-info-more">
@@ -1397,6 +1469,32 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
               </div>
             </div>
+
+              {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
+            <div class="inventory-summary-container">
+                @php
+                    // Definisikan ikon untuk setiap tipe agar mudah di-loop
+                    $typeIcons = [
+                        'Laptop' => 'fas fa-laptop',
+                        'HP' => 'fas fa-mobile-alt',
+                        'PC/AIO' => 'fas fa-desktop',
+                        'Printer' => 'fas fa-print',
+                        'Proyektor' => 'fas fa-video', // Font Awesome 5
+                        'Others' => 'fas fa-boxes' // Font Awesome 5 for 'archive' or 'boxes'
+                    ];
+                @endphp
+
+                @foreach($inventorySummary as $type => $count)
+                    <div class="summary-box">
+                        <div class="summary-box-icon">
+                            <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i> {{-- Fallback icon --}}
+                        </div>
+                        <div class="summary-box-type">{{ $type }}</div>
+                        <div class="summary-box-count">{{ $count }}</div>
+                    </div>
+                @endforeach
+            </div>
+            {{-- +++ AKHIR BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
 
             {{-- FORM FILTER MULAI DI SINI --}}
             <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
@@ -1708,6 +1806,82 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 });
             }
 
+            // == SIDEBAR LOGIC
+            function setActiveSidebarLink() {
+                const currentFullUrl = window.location.href.split('?')[0].split('#')[0];
+                const currentPathname = new URL(currentFullUrl).pathname;
+
+                const sidebarNavItems = document.querySelectorAll('.sidebar .sidebar-list-item');
+                let bestMatchItem = null;
+                let highestSpecificity = -1; // -1: no match, 0: startsWith, 1: exact match
+
+                // Fungsi untuk normalisasi path (hapus trailing slash kecuali root)
+                const normalizePath = (path) => (path.length > 1 && path.endsWith('/')) ? path.slice(0, -1) : path;
+                
+                const normalizedCurrentPath = normalizePath(currentPathname);
+
+                sidebarNavItems.forEach(item => {
+                    item.classList.remove('active'); // Hapus 'active' dari semua item dulu
+                    const link = item.querySelector('a');
+
+                    if (link && link.href) {
+                        const linkFullUrl = link.href.split('?')[0].split('#')[0];
+                        const linkPathname = new URL(linkFullUrl).pathname;
+                        const normalizedLinkPath = normalizePath(linkPathname);
+
+                        // console.log(`Comparing: Current='${normalizedCurrentPath}' with Link='${normalizedLinkPath}' (Full Href: ${link.href})`);
+
+                        // Cek Exact Match
+                        if (normalizedLinkPath === normalizedCurrentPath) {
+                            // Jika ini exact match, dan lebih baik dari match sebelumnya, atau match pertama
+                            if (highestSpecificity < 1) {
+                                highestSpecificity = 1; // Exact match
+                                bestMatchItem = item;
+                                // console.log(`   -> Exact match found: ${normalizedLinkPath}`);
+                            }
+                            // Jika ada exact match lain yang sama, kita tidak perlu mengubah bestMatchItem
+                            // kecuali jika kita ingin logika tambahan (misalnya, pilih yang pertama di DOM)
+                            // Untuk sekarang, exact match pertama (atau yang paling spesifik jika ada beberapa) akan menang.
+                        }
+                        // Cek StartsWith (hanya jika belum ada exact match yang lebih baik)
+                        else if (highestSpecificity < 1 && normalizedCurrentPath.startsWith(normalizedLinkPath)) {
+                             // Hindari kasus di mana linkPath adalah "/" dan currentPath adalah "/sesuatu"
+                             // Ini akan membuat link "/" aktif untuk semua halaman jika tidak ditangani.
+                             // Hanya aktifkan link "/" jika currentPath juga "/" (sudah ditangani oleh exact match)
+                             // atau jika tidak ada kandidat startsWith yang lebih baik.
+                            if (normalizedLinkPath === "/" && normalizedCurrentPath !== "/") {
+                                // Jangan set sebagai best match jika link adalah root dan current path bukan root
+                            } else {
+                                // Jika ini startsWith match, dan lebih baik dari startsWith sebelumnya (lebih panjang/spesifik)
+                                // atau match startsWith pertama
+                                if (highestSpecificity < 0 || (highestSpecificity === 0 && normalizedLinkPath.length > new URL(bestMatchItem.querySelector('a').href).pathname.length) ) {
+                                    highestSpecificity = 0; // StartsWith match
+                                    bestMatchItem = item;
+                                    // console.log(`   -> StartsWith match candidate: ${normalizedLinkPath} (length: ${normalizedLinkPath.length})`);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                if (bestMatchItem) {
+                    // console.log(`Final best match, adding 'active': ${new URL(bestMatchItem.querySelector('a').href).pathname}`);
+                    bestMatchItem.classList.add('active');
+                } else {
+                     // Fallback jika tidak ada match sama sekali, coba aktifkan dashboard jika URL saat ini adalah root dari dashboard.
+                     // Ini berguna jika route('dashboard.index') adalah "/" dan kita berada di "/"
+                    const dashboardLinkEl = document.querySelector('.sidebar-list-item a[href="{{ route('dashboard.index') }}"]');
+                    if (dashboardLinkEl) {
+                        const dashboardLinkFullUrl = dashboardLinkEl.href.split('?')[0].split('#')[0];
+                        const dashboardPathname = new URL(dashboardLinkFullUrl).pathname;
+                        if (normalizePath(currentPathname) === normalizePath(dashboardPathname)) {
+                            // console.log(`Fallback: Activating dashboard link via fallback.`);
+                            dashboardLinkEl.parentElement.classList.add('active');
+                        }
+                    }
+                }
+            }
+            setActiveSidebarLink();
 
              // === MODAL HISTORY USER: Variabel dan Event Listeners ===
             const userHistoryModalElement = document.getElementById('userHistoryModal');

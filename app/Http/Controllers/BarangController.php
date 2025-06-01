@@ -8,12 +8,6 @@ use Illuminate\Support\Facades\Validator; // Penting untuk validasi
 
 class BarangController extends Controller
 {
-    // ... (method index, create, show, edit, update, destroy lainnya) ...
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    
 
     public function store(Request $request)
     {

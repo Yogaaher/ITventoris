@@ -7,6 +7,7 @@ use App\Models\Track;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -45,8 +46,35 @@ class DashboardController extends Controller
         $perusahaanOptions = Barang::select('perusahaan')->distinct()->orderBy('perusahaan')->pluck('perusahaan');
         $jenisBarangOptions = Barang::select('jenis_barang')->distinct()->orderBy('jenis_barang')->pluck('jenis_barang');
 
+                // +++ AWAL LOGIKA BARU UNTUK COUNT ITEM +++
+        $itemTypesToCount = ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor', 'Others'];
+        
+        $itemCounts = Barang::select('jenis_barang', DB::raw('count(*) as total'))
+                            ->groupBy('jenis_barang')
+                            ->pluck('total', 'jenis_barang'); // Hasilnya: ['Laptop' => 5, 'HP' => 3, ...]
+
+        $inventorySummary = [];
+        $totalSpecificItems = 0;
+
+        foreach ($itemTypesToCount as $type) {
+            $count = $itemCounts->get($type, 0); // Ambil count, atau 0 jika tidak ada
+            $inventorySummary[$type] = $count;
+            $totalSpecificItems += $count;
+        }
+
+        // Hitung 'Others'
+        // Cara 1: Total semua barang dikurangi total barang spesifik
+        // $totalAllBarang = Barang::count();
+        // $inventorySummary['Others'] = $totalAllBarang - $totalSpecificItems;
+        
+        // Cara 2 (lebih akurat jika ada jenis barang lain yang tidak masuk daftar):
+        $othersCount = Barang::whereNotIn('jenis_barang', $itemTypesToCount)->count();
+        $inventorySummary['Others'] = $othersCount;
+
+        // +++ AKHIR LOGIKA BARU UNTUK COUNT ITEM +++
+
         // Kirim data ke view
-        return view('DasboardPage', compact('barangs', 'perusahaanOptions', 'jenisBarangOptions', 'filterPerusahaan', 'filterJenisBarang', 'searchNoAsset'));
+        return view('DasboardPage', compact('barangs', 'perusahaanOptions', 'jenisBarangOptions', 'filterPerusahaan', 'filterJenisBarang', 'searchNoAsset', 'inventorySummary'));
     }
 
     public function getDetailBarang(Request $request, $id)
