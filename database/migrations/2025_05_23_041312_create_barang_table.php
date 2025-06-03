@@ -19,6 +19,7 @@ return new class extends Migration
         $table->string('merek');
         $table->date('tgl_pengadaan');
         $table->string('serial_number')->unique();
+        $table->enum('status', ['Digunakan', 'Diperbaiki', 'Dipindah', 'Non Aktif', 'Tersedia'])->default('Tersedia'); 
         $table->timestamps();
     });
     }

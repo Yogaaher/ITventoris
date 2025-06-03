@@ -19,7 +19,7 @@ class Track extends Model
     ];
 
     // Relasi ke tabel barang (1 track → 1 barang)
-    public function barang()
+    public function barang(): BelongsTo
     {
         return $this->belongsTo(Barang::class, 'serial_number', 'serial_number');
     }

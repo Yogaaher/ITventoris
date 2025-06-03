@@ -564,6 +564,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 16px 4px;
+  gap: 8px; 
 }
 .app-content-actions-wrapper {
   display: flex;
@@ -604,6 +605,11 @@ body {
     order: 2; /* Tombol-tombol di bawah */
     justify-content: flex-start; /* Mulai dari kiri */
   }
+  .app-content-actions .search-bar-container {
+    flex-grow: 1; /* Biarkan container yang mengisi ruang jika perlu */
+    max-width: 320px; /* Atur max-width pada container */
+    margin-right: 8px; /* Atur margin pada container */
+    }
 }
 @media screen and (max-width: 520px) {
   .app-content-actions { flex-direction: column; }
@@ -626,6 +632,36 @@ body {
   width: 100%;
   max-width: 320px;
   transition: .2s;
+}
+.search-bar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+.search-bar-container .search-bar {
+    padding-right: 35px;
+    flex-grow: 1;
+    width: 100%;
+}
+.clear-search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    color: var(--app-content-main-color);
+    cursor: pointer;
+    font-size: 2rem;
+    padding: 2px 6px;
+    line-height: 1;
+}
+.clear-search-btn:hover {
+    color: red;
+}
+html.light .clear-search-btn {
+    color: #555; /* Warna 'X' untuk light mode */
 }
 html.light .search-bar {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
@@ -883,7 +919,7 @@ html.light .filter-menu select {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1051; /* Pastikan lebih tinggi dari modal tambah aset */
+    z-index: 1051;
     justify-content: center;
     align-items: center;
     padding: 2rem;
@@ -900,6 +936,8 @@ html.light .filter-menu select {
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     color: var(--color-text-light);
+    position: relative; 
+    z-index: 1052;
 }
 
 #deviceInfoModal .morph-modal-container {
@@ -1059,7 +1097,7 @@ html.light .filter-menu select {
 
 
 /* === CSS TAMBAHAN UNTUK MODAL HISTORY USER === */
-#userHistoryModal.modal-overlay { /* Targetkan ID dan class bersama-sama */
+#userHistoryModal.modal-overlay {
     display: none; /* Awalnya display: none, dikontrol oleh JS */
     position: fixed;
     top: 0;
@@ -1067,7 +1105,7 @@ html.light .filter-menu select {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7); /* Latar belakang overlay standar */
-    z-index: 1052; /* LEBIH TINGGI DARI deviceInfoModal (1051) dan addAssetModal (1050) */
+    z-index: 1053; /* LEBIH TINGGI DARI deviceInfoModal (1051) dan addAssetModal (1050) */
     justify-content: center;
     align-items: center;
     padding: 1.5rem; /* Samakan dengan deviceInfoModal jika diinginkan */
@@ -1078,7 +1116,7 @@ html.light .filter-menu select {
 #userHistoryModal .modal-content-wrapper.device-entry-info-modal {
     background-color: var(--color-modal-background);
     border-radius: 0.8rem;
-    width: 90%; /* Atau sesuaikan jika perlu ukuran berbeda */
+    width: 90%;
     max-width: 60rem;
     max-height: calc(100vh - 6rem);
     overflow: hidden;
@@ -1086,6 +1124,8 @@ html.light .filter-menu select {
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     color: var(--color-text-light);
+    position: relative;
+    z-index: 1054;
 }
 
 /* Kontainer morph modal di dalam history, sama seperti deviceInfoModal */
@@ -1288,6 +1328,211 @@ html.light #userHistoryModal #userHistoryTableHeader {
 }
 /* === AKHIR CSS UNTUK TOMBOL BURGER === */
 
+/* === CSS TAMBAHAN UNTUK MODAL SERAH TERIMA ASET === */
+#serahTerimaAsetModal.modal-overlay { /* Targetkan ID dan class bersama-sama */
+    display: none; /* Awalnya display: none, dikontrol oleh JS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Sama seperti userHistoryModal */
+    z-index: 1055; /* Pastikan cukup tinggi, sama atau > userHistoryModal */
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    overflow: auto;
+}
+
+/* Konten wrapper modal serah terima, sama seperti userHistoryModal */
+#serahTerimaAsetModal .modal-content-wrapper.device-entry-info-modal {
+    background-color: var(--color-modal-background);
+    border-radius: 0.8rem;
+    width: 90%;
+    max-width: 60rem;
+    max-height: calc(100vh - 6rem); /* (1.5rem padding atas + 1.5rem padding bawah) * 2 = 6rem */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    color: var(--color-text-light);
+    position: relative;
+    z-index: 1056; 
+}
+
+/* Kontainer morph modal di dalam serah terima, sama seperti userHistoryModal */
+#serahTerimaAsetModal .morph-modal-container {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    padding: 2rem;
+    flex-grow: 1;
+    overflow: hidden; /* Kontainer utama tidak scroll, body-nya yang scroll */
+}
+
+/* Judul modal serah terima, sama seperti userHistoryModal */
+#serahTerimaAsetModal .morph-modal-title {
+    flex: 0 0 auto;
+    padding-bottom: 1rem;
+    border-bottom: 0.1rem solid var(--color-neutral-medium);
+    font-size: 1.8rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+#serahTerimaAsetModal .morph-modal-title .fa {
+    margin-right: 0.8rem;
+    font-size: 1.7rem;
+}
+
+/* Tombol close modal serah terima, sama seperti userHistoryModal */
+#serahTerimaAsetModal .btn-close {
+    background: none;
+    border: none;
+    color: var(--color-neutral-light);
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    line-height: 1;
+}
+#serahTerimaAsetModal .btn-close:hover {
+    color: var(--color-text-light);
+}
+
+/* Body modal serah terima, sama seperti userHistoryModal */
+#serahTerimaAsetModal .morph-modal-body {
+    flex: 1 1 auto; /* Memungkinkan body untuk tumbuh dan menyusut */
+    overflow-y: auto; /* Hanya body modal yang scroll jika kontennya panjang */
+    font-size: 1.4rem;
+    padding-right: 1rem; /* Tambahkan sedikit padding jika scrollbar muncul agar tidak terlalu mepet */
+}
+
+/* Styling untuk form elements di dalam #serahTerimaAsetModal */
+#serahTerimaAsetModal .morph-modal-body .form-group {
+    margin-bottom: 1.2rem;
+}
+#serahTerimaAsetModal .morph-modal-body label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+/* Menggunakan gaya dari modal tambah aset untuk input fields */
+#serahTerimaAsetModal .morph-modal-body input[type="date"],
+#serahTerimaAsetModal .morph-modal-body input[type="text"],
+#serahTerimaAsetModal .morph-modal-body select,
+#serahTerimaAsetModal .morph-modal-body textarea {
+    width: 100%;
+    padding: 10px;
+    /* margin-bottom: 15px; Dihapus karena .form-group sudah punya margin-bottom */
+    border: 1px solid var(--table-border);
+    border-radius: 4px;
+    background-color: var(--app-bg); /* Dark mode background untuk input */
+    color: var(--app-content-main-color); /* Dark mode text color untuk input */
+    box-sizing: border-box;
+}
+
+html.light #serahTerimaAsetModal .morph-modal-body input[type="date"],
+html.light #serahTerimaAsetModal .morph-modal-body input[type="text"],
+html.light #serahTerimaAsetModal .morph-modal-body select,
+html.light #serahTerimaAsetModal .morph-modal-body textarea {
+    background-color: #fff; /* Light mode background */
+    border-color: #ccc;   /* Light mode border */
+    color: #212529;       /* Light mode text color */
+}
+
+/* Style untuk input tanggal yang readonly */
+#serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only {
+    background-color: var(--color-neutral-medium); /* Lebih gelap untuk menunjukkan non-interaktif */
+    color: var(--color-neutral-light);
+    cursor: not-allowed;
+}
+html.light #serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only {
+    background-color: #e9ecef; /* Standar Bootstrap readonly background */
+    color: #495057;
+}
+
+
+#serahTerimaAsetModal .morph-modal-body input:focus,
+#serahTerimaAsetModal .morph-modal-body select:focus,
+#serahTerimaAsetModal .morph-modal-body textarea:focus {
+    border-color: var(--action-color);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(40, 105, 255, 0.25);
+}
+
+#serahTerimaAsetModal .morph-modal-body .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: .25rem;
+    display: block; /* Agar tetap mengambil ruang meski kosong */
+}
+
+/* Info section styling (untuk Aset: dan Serial Number:) */
+#serahTerimaAsetModal .info-section {
+    margin-bottom: 1.5rem;
+}
+#serahTerimaAsetModal .info-item {
+    display: flex;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+#serahTerimaAsetModal .info-item dt {
+    font-weight: 500; /* Sedikit lebih ringan dari 600 agar tidak terlalu dominan */
+    min-width: 130px; /* Lebar untuk label */
+    padding-right: 0.5rem; /* Jarak dari titik dua */
+    flex-shrink: 0;
+    color: var(--color-neutral-light);
+    position: relative;
+}
+#serahTerimaAsetModal .info-item dt::after { /* Tambahkan titik dua otomatis */
+    content: ":";
+    position: absolute;
+    right: 0;
+}
+#serahTerimaAsetModal .info-item dd {
+    color: var(--color-text-light);
+    word-break: break-word;
+    flex-grow: 1;
+    padding-left: 8px; /* Jarak setelah titik dua */
+}
+
+/* Modal footer styling */
+#serahTerimaAsetModal .modal-footer {
+    padding-top: 15px;
+    border-top: 1px solid var(--color-neutral-medium);
+    margin-top: 20px;
+    text-align: right;
+}
+html.light #serahTerimaAsetModal .modal-footer {
+    border-top-color: #eee;
+}
+#serahTerimaAsetModal .modal-footer .btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 10px;
+}
+#serahTerimaAsetModal .modal-footer .btn-primary {
+    background-color: var(--action-color);
+    color: white;
+}
+#serahTerimaAsetModal .modal-footer .btn-primary:hover {
+    background-color: var(--action-color-hover);
+}
+#serahTerimaAsetModal .modal-footer .btn-secondary {
+    background-color: var(--filter-reset); /* Konsisten dengan Add Asset Modal */
+    color: white;
+}
+html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
+    background-color: #6c757d;
+}
+/* === AKHIR CSS MODAL SERAH TERIMA ASET === */
+
     </style>
 </head>
 <body>
@@ -1387,6 +1632,69 @@ html.light #userHistoryModal #userHistoryTableHeader {
         </div>
     </div>
     {{-- AKHIR MODAL HISTORY PENGGUNA --}}
+
+    {{-- ================================================================ --}}
+    {{-- MODAL BARU: SERAH TERIMA ASET / UPDATE PENGGUNA                --}}
+    {{-- ================================================================ --}}
+    <div id="serahTerimaAsetModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content-wrapper device-entry-info-modal"> {{-- Menggunakan class yang sama untuk styling --}}
+            <div class="morph-modal-container">
+                <div class="morph-modal-title">
+                    <span><i class="fas fa-exchange-alt"></i> Serah Terima Aset</span>
+                    <button id="closeSerahTerimaAsetModalButton" class="btn-close" aria-label="Tutup modal">×</button>
+                </div>
+                <div class="morph-modal-body">
+                    <form id="serahTerimaAsetForm">
+                        @csrf
+                        <input type="hidden" id="serahTerimaAssetId" name="asset_id">
+                        <input type="hidden" id="serahTerimaSerialNumber" name="serial_number">
+
+                        <div class="info-section" style="margin-bottom: 1.5rem;">
+                            <dl class="info-item"><dt>Aset:</dt><dd id="serahTerimaInfoNamaAset">_</dd></dl>
+                            <dl class="info-item"><dt>Serial Number:</dt><dd id="serahTerimaInfoSN">_</dd></dl>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label for="serahTerimaTanggalAwal" style="display: block; margin-bottom: .5rem; font-weight: 500;">Tanggal Serah Terima (Otomatis)</label>
+                            <input type="date" id="serahTerimaTanggalAwal" name="tanggal_awal" class="form-control" readonly>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label for="serahTerimaUser" style="display: block; margin-bottom: .5rem; font-weight: 500;">Nama Pengguna Baru</label>
+                            <input type="text" id="serahTerimaUser" name="username" class="form-control" required style="background-color: var(--app-bg); border-color: var(--table-border); color: var(--app-content-main-color); width: 100%; padding: 8px; border-radius: 4px;">
+                            <div class="invalid-feedback" id="username_serah_error"></div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label for="serahTerimaStatus" style="display: block; margin-bottom: .5rem; font-weight: 500;">Status Aset</label>
+                            <select id="serahTerimaStatus" name="status" class="form-control" required style="background-color: var(--app-bg); border-color: var(--table-border); color: var(--app-content-main-color); width: 100%; padding: 8px; border-radius: 4px;">
+                                <option value="">Pilih Status</option>
+                                <option value="digunakan">Digunakan</option>
+                                <option value="diperbaiki">Diperbaiki</option>
+                                <option value="dipindah">Dipindah</option>
+                                <option value="non aktif">Non Aktif</option>
+                                <option value="tersedia">Tersedia</option>
+                            </select>
+                            <div class="invalid-feedback" id="status_serah_error"></div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="serahTerimaKeterangan" style="display: block; margin-bottom: .5rem; font-weight: 500;">Keterangan</label>
+                            <textarea id="serahTerimaKeterangan" name="keterangan" class="form-control" rows="3" required style="background-color: var(--app-bg); border-color: var(--table-border); color: var(--app-content-main-color); width: 100%; padding: 8px; border-radius: 4px;"></textarea>
+                            <div class="invalid-feedback" id="keterangan_serah_error"></div>
+                        </div>
+
+                        <div class="modal-footer" style="padding-top: 1rem; border-top: 1px solid var(--color-neutral-medium); text-align: right;">
+                             {{-- Tombol modal-footer dari modal tambah aset, disesuaikan class & ID nya --}}
+                            <button type="button" class="btn btn-secondary" id="cancelSerahTerimaAsetModalBtn" style="background-color: var(--filter-reset); color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: 500; margin-left: 10px;">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="submitSerahTerimaAsetBtn" style="background-color: var(--action-color); color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: 500; margin-left: 10px;">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- AKHIR MODAL SERAH TERIMA ASET --}}
 
     <!-- =================================== -->
     <!--        MODAL TAMBAH ASET           -->
@@ -1543,7 +1851,18 @@ html.light #userHistoryModal #userHistoryTableHeader {
         {{-- FORM FILTER DAN TOMBOL AKSI --}}
         <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
             <div class="app-content-actions">
-                <input class="search-bar" placeholder="Cari No Asset ..." type="text" name="search_no_asset" value="{{ $searchNoAsset ?? old('search_no_asset') }}">
+                
+            <div class="search-bar-container">
+                    <input class="search-bar"
+                           placeholder="Cari No Asset, Serial, atau Merek..."
+                           type="text"
+                           name="search_no_asset"
+                           value="{{ $searchKeyword ?? old('search_no_asset') }}"
+                           id="mainSearchInput">
+                    <button type="button" class="clear-search-btn" id="clearMainSearchBtn" style="display: none;" title="Hapus pencarian">
+                        × {{-- Karakter 'X' (kali) --}}
+                    </button>
+                </div>
                 
                 {{-- Tombol aksi (Tambah & Filter) dipindahkan ke sini --}}
                 <div class="app-content-actions-buttons">
@@ -1650,6 +1969,8 @@ html.light #userHistoryModal #userHistoryTableHeader {
     {{-- ... (Bagian HTML Anda di atas) ... --}}
 
     <script>
+
+        let currentAssetIdForSerahTerima = null;
         document.addEventListener('DOMContentLoaded', () => {
 
             // === MODAL TAMBAH ASET: Variabel dan Fungsi Dasar ===
@@ -1663,6 +1984,10 @@ html.light #userHistoryModal #userHistoryTableHeader {
             // Variabel untuk Modal Detail (digunakan oleh event listener di DOMContentLoaded)
             const detailModalOverlayElement = document.getElementById('deviceInfoModal'); // Ganti nama agar tidak konflik
             const closeDetailModalButtonElement = document.getElementById('closeDetailModalButton'); // Ganti nama
+
+            const mainSearchInput = document.getElementById('mainSearchInput');
+            const clearMainSearchBtn = document.getElementById('clearMainSearchBtn');
+            const filterFormForSearch = document.getElementById('filterForm'); // Pastikan ID form filter benar
 
             function openModalElement(modalElement, formToReset) {
                 if (modalElement) {
@@ -1697,6 +2022,38 @@ html.light #userHistoryModal #userHistoryTableHeader {
                         inputElement.classList.add('is-invalid');
                     }
                 }
+            }
+
+            // Fungsi untuk menampilkan atau menyembunyikan tombol clear
+            function toggleClearSearchButton() {
+                if (mainSearchInput && clearMainSearchBtn) {
+                    if (mainSearchInput.value.length > 0) {
+                        clearMainSearchBtn.style.display = 'inline-block';
+                    } else {
+                        clearMainSearchBtn.style.display = 'none';
+                    }
+                }
+            }
+
+            // Event listener saat pengguna mengetik di search bar
+            if (mainSearchInput) {
+                mainSearchInput.addEventListener('input', toggleClearSearchButton);
+
+                // Panggil sekali saat halaman dimuat untuk memeriksa apakah search bar sudah ada isinya
+                toggleClearSearchButton();
+            }
+
+            // Event listener saat tombol clear ('X') diklik
+            if (clearMainSearchBtn) {
+                clearMainSearchBtn.addEventListener('click', () => {
+                    if (mainSearchInput) {
+                        mainSearchInput.value = ''; // Hapus isi search bar
+                    }
+                    toggleClearSearchButton(); // Sembunyikan tombol 'X' lagi
+                    if (filterFormForSearch) {
+                        filterFormForSearch.submit(); // Submit form untuk me-reload data
+                    }
+                });
             }
 
             // === MODAL TAMBAH ASET: Event Listeners ===
@@ -1842,13 +2199,13 @@ html.light #userHistoryModal #userHistoryTableHeader {
 
             // === FITUR DASHBOARD: Auto Submit Search Bar on Enter ===
             const searchBarInput = document.querySelector('.search-bar[name="search_no_asset"]');
-            if (searchBarInput) {
-                searchBarInput.addEventListener('keypress', function(event) {
+              if (mainSearchInput) {
+                mainSearchInput.addEventListener('keypress', function(event) {
                     if (event.key === 'Enter') {
                         event.preventDefault();
-                        const filterForm = document.getElementById('filterForm');
-                        if (filterForm) {
-                            filterForm.submit();
+                        // const filterForm = document.getElementById('filterForm'); // filterFormForSearch sudah ada
+                        if (filterFormForSearch) {
+                            filterFormForSearch.submit();
                         }
                     }
                 });
@@ -1950,9 +2307,15 @@ html.light #userHistoryModal #userHistoryTableHeader {
             }
             setActiveSidebarLink();
 
-             // === MODAL HISTORY USER: Variabel dan Event Listeners ===
+            // === MODAL HISTORY USER: Variabel dan Event Listeners ===
             const userHistoryModalElement = document.getElementById('userHistoryModal');
             const closeUserHistoryModalButtonElement = document.getElementById('closeUserHistoryModalButton');
+            
+            const serahTerimaAsetModalElement = document.getElementById('serahTerimaAsetModal');
+            const closeSerahTerimaAsetModalButtonElement = document.getElementById('closeSerahTerimaAsetModalButton');
+            const cancelSerahTerimaAsetModalBtnElement = document.getElementById('cancelSerahTerimaAsetModalBtn');
+            const serahTerimaAsetFormElement = document.getElementById('serahTerimaAsetForm');
+            const submitSerahTerimaAsetBtnElement = document.getElementById('submitSerahTerimaAsetBtn');
 
             if (closeUserHistoryModalButtonElement && userHistoryModalElement) {
                 closeUserHistoryModalButtonElement.addEventListener('click', () => {
@@ -1984,6 +2347,107 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 }
             }); // Kurung kurawal penutup event keydown ada di sini
 
+            if (closeSerahTerimaAsetModalButtonElement && serahTerimaAsetModalElement) {
+                closeSerahTerimaAsetModalButtonElement.addEventListener('click', () => {
+                    serahTerimaAsetModalElement.style.display = 'none';
+                });
+            }
+
+            if (cancelSerahTerimaAsetModalBtnElement && serahTerimaAsetModalElement) {
+                cancelSerahTerimaAsetModalBtnElement.addEventListener('click', () => {
+                    serahTerimaAsetModalElement.style.display = 'none';
+                });
+            }
+
+            if (serahTerimaAsetModalElement) {
+                serahTerimaAsetModalElement.addEventListener('click', function(event) {
+                    if (event.target === serahTerimaAsetModalElement) {
+                        serahTerimaAsetModalElement.style.display = 'none';
+                    }
+                });
+                // Listener untuk tombol Escape pada modal serah terima
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && serahTerimaAsetModalElement && serahTerimaAsetModalElement.style.display === 'flex') {
+                        serahTerimaAsetModalElement.style.display = 'none';
+                    }
+                });
+            }
+
+            // === MODAL SERAH TERIMA ASET: Event Listeners & AJAX ===
+            if (serahTerimaAsetFormElement && submitSerahTerimaAsetBtnElement) {
+                serahTerimaAsetFormElement.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(serahTerimaAsetFormElement);
+
+                    console.log("--- Data yang Akan Dikirim (Sebelum POST ke /aset/serah-terima/store) ---");
+                    const dataToLog = {};
+                    for (const [key, value] of formData.entries()) {
+                        dataToLog[key] = value;
+                    }
+                    console.table(dataToLog); // Menampilkan sebagai tabel di console, lebih rapi!
+                    console.log("--------------------------------------------------------------------");
+                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                    const originalButtonText = submitSerahTerimaAsetBtnElement.textContent;
+                    submitSerahTerimaAsetBtnElement.textContent = 'Menyimpan...';
+                    submitSerahTerimaAsetBtnElement.disabled = true;
+
+                    document.querySelectorAll('#serahTerimaAsetForm .invalid-feedback').forEach(el => el.textContent = '');
+                    document.querySelectorAll('#serahTerimaAsetForm .form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                    fetch("{{ route('aset.serahterima.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': formData.get('_token'),
+                            'Accept': 'application/json',
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => { throw { status: response.status, body: errData }; })
+                                            .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message || 'Data serah terima berhasil disimpan.');
+                            if (serahTerimaAsetModalElement) { // Pastikan elemen modal ada
+                                serahTerimaAsetModalElement.style.display = 'none';
+                            }
+                            if (currentAssetIdForSerahTerima) {
+                                // Panggil openDetailModal DI LUAR DOMContentLoaded agar bisa diakses
+                                window.openDetailModal(currentAssetIdForSerahTerima);
+                            } else {
+                                window.location.reload();
+                            }
+                        } else if (data.errors) {
+                            // Tampilkan validation errors (fungsi displayValidationErrors Anda harus bisa diakses atau didefinisikan di sini)
+                            // Contoh sederhana:
+                            for (const field in data.errors) {
+                                const errorElement = document.getElementById(`${field}_serah_error`);
+                                const inputElement = document.getElementById(`serahTerima${field.charAt(0).toUpperCase() + field.slice(1)}`);
+                                if (errorElement) errorElement.textContent = data.errors[field][0];
+                                if (inputElement) inputElement.classList.add('is-invalid');
+                                // ... (penanganan error validasi lainnya)
+                            }
+                        } else {
+                            alert(data.message || 'Terjadi kesalahan saat menyimpan data.');
+                        }
+                    })
+                    .catch(errorInfo => {
+                        console.error('Error submitting serah terima form:', errorInfo);
+                        alert('Terjadi kesalahan koneksi atau server. Silakan coba lagi.');
+                    })
+                    .finally(() => {
+                        submitSerahTerimaAsetBtnElement.textContent = originalButtonText;
+                        submitSerahTerimaAsetBtnElement.disabled = false;
+                    });
+                });
+            }
+            // AKHIR BLOK MODAL SERAH TERIMA ASET
+
         }); // <<<<---- INI ADALAH AKHIR DARI BLOK document.addEventListener('DOMContentLoaded')
 
         // ==============================================================================
@@ -2013,6 +2477,8 @@ html.light #userHistoryModal #userHistoryTableHeader {
             const modalKeterangan = document.getElementById('modalKeterangan');
             const deviceImage = document.getElementById('modalDeviceImage');
 
+            const btnUpdateAsetModalDetail = detailModalOverlay.querySelector('.btn-action.btn-update');
+
             // Validasi elemen modal
             if (!modalDeviceName || !modalDeviceType || !modalNo || !modalPerusahaan || !modalNoAsset ||
                 !modalTglPengadaan || !modalSerialNumber || !modalUser || !modalTglPenyerahan ||
@@ -2036,6 +2502,8 @@ html.light #userHistoryModal #userHistoryTableHeader {
             modalStatus.innerHTML = '_';
             modalKeterangan.textContent = '_';
             deviceImage.className = 'device-image fas fa-spinner fa-spin';
+            
+            currentAssetIdForSerahTerima = barangId; 
 
             // Fetch data (semua ini juga harus di dalam fungsi)
             fetch(`/barang/detail/${barangId}`)
@@ -2066,7 +2534,7 @@ html.light #userHistoryModal #userHistoryTableHeader {
                         if (track) {
                             modalUser.textContent = `${track.username || 'N/A'}`;
                             modalTglPenyerahan.textContent = formatDate(track.tanggal_awal);
-                            modalTglPengembalian.textContent = track.tanggal_akhir ? formatDate(track.tanggal_akhir) : '-';
+                            modalTglPengembalian.textContent = track.tanggal_ahir ? formatDate(track.tanggal_ahir) : '-';
                         } else {
                             modalUser.textContent = '-';
                             modalTglPenyerahan.textContent = '-';
@@ -2086,6 +2554,19 @@ html.light #userHistoryModal #userHistoryTableHeader {
                             newTriggerHistoryButton.addEventListener('click', () => {
                                 openUserHistoryModal(barang.serial_number, deviceFullName   );
                             });
+                        if (btnUpdateAsetModalDetail) {
+                            btnUpdateAsetModalDetail.dataset.assetId = barang.id; // Simpan ID barang
+                            btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
+                            btnUpdateAsetModalDetail.dataset.deviceName = `${barang.merek || 'Nama Tidak Ada'} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
+                            
+                            // Hapus event listener onclick yang lama (jika ada, dari atribut HTML)
+                            // dan ganti dengan event listener JS agar lebih manageable
+                            const newBtnUpdate = btnUpdateAsetModalDetail.cloneNode(true);
+                            btnUpdateAsetModalDetail.parentNode.replaceChild(newBtnUpdate, btnUpdateAsetModalDetail);
+                            
+                            newBtnUpdate.removeAttribute('onclick'); // Hapus atribut onclick inline
+                            newBtnUpdate.addEventListener('click', handleOpenSerahTerimaModal);
+                        }
                         } else if (triggerHistoryButton) {
                             // Jika tidak ada serial number, mungkin nonaktifkan tombol atau beri pesan
                             triggerHistoryButton.disabled = true; 
@@ -2109,6 +2590,7 @@ html.light #userHistoryModal #userHistoryTableHeader {
                         deviceImage.className = 'device-image fas fa-exclamation-triangle';
                     }
                 })
+                
                 .catch(error => {
                     console.error('Error fetching detail barang:', error);
                     let displayError = 'Gagal mengambil detail barang. Cek konsol (F12).';
@@ -2123,6 +2605,34 @@ html.light #userHistoryModal #userHistoryTableHeader {
                 });
         } // <<<<---- AKHIR DARI FUNGSI openDetailModal
 
+        function handleOpenSerahTerimaModal(event) {
+            const assetId = event.currentTarget.dataset.assetId;
+            const serialNumber = event.currentTarget.dataset.serialNumber;
+            const deviceName = event.currentTarget.dataset.deviceName;
+
+            const serahModal = document.getElementById('serahTerimaAsetModal');
+             const serahForm = document.getElementById('serahTerimaAsetForm');
+            if (!serahModal) {
+                console.error("Modal serah terima (#serahTerimaAsetModal) tidak ditemukan.");
+                return;
+            }
+
+            serahForm.reset();
+ 
+            // Isi data ke modal serah terima (tetap sama)
+            document.getElementById('serahTerimaAssetId').value = assetId;
+            document.getElementById('serahTerimaSerialNumber').value = serialNumber;
+            document.getElementById('serahTerimaInfoNamaAset').textContent = deviceName;
+            document.getElementById('serahTerimaInfoSN').textContent = serialNumber;
+
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('serahTerimaTanggalAwal').value = today;
+
+            document.querySelectorAll('#serahTerimaAsetForm .invalid-feedback').forEach(el => el.textContent = '');
+            document.querySelectorAll('#serahTerimaAsetForm .form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            serahModal.style.display = 'flex'; // Hanya tampilkan modal serah terima
+        }
 
         function openUserHistoryModal(serialNumber,deviceName) {
         const historyModal = document.getElementById('userHistoryModal');
@@ -2140,7 +2650,7 @@ html.light #userHistoryModal #userHistoryTableHeader {
         historyModalDeviceNameEl.textContent = deviceName || 'Tidak Diketahui';
         historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
         historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>'; // Pesan loading
-        historyTableHeaderEl.innerHTML = ''; // Kosongkan header dulu
+        historyTableHeaderEl.innerHTML = '';
 
         historyModal.style.display = 'flex';
 
@@ -2171,7 +2681,7 @@ html.light #userHistoryModal #userHistoryTableHeader {
                                 <tr>
                                     <td class="cell-history-user" title="${item.username || '-'}">${item.username || '-'}</td>
                                     <td class="cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</td>
-                                    <td class="cell-history-tgl-akhir">${item.tanggal_akhir ? formatDate(item.tanggal_akhir) : '-'}</td>
+                                    <td class="cell-history-tgl-akhir">${item.tanggal_ahir ? formatDate(item.tanggal_ahir) : '-'}</td>
                                     <td class="cell-history-status" title="${item.status || '-'}">${item.status || '-'}</td>
                                     <td class="cell-history-keterangan" title="${item.keterangan || '-'}">${item.keterangan || '-'}</td>
                                 </tr>`;
