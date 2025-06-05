@@ -583,15 +583,15 @@ body {
   gap: 8px;
 }
 .app-content-actions .action-button.add-asset-btn {
-  background-color: var(--action-color); */
-  color: white; */
+  background-color: var(--action-color) !important;
+  color: white;
+  border: none;
 }
-.app-content-actions .action-button.add-asset-btn svg {
-  margin-right: 4px;
+.action-button.add-asset-btn svg,
+.action-button.add-asset-btn i.fas {
+    margin-right: 6px !important;
 }
-.app-content-actions .action-button.add-asset-btn i.fas {
-  margin-right: 4px;
-}
+
 @media screen and (max-width: 768px) {
   .app-content-actions {
     flex-direction: column;
@@ -779,6 +779,35 @@ html.light .filter-menu select {
 }
 .filter-button.reset {
   background-color: var(--filter-reset);
+}
+.filter-menu .filter-button {
+  border-radius: 2px;
+  font-size: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  width: 100%; 
+  box-sizing: border-box;
+}
+.filter-menu .filter-button.reset-filter-in-menu:not(:disabled){
+    background-color: var(--action-color);
+    color: #ffff;
+}
+html.light .filter-menu .filter-button.reset-filter-in-menu:not(:disabled) {
+    background-color: #adb5bd;
+    color: #fff;
+}
+.filter-menu .filter-button.reset-filter-in-menu:disabled {
+    background-color: var(--filter-reset); /* Atau warna yang lebih pudar */
+    opacity: 0.5; /* Buat lebih transparan agar terlihat disabled */
+    color: rgba(255, 255, 255, 0.6); /* Teks putih yang lebih pudar */
+    cursor: not-allowed;
+}
+html.light .filter-menu .filter-button.reset-filter-in-menu:disabled {
+    background-color: #adb5bd; /* Abu-abu lebih terang untuk background disabled di light mode */
+    color: #6c757d; /* Teks abu-abu lebih gelap */
+    opacity: 0.7; /* Atau sesuaikan opacity */
 }
 .products-area-wrapper {
   width: 100%;
@@ -1217,7 +1246,7 @@ html.light .filter-menu select {
 
 /* Styling kolom spesifik (gunakan width atau min-width) */
 #userHistoryModal .user-history-table .cell-history-user {
-    min-width: 120px;
+    min-width: 170px;
 }
 #userHistoryModal .user-history-table .cell-history-tgl-awal,
 #userHistoryModal .user-history-table .cell-history-tgl-akhir {
@@ -1453,8 +1482,6 @@ html.light #serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only 
     background-color: #e9ecef; /* Standar Bootstrap readonly background */
     color: #495057;
 }
-
-
 #serahTerimaAsetModal .morph-modal-body input:focus,
 #serahTerimaAsetModal .morph-modal-body select:focus,
 #serahTerimaAsetModal .morph-modal-body textarea:focus {
@@ -1611,6 +1638,10 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                             <dt>Serial Number</dt>
                             <dd><strong id="historyModalSerialNumber">_</strong></dd>
                         </div>
+                        <div class="history-info-item">
+                            <dt>Perusahaan</dt>
+                            <dd><strong id="historyModalCompany">_</strong></dd>
+                        </div>
                     </dl>
                     
                     {{-- Kontainer PEMBUNGKUS untuk tabel history (untuk scrolling) --}}
@@ -1637,7 +1668,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
     {{-- MODAL BARU: SERAH TERIMA ASET / UPDATE PENGGUNA                --}}
     {{-- ================================================================ --}}
     <div id="serahTerimaAsetModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content-wrapper device-entry-info-modal"> {{-- Menggunakan class yang sama untuk styling --}}
+        <div class="modal-content-wrapper device-entry-info-modal">
             <div class="morph-modal-container">
                 <div class="morph-modal-title">
                     <span><i class="fas fa-exchange-alt"></i> Serah Terima Aset</span>
@@ -1657,6 +1688,19 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         <div class="form-group" style="margin-bottom: 1rem;">
                             <label for="serahTerimaTanggalAwal" style="display: block; margin-bottom: .5rem; font-weight: 500;">Tanggal Serah Terima (Otomatis)</label>
                             <input type="date" id="serahTerimaTanggalAwal" name="tanggal_awal" class="form-control" readonly>
+                        </div>
+
+                        <!-- Form fields untuk pindah perusahaan (tambahkan perusahaan baru disini) -->
+                         <div class="form-group" id="perusahaanTujuanGroup" style="display: none; margin-bottom: 1rem;">
+                            <label for="serahTerimaPerusahaanTujuan" style="display: block; margin-bottom: .5rem; font-weight: 500;">Pindahkan ke Perusahaan</label>
+                            <select id="serahTerimaPerusahaanTujuan" name="perusahaan_tujuan" class="form-control" style="background-color: var(--app-bg); border-color: var(--table-border); color: var(--app-content-main-color); width: 100%; padding: 8px; border-radius: 4px;">
+                                <option value="">Pilih Perusahaan Tujuan</option>
+                                <option value="SCO">SCO</option>
+                                <option value="SCT">SCT</option>
+                                <option value="SCP">SCP</option>
+                                <option value="Migen">Migen</option>
+                            </select>
+                            <div class="invalid-feedback" id="perusahaan_tujuan_serah_error"></div>
                         </div>
 
                         <div class="form-group" style="margin-bottom: 1rem;">
@@ -1899,13 +1943,9 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                                         @endforeach
                                     @endif
                                 </select>
-
-                                <div class="filter-menu-buttons">
-                                    <button type="button" class="filter-button reset" onclick="resetFilters()">
-                                        Reset
-                                    </button>
-                                    <button type="submit" class="filter-button apply">
-                                        Apply
+                                <div class="filter-menu-buttons" style="margin-top: 15px; text-align: center;">
+                                    <button type="button" class="filter-button reset-filter-in-menu" id="resetFilterInMenuBtn" disabled>
+                                        Reset Filter
                                     </button>
                                 </div>
                             </div>
@@ -1913,52 +1953,58 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                     </div>
                 </div>
             </form>
+            
         {{-- FORM FILTER SELESAI DI SINI --}}
 
-            <div class="products-area-wrapper tableView">
-              <div class="products-header">
-                <div class="product-cell cell-no">No</div>
-                <div class="product-cell cell-perusahaan">Perusahaan</div>
-                <div class="product-cell cell-jenis-barang">Jenis Barang</div>
-                <div class="product-cell cell-no-asset">No Asset</div>
-                <div class="product-cell cell-merek">Merek</div>
-                <div class="product-cell cell-tgl-pengadaan">Tgl. Pengadaan</div>
-                <div class="product-cell cell-serial-number">Serial Number</div>
-                <div class="product-cell cell-aksi">Aksi</div>
-              </div>
+            {{-- Area tabel produk --}}
+            <div class="products-area-wrapper tableView" id="productTableArea">
+                {{-- Header Tabel (tetap ada atau bisa juga digenerate JS jika mau) --}}
+                <div class="products-header">
+                    <div class="product-cell cell-no">No</div>
+                    <div class="product-cell cell-perusahaan">Perusahaan</div>
+                    <div class="product-cell cell-jenis-barang">Jenis Barang</div>
+                    <div class="product-cell cell-no-asset">No Asset</div>
+                    <div class="product-cell cell-merek">Merek</div>
+                    <div class="product-cell cell-tgl-pengadaan">Tgl. Pengadaan</div>
+                    <div class="product-cell cell-serial-number">Serial Number</div>
+                    <div class="product-cell cell-aksi">Aksi</div>
+                </div>
 
-              {{-- Pastikan variabel $barangs di-pass dari controller --}}
-              @if(isset($barangs) && $barangs->count() > 0)
-                @foreach($barangs as $index => $barang)
-                <div class="products-row">
-                    {{-- Menyesuaikan nomor urut dengan paginasi --}}
-                    <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
-                    <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan }}">{{ $barang->perusahaan }}</div>
-                    <div class="product-cell cell-jenis-barang" title="{{ $barang->jenis_barang }}">{{ $barang->jenis_barang }}</div>
-                    <div class="product-cell cell-no-asset" title="{{ $barang->no_asset }}">{{ $barang->no_asset }}</div>
-                    <div class="product-cell cell-merek" title="{{ $barang->merek }}">{{ $barang->merek }}</div>
-                    {{-- Menggunakan format tanggal yang lebih umum dan Carbon untuk parsing --}}
-                    <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
-                    <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
-                    <div class="product-cell cell-aksi">
-                        <button class="action-btn-table update-btn" onclick="alert('Update untuk ID: {{ $barang->id }} belum diimplementasikan')">Update</button>
-                        <button class="action-btn-table detail-btn" onclick="openDetailModal({{ $barang->id }})">Detail</button>
-                    </div>
+                {{-- Container untuk baris-baris produk yang akan diisi oleh JS --}}
+                <div id="productTableRowsContainer">
+                    {{-- Load Awal dari Controller index() --}}
+                    @if(isset($barangs) && $barangs->count() > 0)
+                        @foreach($barangs as $index => $barang)
+                        <div class="products-row">
+                            <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
+                            <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan }}">{{ $barang->perusahaan }}</div>
+                            <div class="product-cell cell-jenis-barang" title="{{ $barang->jenis_barang }}">{{ $barang->jenis_barang }}</div>
+                            <div class="product-cell cell-no-asset" title="{{ $barang->no_asset }}">{{ $barang->no_asset }}</div>
+                            <div class="product-cell cell-merek" title="{{ $barang->merek }}">{{ $barang->merek }}</div>
+                            <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
+                            <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
+                            <div class="product-cell cell-aksi">
+                                <button class="action-btn-table detail-btn-table-js" onclick="openDetailModal({{ $barang->id }})" title="Detail Aset">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Detail</span>
+                                </button>
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="products-row">
+                            <div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div>
+                        </div>
+                    @endif
                 </div>
-                @endforeach
-              @else
-                <div class="products-row">
-                    <div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div>
-                </div>
-              @endif
             </div>
 
-            @if (isset($barangs) && $barangs->hasPages())
-                <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center;">
-                    {{-- appends(request()->query()) penting agar filter tetap aktif saat paginasi --}}
-                    {{ $barangs->appends(request()->query())->links('pagination::bootstrap-4') }}
-                </div>
-            @endif
+            {{-- Container untuk Paginasi --}}
+            <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center;" id="realtimePaginationContainer">
+                @if (isset($barangs) && $barangs->hasPages())
+                    {{ $barangs->links('pagination::bootstrap-4') }}
+                @endif
+            </div>
 
           </div>
           {{-- AKHIR KONTEN UTAMA APLIKASI --}}
@@ -1969,500 +2015,97 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
     {{-- ... (Bagian HTML Anda di atas) ... --}}
 
     <script>
-
+        // ==============================================================================
+        // VARIABEL GLOBAL & FUNGSI HELPER YANG BISA DIAKSES DARI MANA SAJA
+        // ==============================================================================
         let currentAssetIdForSerahTerima = null;
-        document.addEventListener('DOMContentLoaded', () => {
+        let debounceTimer;
+        let lastKnownUserFromDetail = '-';
+        const DEBOUNCE_DELAY = 500;
 
-            // === MODAL TAMBAH ASET: Variabel dan Fungsi Dasar ===
-            const addAssetModal = document.getElementById('addAssetModal');
-            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton');
-            const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
-            const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
-            const addAssetForm = document.getElementById('addAssetForm');
-            const submitAddAssetBtn = document.getElementById('submitAddAssetBtn');
-
-            // Variabel untuk Modal Detail (digunakan oleh event listener di DOMContentLoaded)
-            const detailModalOverlayElement = document.getElementById('deviceInfoModal'); // Ganti nama agar tidak konflik
-            const closeDetailModalButtonElement = document.getElementById('closeDetailModalButton'); // Ganti nama
-
-            const mainSearchInput = document.getElementById('mainSearchInput');
-            const clearMainSearchBtn = document.getElementById('clearMainSearchBtn');
-            const filterFormForSearch = document.getElementById('filterForm'); // Pastikan ID form filter benar
-
-            function openModalElement(modalElement, formToReset) {
-                if (modalElement) {
-                    modalElement.classList.add('show');
-                    if (formToReset) {
-                        formToReset.reset();
-                    }
-                    clearValidationErrors();
-                }
-            }
-
-            function closeModalElement(modalElement) {
-                if (modalElement) {
-                    modalElement.classList.remove('show');
-                }
-            }
-
-            function clearValidationErrors() {
-                document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-                document.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            }
-
-            function displayValidationErrors(errors) {
-                clearValidationErrors();
-                for (const field in errors) {
-                    const errorElement = document.getElementById(`${field}_error`);
-                    const inputElement = document.getElementById(field);
-                    if (errorElement) {
-                        errorElement.textContent = errors[field][0];
-                    }
-                    if (inputElement) {
-                        inputElement.classList.add('is-invalid');
-                    }
-                }
-            }
-
-            // Fungsi untuk menampilkan atau menyembunyikan tombol clear
-            function toggleClearSearchButton() {
-                if (mainSearchInput && clearMainSearchBtn) {
-                    if (mainSearchInput.value.length > 0) {
-                        clearMainSearchBtn.style.display = 'inline-block';
-                    } else {
-                        clearMainSearchBtn.style.display = 'none';
-                    }
-                }
-            }
-
-            // Event listener saat pengguna mengetik di search bar
-            if (mainSearchInput) {
-                mainSearchInput.addEventListener('input', toggleClearSearchButton);
-
-                // Panggil sekali saat halaman dimuat untuk memeriksa apakah search bar sudah ada isinya
-                toggleClearSearchButton();
-            }
-
-            // Event listener saat tombol clear ('X') diklik
-            if (clearMainSearchBtn) {
-                clearMainSearchBtn.addEventListener('click', () => {
-                    if (mainSearchInput) {
-                        mainSearchInput.value = ''; // Hapus isi search bar
-                    }
-                    toggleClearSearchButton(); // Sembunyikan tombol 'X' lagi
-                    if (filterFormForSearch) {
-                        filterFormForSearch.submit(); // Submit form untuk me-reload data
-                    }
-                });
-            }
-
-            // === MODAL TAMBAH ASET: Event Listeners ===
-            if (openAddAssetModalButton && addAssetModal) {
-                openAddAssetModalButton.addEventListener('click', () => {
-                    openModalElement(addAssetModal, addAssetForm);
-                });
-            }
-
-            if (closeAddAssetModalBtn && addAssetModal) {
-                closeAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
-            }
-
-            if (cancelAddAssetModalBtn && addAssetModal) {
-                cancelAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
-            }
-
-            if (addAssetModal) {
-                window.addEventListener('click', (event) => {
-                    if (event.target == addAssetModal) {
-                        closeModalElement(addAssetModal);
-                    }
-                });
-            }
-
-            // === MODAL TAMBAH ASET: Submit Form AJAX ===
-            if (addAssetForm && submitAddAssetBtn) {
-                addAssetForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const formData = new FormData(addAssetForm);
-                    const originalButtonText = submitAddAssetBtn.textContent;
-                    submitAddAssetBtn.textContent = 'Menyimpan...';
-                    submitAddAssetBtn.disabled = true;
-                    clearValidationErrors();
-
-                    fetch("{{ route('barang.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': formData.get('_token'),
-                            'Accept': 'application/json',
-                        },
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errData => { throw { status: response.status, body: errData }; })
-                                             .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    // Jika formatnya sudah YYYY-MM-DD dari input date, coba parse langsung
+                    const parts = dateString.split('-');
+                    if (parts.length === 3) {
+                        const year = parseInt(parts[0], 10);
+                        const month = parseInt(parts[1], 10) -1; // Month is 0-indexed
+                        const day = parseInt(parts[2], 10);
+                        const parsedDate = new Date(year, month, day);
+                        if (!isNaN(parsedDate.getTime())) {
+                             const d = String(parsedDate.getDate()).padStart(2, '0');
+                             const m = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                             const y = parsedDate.getFullYear();
+                             return `${d}-${m}-${y}`;
                         }
-                        return response.json().then(data => ({ status: response.status, body: data }));
-                    })
-                    .then(({ status, body }) => {
-                        if (status === 201 && body.success) {
-                            alert(body.success);
-                            closeModalElement(addAssetModal);
-                            window.location.reload();
-                        } else if (body.errors) {
-                            displayValidationErrors(body.errors);
-                        } else {
-                            alert(body.error || 'Terjadi kesalahan saat menyimpan data.');
-                            console.error('Server error response:', body);
-                        }
-                    })
-                    .catch(errorInfo => {
-                        if (errorInfo && errorInfo.body && errorInfo.body.errors) {
-                            displayValidationErrors(errorInfo.body.errors);
-                        } else if (errorInfo && errorInfo.body && errorInfo.body.error) {
-                            alert(errorInfo.body.error);
-                            console.error('Server error caught in .catch:', errorInfo.body);
-                        } else {
-                            console.error('Error submitting form (catch block):', errorInfo);
-                            alert('Terjadi kesalahan koneksi atau server. Silakan cek console browser (F12) untuk detail.');
-                        }
-                    })
-                    .finally(() => {
-                        submitAddAssetBtn.textContent = originalButtonText;
-                        submitAddAssetBtn.disabled = false;
-                    });
-                });
-            }
-
-            // === FITUR DASHBOARD: Filter Dropdown ===
-            const filterToggleButton = document.querySelector(".jsFilter");
-            if (filterToggleButton) {
-                filterToggleButton.addEventListener("click", function () {
-                    const filterButtonWrapper = this.closest('.filter-button-wrapper');
-                    if (filterButtonWrapper) {
-                        const filterMenu = filterButtonWrapper.querySelector(".filter-menu");
-                        if (filterMenu) {
-                            filterMenu.classList.toggle("active");
-                        } else {
-                            console.error("Elemen .filter-menu tidak ditemukan di dalam .filter-button-wrapper.");
-                        }
-                    } else {
-                        console.error("Elemen .filter-button-wrapper tidak ditemukan sebagai parent dari tombol filter.");
                     }
-                });
-            } else {
-                console.warn("Tombol dengan kelas .jsFilter tidak ditemukan.");
-            }
-
-            // === FITUR DASHBOARD: Theme Switch ===
-            const modeSwitch = document.querySelector('.mode-switch');
-            if (modeSwitch) {
-                modeSwitch.addEventListener('click', function () {
-                    document.documentElement.classList.toggle('light');
-                    modeSwitch.classList.toggle('active');
-                    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--app-bg');
-                    document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--app-content-main-color');
-                });
-            }
-
-            // === FITUR DASHBOARD: Burger Menu Sidebar ===
-            const burgerMenuButton = document.getElementById('burger-menu');
-            const sidebarElement = document.querySelector('.sidebar');
-            const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsed'; 
-
-    function initializeSidebarState() {
-        if (burgerMenuButton && sidebarElement) {
-            const isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
-            if (isCollapsed) {
-                sidebarElement.classList.add('collapsed');
-                burgerMenuButton.classList.remove('active'); // Burger tidak aktif jika sidebar collapsed
-            } else {
-                sidebarElement.classList.remove('collapsed');
-                burgerMenuButton.classList.add('active'); // Burger aktif jika sidebar expanded
+                    console.warn("Invalid date string for formatting:", dateString);
+                    return dateString;
+                }
+                // Format 'dd-mm-yyyy'
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            } catch (e) {
+                console.error("Error formatting date:", dateString, e);
+                return dateString;
             }
         }
-    }
 
-    initializeSidebarState(); // Panggil fungsi ini saat DOM siap
-        // Event listener untuk tombol burger
-        if (burgerMenuButton && sidebarElement) {
-            burgerMenuButton.addEventListener('click', () => {
-                sidebarElement.classList.toggle('collapsed');
-                burgerMenuButton.classList.toggle('active');
-                if (sidebarElement.classList.contains('collapsed')) {
-                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'true');
-                } else {
-                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'false');
-                }
-            });
-        }
+        function handleSerahTerimaStatusChange() {
+            const serahTerimaStatusSelect = document.getElementById('serahTerimaStatus');
+            const serahTerimaUserInput = document.getElementById('serahTerimaUser');
+            const perusahaanTujuanGroup = document.getElementById('perusahaanTujuanGroup');
+            const serahTerimaPerusahaanTujuanSelect = document.getElementById('serahTerimaPerusahaanTujuan');
 
-            // === FITUR DASHBOARD: Auto Submit Search Bar on Enter ===
-            const searchBarInput = document.querySelector('.search-bar[name="search_no_asset"]');
-              if (mainSearchInput) {
-                mainSearchInput.addEventListener('keypress', function(event) {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        // const filterForm = document.getElementById('filterForm'); // filterFormForSearch sudah ada
-                        if (filterFormForSearch) {
-                            filterFormForSearch.submit();
-                        }
-                    }
-                });
-            }
-
-            // === MODAL DETAIL ASET: Event Listeners untuk menutup modal ===
-            if (closeDetailModalButtonElement) { // Menggunakan variabel dengan _element
-                closeDetailModalButtonElement.addEventListener('click', () => {
-                    if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
-                        detailModalOverlayElement.style.display = 'none';
-                    }
-                });
-            }
-
-            if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
-                detailModalOverlayElement.addEventListener('click', function(event) {
-                    if (event.target === detailModalOverlayElement) { // Menggunakan variabel dengan _element
-                        if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
-                            detailModalOverlayElement.style.display = 'none';
-                        }
-                    }
-                });
-            }
-
-            // == SIDEBAR LOGIC
-            function setActiveSidebarLink() {
-                const currentFullUrl = window.location.href.split('?')[0].split('#')[0];
-                const currentPathname = new URL(currentFullUrl).pathname;
-
-                const sidebarNavItems = document.querySelectorAll('.sidebar .sidebar-list-item');
-                let bestMatchItem = null;
-                let highestSpecificity = -1; // -1: no match, 0: startsWith, 1: exact match
-
-                // Fungsi untuk normalisasi path (hapus trailing slash kecuali root)
-                const normalizePath = (path) => (path.length > 1 && path.endsWith('/')) ? path.slice(0, -1) : path;
-                
-                const normalizedCurrentPath = normalizePath(currentPathname);
-
-                sidebarNavItems.forEach(item => {
-                    item.classList.remove('active'); // Hapus 'active' dari semua item dulu
-                    const link = item.querySelector('a');
-
-                    if (link && link.href) {
-                        const linkFullUrl = link.href.split('?')[0].split('#')[0];
-                        const linkPathname = new URL(linkFullUrl).pathname;
-                        const normalizedLinkPath = normalizePath(linkPathname);
-
-                        // console.log(`Comparing: Current='${normalizedCurrentPath}' with Link='${normalizedLinkPath}' (Full Href: ${link.href})`);
-
-                        // Cek Exact Match
-                        if (normalizedLinkPath === normalizedCurrentPath) {
-                            // Jika ini exact match, dan lebih baik dari match sebelumnya, atau match pertama
-                            if (highestSpecificity < 1) {
-                                highestSpecificity = 1; // Exact match
-                                bestMatchItem = item;
-                                // console.log(`   -> Exact match found: ${normalizedLinkPath}`);
-                            }
-                            // Jika ada exact match lain yang sama, kita tidak perlu mengubah bestMatchItem
-                            // kecuali jika kita ingin logika tambahan (misalnya, pilih yang pertama di DOM)
-                            // Untuk sekarang, exact match pertama (atau yang paling spesifik jika ada beberapa) akan menang.
-                        }
-                        // Cek StartsWith (hanya jika belum ada exact match yang lebih baik)
-                        else if (highestSpecificity < 1 && normalizedCurrentPath.startsWith(normalizedLinkPath)) {
-                             // Hindari kasus di mana linkPath adalah "/" dan currentPath adalah "/sesuatu"
-                             // Ini akan membuat link "/" aktif untuk semua halaman jika tidak ditangani.
-                             // Hanya aktifkan link "/" jika currentPath juga "/" (sudah ditangani oleh exact match)
-                             // atau jika tidak ada kandidat startsWith yang lebih baik.
-                            if (normalizedLinkPath === "/" && normalizedCurrentPath !== "/") {
-                                // Jangan set sebagai best match jika link adalah root dan current path bukan root
-                            } else {
-                                // Jika ini startsWith match, dan lebih baik dari startsWith sebelumnya (lebih panjang/spesifik)
-                                // atau match startsWith pertama
-                                if (highestSpecificity < 0 || (highestSpecificity === 0 && normalizedLinkPath.length > new URL(bestMatchItem.querySelector('a').href).pathname.length) ) {
-                                    highestSpecificity = 0; // StartsWith match
-                                    bestMatchItem = item;
-                                    // console.log(`   -> StartsWith match candidate: ${normalizedLinkPath} (length: ${normalizedLinkPath.length})`);
-                                }
-                            }
-                        }
-                    }
-                });
-
-                if (bestMatchItem) {
-                    // console.log(`Final best match, adding 'active': ${new URL(bestMatchItem.querySelector('a').href).pathname}`);
-                    bestMatchItem.classList.add('active');
-                } else {
-                     // Fallback jika tidak ada match sama sekali, coba aktifkan dashboard jika URL saat ini adalah root dari dashboard.
-                     // Ini berguna jika route('dashboard.index') adalah "/" dan kita berada di "/"
-                    const dashboardLinkEl = document.querySelector('.sidebar-list-item a[href="{{ route('dashboard.index') }}"]');
-                    if (dashboardLinkEl) {
-                        const dashboardLinkFullUrl = dashboardLinkEl.href.split('?')[0].split('#')[0];
-                        const dashboardPathname = new URL(dashboardLinkFullUrl).pathname;
-                        if (normalizePath(currentPathname) === normalizePath(dashboardPathname)) {
-                            // console.log(`Fallback: Activating dashboard link via fallback.`);
-                            dashboardLinkEl.parentElement.classList.add('active');
-                        }
-                    }
-                }
-            }
-            setActiveSidebarLink();
-
-            // === MODAL HISTORY USER: Variabel dan Event Listeners ===
-            const userHistoryModalElement = document.getElementById('userHistoryModal');
-            const closeUserHistoryModalButtonElement = document.getElementById('closeUserHistoryModalButton');
-            
-            const serahTerimaAsetModalElement = document.getElementById('serahTerimaAsetModal');
-            const closeSerahTerimaAsetModalButtonElement = document.getElementById('closeSerahTerimaAsetModalButton');
-            const cancelSerahTerimaAsetModalBtnElement = document.getElementById('cancelSerahTerimaAsetModalBtn');
-            const serahTerimaAsetFormElement = document.getElementById('serahTerimaAsetForm');
-            const submitSerahTerimaAsetBtnElement = document.getElementById('submitSerahTerimaAsetBtn');
-
-            if (closeUserHistoryModalButtonElement && userHistoryModalElement) {
-                closeUserHistoryModalButtonElement.addEventListener('click', () => {
-                    userHistoryModalElement.style.display = 'none';
-                });
-            }
-
-            if (userHistoryModalElement) {
-                userHistoryModalElement.addEventListener('click', function(event) {
-                    if (event.target === userHistoryModalElement) {
-                        userHistoryModalElement.style.display = 'none';
-                    }
-                });
-            }
-            
-            // Tambahkan listener untuk tombol Escape pada modal history user
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && userHistoryModalElement && userHistoryModalElement.style.display === 'flex') {
-                    userHistoryModalElement.style.display = 'none';
-                }
-            });
-
-
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && detailModalOverlayElement && detailModalOverlayElement.style.display === 'flex') { // Menggunakan variabel dengan _element
-                    if (detailModalOverlayElement) { // Menggunakan variabel dengan _element
-                        detailModalOverlayElement.style.display = 'none';
-                    }
-                }
-            }); // Kurung kurawal penutup event keydown ada di sini
-
-            if (closeSerahTerimaAsetModalButtonElement && serahTerimaAsetModalElement) {
-                closeSerahTerimaAsetModalButtonElement.addEventListener('click', () => {
-                    serahTerimaAsetModalElement.style.display = 'none';
-                });
-            }
-
-            if (cancelSerahTerimaAsetModalBtnElement && serahTerimaAsetModalElement) {
-                cancelSerahTerimaAsetModalBtnElement.addEventListener('click', () => {
-                    serahTerimaAsetModalElement.style.display = 'none';
-                });
-            }
-
-            if (serahTerimaAsetModalElement) {
-                serahTerimaAsetModalElement.addEventListener('click', function(event) {
-                    if (event.target === serahTerimaAsetModalElement) {
-                        serahTerimaAsetModalElement.style.display = 'none';
-                    }
-                });
-                // Listener untuk tombol Escape pada modal serah terima
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape' && serahTerimaAsetModalElement && serahTerimaAsetModalElement.style.display === 'flex') {
-                        serahTerimaAsetModalElement.style.display = 'none';
-                    }
-                });
-            }
-
-            // === MODAL SERAH TERIMA ASET: Event Listeners & AJAX ===
-            if (serahTerimaAsetFormElement && submitSerahTerimaAsetBtnElement) {
-                serahTerimaAsetFormElement.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const formData = new FormData(serahTerimaAsetFormElement);
-
-                    console.log("--- Data yang Akan Dikirim (Sebelum POST ke /aset/serah-terima/store) ---");
-                    const dataToLog = {};
-                    for (const [key, value] of formData.entries()) {
-                        dataToLog[key] = value;
-                    }
-                    console.table(dataToLog); // Menampilkan sebagai tabel di console, lebih rapi!
-                    console.log("--------------------------------------------------------------------");
-                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-                    const originalButtonText = submitSerahTerimaAsetBtnElement.textContent;
-                    submitSerahTerimaAsetBtnElement.textContent = 'Menyimpan...';
-                    submitSerahTerimaAsetBtnElement.disabled = true;
-
-                    document.querySelectorAll('#serahTerimaAsetForm .invalid-feedback').forEach(el => el.textContent = '');
-                    document.querySelectorAll('#serahTerimaAsetForm .form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-                    fetch("{{ route('aset.serahterima.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': formData.get('_token'),
-                            'Accept': 'application/json',
-                        },
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errData => { throw { status: response.status, body: errData }; })
-                                            .catch(() => { throw new Error(`HTTP error! status: ${response.status}`); });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert(data.message || 'Data serah terima berhasil disimpan.');
-                            if (serahTerimaAsetModalElement) { // Pastikan elemen modal ada
-                                serahTerimaAsetModalElement.style.display = 'none';
-                            }
-                            if (currentAssetIdForSerahTerima) {
-                                // Panggil openDetailModal DI LUAR DOMContentLoaded agar bisa diakses
-                                window.openDetailModal(currentAssetIdForSerahTerima);
-                            } else {
-                                window.location.reload();
-                            }
-                        } else if (data.errors) {
-                            // Tampilkan validation errors (fungsi displayValidationErrors Anda harus bisa diakses atau didefinisikan di sini)
-                            // Contoh sederhana:
-                            for (const field in data.errors) {
-                                const errorElement = document.getElementById(`${field}_serah_error`);
-                                const inputElement = document.getElementById(`serahTerima${field.charAt(0).toUpperCase() + field.slice(1)}`);
-                                if (errorElement) errorElement.textContent = data.errors[field][0];
-                                if (inputElement) inputElement.classList.add('is-invalid');
-                                // ... (penanganan error validasi lainnya)
-                            }
-                        } else {
-                            alert(data.message || 'Terjadi kesalahan saat menyimpan data.');
-                        }
-                    })
-                    .catch(errorInfo => {
-                        console.error('Error submitting serah terima form:', errorInfo);
-                        alert('Terjadi kesalahan koneksi atau server. Silakan coba lagi.');
-                    })
-                    .finally(() => {
-                        submitSerahTerimaAsetBtnElement.textContent = originalButtonText;
-                        submitSerahTerimaAsetBtnElement.disabled = false;
-                    });
-                });
-            }
-            // AKHIR BLOK MODAL SERAH TERIMA ASET
-
-        }); // <<<<---- INI ADALAH AKHIR DARI BLOK document.addEventListener('DOMContentLoaded')
-
-        // ==============================================================================
-        // FUNGSI-FUNGSI DI BAWAH INI HARUS BERADA DI LUAR DOMContentLoaded
-        // AGAR DAPAT DIAKSES SECARA GLOBAL OLEH atribut onclick="" DI HTML
-        // ==============================================================================
-
-        function openDetailModal(barangId) {
-            const detailModalOverlay = document.getElementById('deviceInfoModal'); // Variabel ini lokal untuk fungsi ini
-            if (!detailModalOverlay) {
-                console.error('Modal detail element (deviceInfoModal) not found!');
+            // Pastikan elemen ada sebelum dimanipulasi (penting jika fungsi dipanggil sebelum modal siap)
+            if (!serahTerimaStatusSelect || !serahTerimaUserInput || !perusahaanTujuanGroup || !serahTerimaPerusahaanTujuanSelect) {
                 return;
             }
 
-            // Semua const untuk elemen modal HARUS di dalam fungsi ini
+            const selectedStatus = serahTerimaStatusSelect.value;
+
+            serahTerimaUserInput.placeholder = 'Masukkan nama pengguna';
+            serahTerimaUserInput.value = '';
+            serahTerimaUserInput.readOnly = false;
+            perusahaanTujuanGroup.style.display = 'none';
+            serahTerimaPerusahaanTujuanSelect.value = '';
+            serahTerimaPerusahaanTujuanSelect.removeAttribute('required');
+
+            // Bersihkan error messages terkait
+            const usernameErrorEl = document.getElementById('username_serah_error');
+            const perusahaanTujuanErrorEl = document.getElementById('perusahaan_tujuan_serah_error');
+            if (usernameErrorEl) usernameErrorEl.textContent = '';
+            if (perusahaanTujuanErrorEl) perusahaanTujuanErrorEl.textContent = '';
+            serahTerimaUserInput.classList.remove('is-invalid');
+            serahTerimaPerusahaanTujuanSelect.classList.remove('is-invalid');
+
+            const previousUser = (lastKnownUserFromDetail && lastKnownUserFromDetail !== '-' && lastKnownUserFromDetail.trim() !== '') ? lastKnownUserFromDetail : 'User Sebelumnya Tidak Diketahui';
+
+            if (selectedStatus === 'digunakan') {
+                // Input pengguna biasa, tidak ada perubahan dari reset di atas.
+            } else if (selectedStatus === 'tersedia') {
+                serahTerimaUserInput.value = 'Team IT';
+                serahTerimaUserInput.readOnly = true;
+            } else if (selectedStatus === 'diperbaiki') {
+                serahTerimaUserInput.value = `Team IT - ${previousUser}`;
+            } else if (selectedStatus === 'non aktif') {
+                serahTerimaUserInput.value = 'Team IT';
+                serahTerimaUserInput.readOnly = true;
+            } else if (selectedStatus === 'dipindah') {
+                perusahaanTujuanGroup.style.display = 'block';
+                serahTerimaPerusahaanTujuanSelect.setAttribute('required', 'required');
+            }
+        }
+
+        function openDetailModal(barangId) {
+            const detailModalOverlay = document.getElementById('deviceInfoModal');
+            if (!detailModalOverlay) return;
+
             const modalDeviceName = document.getElementById('modalDeviceName');
             const modalDeviceType = document.getElementById('modalDeviceType');
             const modalNo = document.getElementById('modalNo');
@@ -2476,19 +2119,15 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const modalStatus = document.getElementById('modalStatus');
             const modalKeterangan = document.getElementById('modalKeterangan');
             const deviceImage = document.getElementById('modalDeviceImage');
-
+            const modalPerusahaanTeks = document.getElementById('modalPerusahaan');
             const btnUpdateAsetModalDetail = detailModalOverlay.querySelector('.btn-action.btn-update');
 
-            // Validasi elemen modal
-            if (!modalDeviceName || !modalDeviceType || !modalNo || !modalPerusahaan || !modalNoAsset ||
-                !modalTglPengadaan || !modalSerialNumber || !modalUser || !modalTglPenyerahan ||
-                !modalTglPengembalian || !modalStatus || !modalKeterangan || !deviceImage) {
-                console.error('One or more modal content elements are missing. Check their IDs.');
-                alert('Kesalahan konfigurasi: Elemen modal tidak lengkap.');
+            if (!modalDeviceName || !btnUpdateAsetModalDetail /* ...tambahkan cek null untuk elemen lain jika perlu...*/) {
+                console.error('Beberapa elemen modal detail tidak ditemukan.');
                 return;
             }
 
-            // Reset dan tampilkan loading
+            // Reset UI modal detail
             modalDeviceName.textContent = 'Memuat...';
             modalDeviceType.textContent = '_';
             modalNo.textContent = '_';
@@ -2502,22 +2141,11 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             modalStatus.innerHTML = '_';
             modalKeterangan.textContent = '_';
             deviceImage.className = 'device-image fas fa-spinner fa-spin';
-            
-            currentAssetIdForSerahTerima = barangId; 
 
-            // Fetch data (semua ini juga harus di dalam fungsi)
+            currentAssetIdForSerahTerima = barangId;
+
             fetch(`/barang/detail/${barangId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        // Coba dapatkan detail error dari body jika response JSON
-                        return response.json().then(errData => {
-                            throw { status: response.status, body: errData, message: `HTTP error! status: ${response.status}` };
-                        }).catch(() => { // Jika body bukan JSON atau parsing gagal
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        });
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.success && data.barang) {
                         const barang = data.barang;
@@ -2530,50 +2158,49 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         modalNoAsset.textContent = barang.no_asset || 'N/A';
                         modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
                         modalSerialNumber.textContent = barang.serial_number || 'N/A';
+                        modalPerusahaanTeks.textContent = barang.perusahaan || 'N/A';
 
                         if (track) {
-                            modalUser.textContent = `${track.username || 'N/A'}`;
+                            modalUser.textContent = track.username || 'N/A';
+                            lastKnownUserFromDetail = track.username || '-';
                             modalTglPenyerahan.textContent = formatDate(track.tanggal_awal);
                             modalTglPengembalian.textContent = track.tanggal_ahir ? formatDate(track.tanggal_ahir) : '-';
+                            modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${track.status || 'N/A'}</span>`;
+                            modalKeterangan.textContent = track.keterangan || 'Tidak ada keterangan.';
                         } else {
                             modalUser.textContent = '-';
                             modalTglPenyerahan.textContent = '-';
                             modalTglPengembalian.textContent = '-';
+                            lastKnownUserFromDetail = '-';
+                            modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${barang.status || 'N/A'}</span>`; // Fallback ke status barang
+                            modalKeterangan.textContent = 'Belum ada riwayat serah terima.';
                         }
 
-                        modalStatus.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${track.status || 'N/A'}</span>`;
-                        modalKeterangan.textContent = `${track.keterangan || 'Tidak ada keterangan.'}` ;
-                        
                         const triggerHistoryButton = document.getElementById('triggerUserHistoryModalButton');
                         if (triggerHistoryButton && barang.serial_number) {
-                            // Penting: Hapus event listener lama jika ada untuk mencegah penumpukan
                             const newTriggerHistoryButton = triggerHistoryButton.cloneNode(true);
                             triggerHistoryButton.parentNode.replaceChild(newTriggerHistoryButton, triggerHistoryButton);
                             const deviceFullName = `${barang.merek || ''} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
-                            
-                            newTriggerHistoryButton.addEventListener('click', () => {
-                                openUserHistoryModal(barang.serial_number, deviceFullName   );
-                            });
-                        if (btnUpdateAsetModalDetail) {
-                            btnUpdateAsetModalDetail.dataset.assetId = barang.id; // Simpan ID barang
-                            btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
-                            btnUpdateAsetModalDetail.dataset.deviceName = `${barang.merek || 'Nama Tidak Ada'} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
-                            
-                            // Hapus event listener onclick yang lama (jika ada, dari atribut HTML)
-                            // dan ganti dengan event listener JS agar lebih manageable
-                            const newBtnUpdate = btnUpdateAsetModalDetail.cloneNode(true);
-                            btnUpdateAsetModalDetail.parentNode.replaceChild(newBtnUpdate, btnUpdateAsetModalDetail);
-                            
-                            newBtnUpdate.removeAttribute('onclick'); // Hapus atribut onclick inline
-                            newBtnUpdate.addEventListener('click', handleOpenSerahTerimaModal);
-                        }
-                        } else if (triggerHistoryButton) {
-                            // Jika tidak ada serial number, mungkin nonaktifkan tombol atau beri pesan
-                            triggerHistoryButton.disabled = true; 
-                            triggerHistoryButton.title = "Serial number tidak tersedia untuk histori";
+                            const currentCompany = barang.perusahaan || 'N/A';
+                            newTriggerHistoryButton.addEventListener('click', () => openUserHistoryModal(barang.serial_number, deviceFullName, currentCompany));
                         }
 
-                        let iconClass = 'fas fa-desktop';
+                        // Setup tombol "Update Aset" di modal detail untuk memanggil handleOpenSerahTerimaModal
+                        btnUpdateAsetModalDetail.dataset.assetId = barang.id;
+                        btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
+                        // Pastikan nama perangkat tidak mengandung karakter yang bisa merusak HTML jika tidak di-escape
+                        const deviceNameForModal = `${barang.merek || 'Aset'} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
+                        btnUpdateAsetModalDetail.dataset.assetId = barang.id;
+                        btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
+                        btnUpdateAsetModalDetail.dataset.deviceName = deviceNameForModal.replace(/"/g, '"');
+
+                        const newBtnUpdate = btnUpdateAsetModalDetail.cloneNode(true); // Reclone untuk listener baru
+                        btnUpdateAsetModalDetail.parentNode.replaceChild(newBtnUpdate, btnUpdateAsetModalDetail);
+                        newBtnUpdate.removeAttribute('onclick');
+                        newBtnUpdate.addEventListener('click', handleOpenSerahTerimaModal);
+
+
+                        let iconClass = 'fas fa-desktop'; // default
                         if (barang.jenis_barang === 'Laptop') iconClass = 'fas fa-laptop';
                         else if (barang.jenis_barang === 'HP') iconClass = 'fas fa-mobile-alt';
                         else if (barang.jenis_barang === 'Printer') iconClass = 'fas fa-print';
@@ -2583,27 +2210,21 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
 
                         detailModalOverlay.style.display = 'flex';
                     } else {
-                        const errorMessage = data.error || 'Data tidak ditemukan atau format respons salah.';
-                        alert(errorMessage);
-                        console.error('Server response error:', errorMessage, data);
-                        modalDeviceName.textContent = 'Error'; // Atau biarkan Memuat...
+                        alert(data.error || 'Data tidak ditemukan.');
+                        // Reset UI ke keadaan error jika perlu
+                        modalDeviceName.textContent = 'Error';
                         deviceImage.className = 'device-image fas fa-exclamation-triangle';
+                        lastKnownUserFromDetail = '-';
                     }
                 })
-                
                 .catch(error => {
                     console.error('Error fetching detail barang:', error);
-                    let displayError = 'Gagal mengambil detail barang. Cek konsol (F12).';
-                    if (error.body && error.body.error) { // Jika error dari then(response.json())
-                        displayError = error.body.error;
-                    } else if (error.message) { // Jika error dari new Error()
-                        displayError = error.message;
-                    }
-                    alert(displayError);
-                    modalDeviceName.textContent = 'Gagal memuat.'; // Atau biarkan Memuat...
+                    alert('Gagal mengambil detail barang.');
+                    modalDeviceName.textContent = 'Error';
                     deviceImage.className = 'device-image fas fa-exclamation-triangle';
+                    lastKnownUserFromDetail = '-';
                 });
-        } // <<<<---- AKHIR DARI FUNGSI openDetailModal
+        }
 
         function handleOpenSerahTerimaModal(event) {
             const assetId = event.currentTarget.dataset.assetId;
@@ -2611,15 +2232,15 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const deviceName = event.currentTarget.dataset.deviceName;
 
             const serahModal = document.getElementById('serahTerimaAsetModal');
-             const serahForm = document.getElementById('serahTerimaAsetForm');
-            if (!serahModal) {
-                console.error("Modal serah terima (#serahTerimaAsetModal) tidak ditemukan.");
+            const serahForm = document.getElementById('serahTerimaAsetForm');
+
+            if (!serahModal || !serahForm) {
+                console.error("Modal serah terima atau formnya tidak ditemukan.");
                 return;
             }
 
-            serahForm.reset();
- 
-            // Isi data ke modal serah terima (tetap sama)
+            serahForm.reset(); // Reset form, termasuk select status
+
             document.getElementById('serahTerimaAssetId').value = assetId;
             document.getElementById('serahTerimaSerialNumber').value = serialNumber;
             document.getElementById('serahTerimaInfoNamaAset').textContent = deviceName;
@@ -2628,42 +2249,54 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const today = new Date().toISOString().slice(0, 10);
             document.getElementById('serahTerimaTanggalAwal').value = today;
 
-            document.querySelectorAll('#serahTerimaAsetForm .invalid-feedback').forEach(el => el.textContent = '');
-            document.querySelectorAll('#serahTerimaAsetForm .form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            // PENTING: Panggil handleSerahTerimaStatusChange SETELAH form direset
+            // Ini akan mengatur UI berdasarkan nilai default dari select status (yang akan kosong)
+            handleSerahTerimaStatusChange();
 
-            serahModal.style.display = 'flex'; // Hanya tampilkan modal serah terima
+            // Bersihkan pesan error validasi sebelumnya jika ada
+            serahForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            serahForm.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            serahModal.style.display = 'flex';
         }
 
-        function openUserHistoryModal(serialNumber,deviceName) {
-        const historyModal = document.getElementById('userHistoryModal');
-        const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
-        const historyModalDeviceNameEl = document.getElementById('historyModalDeviceName');
-        const historyTableBodyEl = document.getElementById('userHistoryTableBody'); // Target untuk baris data
-        const historyTableHeaderEl = document.getElementById('userHistoryTableHeader'); // Target untuk header tabel
+        function openUserHistoryModal(serialNumber, deviceName, company) {
+            const historyModal = document.getElementById('userHistoryModal');
+            const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
+            const historyModalDeviceNameEl = document.getElementById('historyModalDeviceName');
+            const historyModalCompanyEl = document.getElementById('historyModalCompany');
+            const historyTableBodyEl = document.getElementById('userHistoryTableBody');
+            const historyTableHeaderEl = document.getElementById('userHistoryTableHeader');
 
-        if (!historyModal || !historyModalSerialNumberEl || !historyModalDeviceNameEl || !historyTableBodyEl || !historyTableHeaderEl) {
-            console.error("Satu atau lebih elemen modal history tidak ditemukan. Periksa ID.");
-            alert("Kesalahan: Komponen modal history tidak lengkap.");
-            return;
-        }
+            if (!historyModal || !historyModalSerialNumberEl || !historyModalDeviceNameEl || !historyModalCompanyEl || !historyTableBodyEl || !historyTableHeaderEl) {
+                console.error("Satu atau lebih elemen modal history tidak ditemukan. Periksa ID.");
+                alert("Kesalahan: Komponen modal history tidak lengkap.");
+                return; // Keluar dari fungsi jika elemen tidak ditemukan
+            }
+            // Tidak ada kurung kurawal pembuka baru di sini
 
-        historyModalDeviceNameEl.textContent = deviceName || 'Tidak Diketahui';
-        historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
-        historyTableBodyEl.innerHTML = '<p style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</p>'; // Pesan loading
-        historyTableHeaderEl.innerHTML = '';
+            historyModalDeviceNameEl.textContent = deviceName || 'Tidak Diketahui';
+            historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
+            historyModalCompanyEl.textContent = company || 'N/A'; // Pastikan ini ada
+            
+            historyTableBodyEl.innerHTML = '<tr><td colspan="5" style="padding:15px; text-align:center;">Memuat riwayat... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+            historyTableHeaderEl.innerHTML = ''; 
 
-        historyModal.style.display = 'flex';
+            historyModal.style.display = 'flex';
 
-        // Panggil endpoint baru untuk mendapatkan data history (buat endpoint ini di controller nanti)
-        fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                }
-                return response.json();
-            })
-            .then(data => {
-                    // Set header tabel (dalam <tr> di dalam <thead>)
+            fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
+                .then(response => { // Tambahkan penanganan error fetch yang lebih baik
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            console.error('Server returned an error (history):', response.status, text);
+                            let errorData = { message: `HTTP error ${response.status}.` };
+                            try { errorData = JSON.parse(text); } catch (e) { /* abaikan jika bukan JSON */ }
+                            throw errorData;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     historyTableHeaderEl.innerHTML = `
                         <tr>
                             <th class="cell-history-user">Pengguna</th>
@@ -2673,69 +2306,465 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                             <th class="cell-history-keterangan">Keterangan</th>
                         </tr>
                     `;
-
-                    if (data.success && data.history && data.history.length > 0) {
+                    if (data && data.success && Array.isArray(data.history) && data.history.length > 0) {
                         let tableRowsHTML = '';
                         data.history.forEach(item => {
+                            const username = (item && item.username) ? item.username : '-';
+                            const tglAwal = (item && item.tanggal_awal) ? formatDate(item.tanggal_awal) : '-';
+                            const tglAkhir = (item && item.tanggal_ahir) ? formatDate(item.tanggal_ahir) : '-';
+                            const status = (item && item.status) ? item.status : '-';
+                            const keterangan = (item && item.keterangan) ? item.keterangan : '-';
                             tableRowsHTML += `
                                 <tr>
-                                    <td class="cell-history-user" title="${item.username || '-'}">${item.username || '-'}</td>
-                                    <td class="cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</td>
-                                    <td class="cell-history-tgl-akhir">${item.tanggal_ahir ? formatDate(item.tanggal_ahir) : '-'}</td>
-                                    <td class="cell-history-status" title="${item.status || '-'}">${item.status || '-'}</td>
-                                    <td class="cell-history-keterangan" title="${item.keterangan || '-'}">${item.keterangan || '-'}</td>
+                                    <td class="cell-history-user" title="${username}">${username}</td>
+                                    <td class="cell-history-tgl-awal">${tglAwal}</td>
+                                    <td class="cell-history-tgl-akhir">${tglAkhir}</td>
+                                    <td class="cell-history-status" title="${status}">${status}</td>
+                                    <td class="cell-history-keterangan" title="${keterangan}">${keterangan}</td>
                                 </tr>`;
                         });
                         historyTableBodyEl.innerHTML = tableRowsHTML;
-                    } else if (data.history && data.history.length === 0) {
-                        historyTableBodyEl.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Tidak ada riwayat pengguna untuk serial number ini.</td></tr>';
                     } else {
-                        historyTableBodyEl.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: red;">Gagal memuat riwayat: ${data.error || 'Format data tidak sesuai.'}</td></tr>`;
+                        historyTableBodyEl.innerHTML = '<tr><td colspan="5" style="padding:15px; text-align:center;">Tidak ada riwayat pengguna.</td></tr>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching user history:', error);
-                    let errorMessage = '<tr><td colspan="5" style="padding: 15px; text-align: center; color: red;">Terjadi kesalahan saat mengambil data riwayat. Cek konsol (F12).';
-                    if (error && error.error) {
-                        errorMessage += `<br><small>${error.error}</small>`;
-                    }
-                    errorMessage += '</td></tr>';
-                    historyTableBodyEl.innerHTML = errorMessage;
+                    console.error('Error fetching atau memproses user history:', error);
+                    let displayError = 'Gagal memuat riwayat.';
+                    if (error && typeof error === 'object' && error.message) displayError = error.message;
+                    else if (typeof error === 'string') displayError = error;
+                    
+                    historyTableBodyEl.innerHTML = `<tr><td colspan="5" style="padding:15px; text-align:center; color:red;">${displayError}</td></tr>`;
+                    historyTableHeaderEl.innerHTML = `
+                        <tr>
+                            <th class="cell-history-user">Pengguna</th>
+                            <th class="cell-history-tgl-awal">Penyerahan</th>
+                            <th class="cell-history-tgl-akhir">Pengembalian</th>
+                            <th class="cell-history-status">Status</th>
+                            <th class="cell-history-keterangan">Keterangan</th>
+                        </tr>
+                    `;
                 });
-        }
-
-        function resetFilters() {
-            const filterForm = document.getElementById('filterForm');
-            if (filterForm) {
-                const filterPerusahaanSelect = document.getElementById('filter_perusahaan');
-                const filterJenisBarangSelect = document.getElementById('filter_jenis_barang');
-                const searchBar = filterForm.querySelector('.search-bar[name="search_no_asset"]');
-
-                if(filterPerusahaanSelect) filterPerusahaanSelect.value = '';
-                if(filterJenisBarangSelect) filterJenisBarangSelect.value = '';
-                if(searchBar) searchBar.value = '';
-
-                filterForm.submit();
             }
-        }
 
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) {
-                    console.warn("Invalid date string received for formatting:", dateString);
-                    return dateString;
+        // ==============================================================================
+        // DOMContentLoaded: INSIALISASI EVENT LISTENERS DAN FUNGSI YANG BERGANTUNG DOM
+        // ==============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const productTableRowsContainer = document.getElementById('productTableRowsContainer');
+            const paginationContainer = document.getElementById('realtimePaginationContainer');
+            const filterPerusahaanSelect = document.getElementById('filter_perusahaan');
+            const filterJenisBarangSelect = document.getElementById('filter_jenis_barang');
+
+            const addAssetModal = document.getElementById('addAssetModal');
+            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton');
+            const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
+            const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
+            const addAssetForm = document.getElementById('addAssetForm');
+            const submitAddAssetBtn = document.getElementById('submitAddAssetBtn');
+            const resetFilterInMenuBtn = document.getElementById('resetFilterInMenuBtn');
+
+            const detailModalOverlayElement = document.getElementById('deviceInfoModal');
+            const closeDetailModalButtonElement = document.getElementById('closeDetailModalButton');
+
+            const mainSearchInput = document.getElementById('mainSearchInput');
+            const clearMainSearchBtn = document.getElementById('clearMainSearchBtn');
+            const filterToggleButton = document.querySelector(".jsFilter");
+            const filterMenu = document.querySelector(".filter-button-wrapper .filter-menu");
+
+            console.log('filterToggleButton:', filterToggleButton);
+            console.log('filterMenu:', filterMenu);
+
+            // Fungsi helper modal, bisa tetap di sini jika hanya dipakai di dalam DOMContentLoaded
+            function openModalElement(modalElement, formToReset = null) {
+                if (modalElement) {
+                    modalElement.classList.add('show');
+                    if (formToReset) {
+                        formToReset.reset();
+                    }
+                    if (formToReset) {
+                        formToReset.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                        formToReset.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    }
                 }
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                return date.toLocaleDateString('id-ID', options);
-            } catch (e) {
-                console.error("Error formatting date:", dateString, e);
-                return dateString;
             }
-        }
+
+            function closeModalElement(modalElement) {
+                if (modalElement) {
+                    modalElement.classList.remove('show');
+                }
+            }
+            
+            function displayValidationErrorsOnForm(errors, formElement) {
+                if (!formElement) return;
+                // Clear previous errors on this form
+                formElement.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                formElement.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                for (const field in errors) {
+                    let errorElement = formElement.querySelector(`#${field}_error`); // Default untuk Add Asset
+                    if (formElement.id === 'serahTerimaAsetForm' && !errorElement) { // Fallback untuk Serah Terima
+                        errorElement = formElement.querySelector(`#${field}_serah_error`);
+                    }
+                    
+                    const inputElement = formElement.querySelector(`[name="${field}"]`);
+                    if (errorElement) {
+                        errorElement.textContent = errors[field][0];
+                    }
+                    if (inputElement) {
+                        inputElement.classList.add('is-invalid');
+                    }
+                }
+            }
+
+            function performRealtimeSearch(page = 1) {
+                if (!productTableRowsContainer || !paginationContainer) return;
+                const keyword = mainSearchInput ? mainSearchInput.value : '';
+                const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
+                const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
+
+                productTableRowsContainer.innerHTML = '<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat data... <i class="fas fa-spinner fa-spin"></i></div></div>';
+                paginationContainer.innerHTML = '';
+
+                const params = new URLSearchParams({
+                    search_no_asset: keyword,
+                    filter_perusahaan: perusahaan,
+                    filter_jenis_barang: jenisBarang,
+                    page: page
+                });
+
+                fetch(`{{ route('dashboard.search.realtime') }}?${params.toString()}`, {
+                    method: 'GET',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(responseData => {
+                    let tableRowsHtml = '';
+                    if (responseData.data && responseData.data.length > 0) {
+                        let currentItemNumber = responseData.first_item || 1;
+                        responseData.data.forEach(barang => {
+                            let tglPengadaanFormatted = formatDate(barang.tgl_pengadaan);
+                            tableRowsHtml += `
+                                <div class="products-row">
+                                    <div class="product-cell cell-no">${currentItemNumber++}</div>
+                                    <div class="product-cell cell-perusahaan" title="${barang.perusahaan || ''}">${barang.perusahaan || ''}</div>
+                                    <div class="product-cell cell-jenis-barang" title="${barang.jenis_barang || ''}">${barang.jenis_barang || ''}</div>
+                                    <div class="product-cell cell-no-asset" title="${barang.no_asset || ''}">${barang.no_asset || ''}</div>
+                                    <div class="product-cell cell-merek" title="${barang.merek || ''}">${barang.merek || ''}</div>
+                                    <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
+                                    <div class="product-cell cell-serial-number" title="${barang.serial_number || ''}">${barang.serial_number || ''}</div>
+                                    <div class="product-cell cell-aksi">
+                                        <button class="action-btn-table detail-btn-table-js" onclick="openDetailModal(${barang.id})" title="Detail Aset">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Detail</span>
+                                        </button>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
+                    }
+                    productTableRowsContainer.innerHTML = tableRowsHtml;
+                    if (responseData.links) {
+                        paginationContainer.innerHTML = responseData.links;
+                        setupAjaxPagination();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error performing real-time search:', error);
+                    productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
+                });
+            }
+
+            function setupAjaxPagination() {
+                if (!paginationContainer) return;
+                paginationContainer.querySelectorAll('.pagination a').forEach(link => {
+                    const newLink = link.cloneNode(true);
+                    link.parentNode.replaceChild(newLink, link);
+                    newLink.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const url = new URL(this.href);
+                        const page = url.searchParams.get('page') || 1;
+                        performRealtimeSearch(page);
+                    });
+                });
+            }
+
+            function checkAndUpdateFilterStates() {
+                if (!filterPerusahaanSelect || !filterJenisBarangSelect || !resetFilterInMenuBtn) return;
+                const perusahaanAktif = filterPerusahaanSelect.value !== '';
+                const jenisBarangAktif = filterJenisBarangSelect.value !== '';
+                const isAnyFilterActive = perusahaanAktif || jenisBarangAktif;
+                resetFilterInMenuBtn.disabled = !isAnyFilterActive;
+            }
+
+            setupAjaxPagination();
+            checkAndUpdateFilterStates();
+
+            // Event Listeners untuk Search dan Filter
+            if (mainSearchInput) {
+                mainSearchInput.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => performRealtimeSearch(1), DEBOUNCE_DELAY);
+                });
+                mainSearchInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        clearTimeout(debounceTimer);
+                        performRealtimeSearch(1);
+                    }
+                });
+            }
+            if (clearMainSearchBtn && mainSearchInput) {
+                clearMainSearchBtn.addEventListener('click', () => {
+                    mainSearchInput.value = '';
+                    performRealtimeSearch(1);
+                });
+            }
+            if (filterPerusahaanSelect) {
+                filterPerusahaanSelect.addEventListener('change', () => {
+                    performRealtimeSearch(1);
+                    checkAndUpdateFilterStates(); // Panggil ini
+                });
+            }
+            if (filterJenisBarangSelect) {
+                filterJenisBarangSelect.addEventListener('change', () => {
+                    performRealtimeSearch(1);
+                    checkAndUpdateFilterStates(); // Panggil ini
+                });
+            }
+            if (resetFilterInMenuBtn) {
+                resetFilterInMenuBtn.addEventListener('click', () => {
+                    if (filterPerusahaanSelect) filterPerusahaanSelect.value = '';
+                    if (filterJenisBarangSelect) filterJenisBarangSelect.value = '';
+                    if (mainSearchInput) mainSearchInput.value = ''; // Tambahkan ini jika diinginkan
+
+                    performRealtimeSearch(1);
+                    checkAndUpdateFilterStates(); 
+
+                    if (filterMenu && filterMenu.classList.contains('active')) {
+                        filterMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Modal Tambah Aset
+            if (openAddAssetModalButton && addAssetModal) {
+                openAddAssetModalButton.addEventListener('click', () => openModalElement(addAssetModal, addAssetForm));
+            }
+            // ... (listener tombol close/cancel/overlay click untuk addAssetModal) ...
+            if (closeAddAssetModalBtn) closeAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
+            if (cancelAddAssetModalBtn) cancelAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
+            if (addAssetModal) window.addEventListener('click', (e) => { if (e.target === addAssetModal) closeModalElement(addAssetModal); });
 
 
+            if (addAssetForm && submitAddAssetBtn) {
+                addAssetForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(addAssetForm);
+                    // ... (AJAX submit untuk tambah aset) ...
+                    submitAddAssetBtn.textContent = 'Menyimpan...';
+                    submitAddAssetBtn.disabled = true;
+
+                    fetch("{{ route('barang.store') }}", {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': formData.get('_token'), 'Accept': 'application/json' },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success || (data.status && data.status === 201)) { // Cek kedua kondisi
+                            alert(data.message || data.success || 'Aset berhasil ditambahkan.');
+                            closeModalElement(addAssetModal);
+                            performRealtimeSearch(); // Refresh tabel
+                        } else if (data.errors) {
+                            displayValidationErrorsOnForm(data.errors, addAssetForm);
+                        } else {
+                            alert(data.error || data.message || 'Gagal menambahkan aset.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error add asset:", err);
+                        alert('Terjadi kesalahan. Cek konsol.');
+                         if (err.body && err.body.errors) { // Jika error dari response.json().then(errData => { throw { body: errData } })
+                            displayValidationErrorsOnForm(err.body.errors, addAssetForm);
+                        }
+                    })
+                    .finally(() => {
+                        submitAddAssetBtn.textContent = 'Simpan Aset';
+                        submitAddAssetBtn.disabled = false;
+                    });
+                });
+            }
+
+            // Modal Detail Aset (hanya menutup)
+            if (closeDetailModalButtonElement) closeDetailModalButtonElement.addEventListener('click', () => { if(detailModalOverlayElement) detailModalOverlayElement.style.display = 'none'; });
+            if (detailModalOverlayElement) {
+                detailModalOverlayElement.addEventListener('click', (e) => { if (e.target === detailModalOverlayElement) detailModalOverlayElement.style.display = 'none'; });
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && detailModalOverlayElement.style.display === 'flex') detailModalOverlayElement.style.display = 'none'; });
+            }
+
+
+            // Modal Serah Terima Aset
+            const serahTerimaAsetModalElement = document.getElementById('serahTerimaAsetModal');
+            const serahTerimaStatusSelect = document.getElementById('serahTerimaStatus');
+            const closeSerahTerimaBtn = document.getElementById('closeSerahTerimaAsetModalButton');
+            const cancelSerahTerimaBtn = document.getElementById('cancelSerahTerimaAsetModalBtn');
+            const serahTerimaForm = document.getElementById('serahTerimaAsetForm');
+            const submitSerahTerimaBtn = document.getElementById('submitSerahTerimaAsetBtn');
+
+            if (serahTerimaStatusSelect) {
+                serahTerimaStatusSelect.addEventListener('change', handleSerahTerimaStatusChange); // Panggil fungsi global
+            }
+            // ... (listener tombol close/cancel/overlay click untuk serahTerimaAsetModal) ...
+            if (closeSerahTerimaBtn) closeSerahTerimaBtn.addEventListener('click', () => { if(serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';});
+            if (cancelSerahTerimaBtn) cancelSerahTerimaBtn.addEventListener('click', () => { if(serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';});
+            if (serahTerimaAsetModalElement) {
+                 serahTerimaAsetModalElement.addEventListener('click', (e) => { if (e.target === serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none'; });
+                 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && serahTerimaAsetModalElement.style.display === 'flex') serahTerimaAsetModalElement.style.display = 'none'; });
+            }
+
+            if (serahTerimaForm && submitSerahTerimaBtn) {
+                serahTerimaForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(serahTerimaForm);
+                    // ... (AJAX submit untuk serah terima aset) ...
+                    submitSerahTerimaBtn.textContent = 'Menyimpan...';
+                    submitSerahTerimaBtn.disabled = true;
+
+                    fetch("{{ route('aset.serahterima.store') }}", {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': formData.get('_token'), 'Accept': 'application/json' },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message || 'Data serah terima berhasil disimpan.');
+                            if(serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
+                            // Cek apakah modal detail terbuka untuk aset yang sama
+                            if (detailModalOverlayElement && detailModalOverlayElement.style.display === 'flex' && currentAssetIdForSerahTerima == formData.get('asset_id')) {
+                                openDetailModal(currentAssetIdForSerahTerima); // Re-fetch dan buka lagi modal detail
+                            } else {
+                                performRealtimeSearch(); // Refresh tabel jika modal detail tidak terbuka atau beda aset
+                            }
+                        } else if (data.errors) {
+                            displayValidationErrorsOnForm(data.errors, serahTerimaForm);
+                        } else {
+                            alert(data.message || 'Gagal menyimpan data serah terima.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error serah terima:", err);
+                        alert('Terjadi kesalahan. Cek konsol.');
+                         if (err.body && err.body.errors) {
+                            displayValidationErrorsOnForm(err.body.errors, serahTerimaForm);
+                        }
+                    })
+                    .finally(() => {
+                        submitSerahTerimaBtn.textContent = 'Simpan Perubahan';
+                        submitSerahTerimaBtn.disabled = false;
+                    });
+                });
+            }
+
+            // Modal User History (hanya menutup)
+            const userHistoryModalElement = document.getElementById('userHistoryModal');
+            const closeUserHistoryBtn = document.getElementById('closeUserHistoryModalButton');
+            if (closeUserHistoryBtn) closeUserHistoryBtn.addEventListener('click', () => { if(userHistoryModalElement) userHistoryModalElement.style.display = 'none';});
+            if (userHistoryModalElement) {
+                userHistoryModalElement.addEventListener('click', (e) => { if (e.target === userHistoryModalElement) userHistoryModalElement.style.display = 'none'; });
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && userHistoryModalElement.style.display === 'flex') userHistoryModalElement.style.display = 'none'; });
+            }
+
+            // Fitur UI Dashboard Lainnya (Theme, Sidebar, Filter Toggle)
+            if (filterToggleButton && filterMenu) {
+                filterToggleButton.addEventListener("click", function (event) {
+                    event.stopPropagation(); // Mencegah event menyebar ke document
+                    filterMenu.classList.toggle("active");
+                });
+            }
+            if (resetFilterInMenuBtn) {
+                resetFilterInMenuBtn.addEventListener('click', () => {
+                    if (filterPerusahaanSelect) filterPerusahaanSelect.value = '';
+                    if (filterJenisBarangSelect) filterJenisBarangSelect.value = '';
+
+
+                    performRealtimeSearch(1);
+                    checkAndUpdateFilterStates(); 
+
+                    if (filterMenu && filterMenu.classList.contains('active')) {
+                        filterMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            if (filterMenu && filterToggleButton) { // Pastikan kedua elemen ada
+                document.addEventListener('click', function(event) {
+                    const isClickInsideFilterMenu = filterMenu.contains(event.target);
+                    const isClickOnFilterToggleButton = filterToggleButton.contains(event.target);
+
+                    if (filterMenu.classList.contains('active') && !isClickInsideFilterMenu && !isClickOnFilterToggleButton) {
+                        filterMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            const modeSwitch = document.querySelector('.mode-switch');
+            if (modeSwitch) {
+                modeSwitch.addEventListener('click', function () {
+                    document.documentElement.classList.toggle('light');
+                    modeSwitch.classList.toggle('active');
+                    // Anda mungkin ingin menyimpan preferensi tema di localStorage
+                });
+                 // Load tema dari localStorage jika ada
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('light');
+                    modeSwitch.classList.add('active');
+                }
+            }
+            const burgerMenuButton = document.getElementById('burger-menu');
+            const sidebarElement = document.querySelector('.sidebar');
+            const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsedITventory'; // Gunakan nama unik
+            function initializeSidebarState() {
+                if (!burgerMenuButton || !sidebarElement) return;
+                const isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+                if (isCollapsed) {
+                    sidebarElement.classList.add('collapsed');
+                    burgerMenuButton.classList.remove('active');
+                } else {
+                    sidebarElement.classList.remove('collapsed');
+                    burgerMenuButton.classList.add('active');
+                }
+            }
+            initializeSidebarState();
+            if (burgerMenuButton && sidebarElement) {
+                burgerMenuButton.addEventListener('click', () => {
+                    sidebarElement.classList.toggle('collapsed');
+                    burgerMenuButton.classList.toggle('active');
+                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, sidebarElement.classList.contains('collapsed'));
+                });
+            }
+            function setActiveSidebarLink() {
+                const currentPathname = window.location.pathname; // e.g., "/dashboard" or "/"
+                const sidebarNavItems = document.querySelectorAll('.sidebar .sidebar-list-item');
+                let exactMatchFound = false;
+
+                // Hapus class 'active' dari semua item terlebih dahulu
+                sidebarNavItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                // Jika tidak ada yang aktif, coba aktifkan link dashboard jika URL adalah root
+                if (!document.querySelector('.sidebar .sidebar-list-item.active')) {
+                    const dashboardLinkEl = document.querySelector('.sidebar-list-item a[href="{{ route('dashboard.index') }}"]');
+                     if (dashboardLinkEl && (window.location.pathname === '/' || window.location.pathname === new URL(dashboardLinkEl.href).pathname )) {
+                        dashboardLinkEl.parentElement.classList.add('active');
+                    }
+                }
+            }
+            setActiveSidebarLink();
+        });
     </script>
 </body>
 </html>

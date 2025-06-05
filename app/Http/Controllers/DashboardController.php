@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Track;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -14,96 +14,158 @@ use Illuminate\Support\Facades\Validator;
 class DashboardController extends Controller
 {
     /**
-     * Menampilkan halaman utama dashboard (yang juga bisa menampilkan login awal).
-     * Method ini akan mengambil data barang dan mengirimkannya ke view.
+     * Method privat untuk membangun query dasar barang berdasarkan filter.
+     * Digunakan oleh index() dan searchRealtime().
      */
-    public function index(Request $request)
+    private function getBarangQuery(Request $request)
     {
-        // Memulai query builder
-        $queryBuilder = Barang::query(); // Kita akan menggunakan ini sebagai basis untuk tabel dan summary
+        $queryBuilder = Barang::query();
 
         // Filter berdasarkan perusahaan
-        $filterPerusahaan = $request->input('filter_perusahaan');
-        if ($filterPerusahaan) {
-            $queryBuilder->where('perusahaan', $filterPerusahaan);
+        if ($request->filled('filter_perusahaan')) {
+            $queryBuilder->where('perusahaan', $request->input('filter_perusahaan'));
         }
 
         // Filter berdasarkan jenis barang
-        $filterJenisBarang = $request->input('filter_jenis_barang');
-        if ($filterJenisBarang) {
-            $queryBuilder->where('jenis_barang', $filterJenisBarang);
+        if ($request->filled('filter_jenis_barang')) {
+            $queryBuilder->where('jenis_barang', $request->input('filter_jenis_barang'));
         }
 
-        // Filter berdasarkan No Asset (dari search bar)
-        $searchKeyword = $request->input('search_no_asset');
-        if ($searchKeyword) {
+        // Filter berdasarkan keyword pencarian (no asset, serial number, atau merek)
+        if ($request->filled('search_no_asset')) {
+            $searchKeyword = $request->input('search_no_asset');
             $queryBuilder->where(function ($query) use ($searchKeyword) {
                 $query->where('no_asset', 'like', '%' . $searchKeyword . '%')
                       ->orWhere('serial_number', 'like', '%' . $searchKeyword . '%')
                       ->orWhere('merek', 'like', '%' . $searchKeyword . '%');
             });
         }
+        return $queryBuilder;
+    }
 
-        // Ambil data barang yang sudah difilter untuk tabel utama (dengan pagination)
-        // Clone queryBuilder sebelum menambahkan orderBy dan paginate agar query dasar untuk summary tidak terpengaruh
-        $tableQuery = clone $queryBuilder;
-        $barangs = $tableQuery->orderBy('id', 'asc')->paginate(10);
+    /**
+     * Method privat untuk menghitung summary inventaris.
+     * Digunakan oleh index() dan bisa juga oleh searchRealtime() jika summary diupdate via AJAX.
+     */
+    private function calculateInventorySummary($baseQueryBuilder, $filterJenisBarangInput)
+    {
+        $itemTypesToCount = ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor'];
+        $inventorySummary = [];
 
-        // (Opsional tapi direkomendasikan) Ambil opsi filter dinamis dari database (TIDAK terpengaruh filter aktif)
-        $perusahaanOptions = Barang::select('perusahaan')->distinct()->orderBy('perusahaan')->pluck('perusahaan');
-        $jenisBarangOptions = Barang::select('jenis_barang')->distinct()->orderBy('jenis_barang')->pluck('jenis_barang');
-
-        // +++ AWAL LOGIKA BARU UNTUK COUNT ITEM (BERDASARKAN FILTER AKTIF) +++
-        $itemTypesToCount = ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor']; // 'Others' akan dihitung terpisah
-
-        // Gunakan $queryBuilder (yang sudah berisi filter aktif) untuk menghitung item counts
-        // Penting: Clone $queryBuilder agar select dan groupBy tidak memengaruhi query asli jika digunakan lagi
-        $filteredItemCountsQuery = clone $queryBuilder;
-        $itemCounts = $filteredItemCountsQuery
+        // Clone query builder agar query asli tidak terpengaruh
+        $summaryQuery = clone $baseQueryBuilder;
+        $itemCounts = $summaryQuery
                             ->select('jenis_barang', DB::raw('count(*) as total'))
                             ->groupBy('jenis_barang')
                             ->pluck('total', 'jenis_barang');
 
-        $inventorySummary = [];
         foreach ($itemTypesToCount as $type) {
-            // Jika filter jenis_barang aktif dan BUKAN $type ini, maka countnya harus 0
-            // Jika filter jenis_barang aktif dan SAMA DENGAN $type ini, ambil dari $itemCounts
-            // Jika tidak ada filter jenis_barang, ambil dari $itemCounts
-            if ($filterJenisBarang && $filterJenisBarang !== $type) {
+            if ($filterJenisBarangInput && $filterJenisBarangInput !== $type) {
                 $inventorySummary[$type] = 0;
             } else {
                 $inventorySummary[$type] = $itemCounts->get($type, 0);
             }
         }
 
-        // Hitung 'Others' berdasarkan filter yang aktif
-        // Jika filterJenisBarang aktif dan BUKAN salah satu dari $itemTypesToCount, maka itu adalah 'Others'
-        // Jika filterJenisBarang aktif dan SALAH SATU dari $itemTypesToCount, maka 'Others' pasti 0
-        // Jika tidak ada filterJenisBarang, hitung seperti biasa.
-        if ($filterJenisBarang) {
-            if (in_array($filterJenisBarang, $itemTypesToCount)) {
-                $inventorySummary['Others'] = 0; // Karena jenis spesifik sudah difilter, 'Others' tidak mungkin ada
+        // Hitung 'Others'
+        // Clone lagi query builder dasar untuk 'Others'
+        $othersQueryBase = clone $baseQueryBuilder;
+        if ($filterJenisBarangInput) {
+            if (in_array($filterJenisBarangInput, $itemTypesToCount)) {
+                $inventorySummary['Others'] = 0;
             } else {
-                // Jika $filterJenisBarang adalah 'Others' atau jenis lain yang tidak terdaftar,
-                // maka $itemCounts akan berisi count untuk $filterJenisBarang tersebut.
-                // Kita perlu query ulang khusus untuk 'Others' dengan filter aktif.
-                $othersQuery = clone $queryBuilder; // Sudah punya filter perusahaan, dan filter jenis_barang
-                $othersCount = $othersQuery->whereNotIn('jenis_barang', $itemTypesToCount)->count();
+                // Jika $filterJenisBarangInput adalah 'Others' atau jenis lain yang tidak terdaftar,
+                // maka $itemCounts akan berisi count untuk $filterJenisBarangInput tersebut.
+                // Kita perlu query ulang khusus untuk 'Others' dengan filter aktif (perusahaan, keyword, dan jenis != itemTypesToCount).
+                $othersCount = $othersQueryBase->whereNotIn('jenis_barang', $itemTypesToCount)->count();
                 $inventorySummary['Others'] = $othersCount;
             }
         } else {
             // Tidak ada filter jenis barang, hitung 'Others' dari $queryBuilder
-            $othersQuery = clone $queryBuilder;
-            $othersCount = $othersQuery->whereNotIn('jenis_barang', $itemTypesToCount)->count();
+            $othersCount = $othersQueryBase->whereNotIn('jenis_barang', $itemTypesToCount)->count();
             $inventorySummary['Others'] = $othersCount;
         }
-        // +++ AKHIR LOGIKA BARU UNTUK COUNT ITEM +++
-
-        // Kirim data ke view
-        return view('DasboardPage', compact('barangs', 'perusahaanOptions', 'jenisBarangOptions', 'filterPerusahaan', 'filterJenisBarang', 'searchKeyword', 'inventorySummary'));
+        return $inventorySummary;
     }
 
-    // ... (sisa method controller Anda tetap sama) ...
+    /**
+     * Menampilkan halaman utama dashboard (load awal).
+     */
+    public function index(Request $request)
+    {
+        // Dapatkan query builder dasar dengan semua filter dari request
+        $queryBuilder = $this->getBarangQuery($request);
+
+        // Ambil nilai filter untuk dikirim ke view
+        $searchKeyword = $request->input('search_no_asset');
+        $filterPerusahaan = $request->input('filter_perusahaan');
+        $filterJenisBarang = $request->input('filter_jenis_barang');
+
+        // Clone query untuk tabel utama sebelum paginasi
+        $tableQuery = clone $queryBuilder;
+        $barangs = $tableQuery->orderBy('id', 'asc')->paginate(10);
+        // Pastikan paginasi mempertahankan query string filter
+        $barangs->appends($request->query());
+
+        // Ambil opsi untuk dropdown filter (tidak terpengaruh filter aktif)
+        $perusahaanOptions = Barang::select('perusahaan')->distinct()->orderBy('perusahaan')->pluck('perusahaan');
+        $jenisBarangOptions = Barang::select('jenis_barang')->distinct()->orderBy('jenis_barang')->pluck('jenis_barang');
+
+        // Hitung summary inventaris berdasarkan query builder yang sudah difilter
+        $inventorySummary = $this->calculateInventorySummary($queryBuilder, $filterJenisBarang);
+
+        return view('DasboardPage', compact(
+            'barangs',
+            'perusahaanOptions',
+            'jenisBarangOptions',
+            'inventorySummary',
+            'searchKeyword',
+            'filterPerusahaan',
+            'filterJenisBarang'
+        ));
+    }
+
+    /**
+     * Menangani pencarian real-time via AJAX.
+     */
+    public function searchRealtime(Request $request)
+    {
+        // Dapatkan query builder dasar dengan semua filter dari request AJAX
+        $queryBuilder = $this->getBarangQuery($request);
+
+        $barangs = $queryBuilder->orderBy('id', 'asc')->paginate(10);
+        // Pastikan paginasi AJAX mempertahankan query string filter (kecuali 'page')
+        $barangs->appends($request->except('page'));
+
+        // Jika Anda ingin summary juga diupdate via AJAX, hitung di sini:
+        // $filterJenisBarangAjax = $request->input('filter_jenis_barang');
+        // $inventorySummaryAjax = $this->calculateInventorySummary($queryBuilder, $filterJenisBarangAjax);
+        // Kemudian kirim 'inventorySummaryAjax' ke view parsial atau sebagai bagian dari JSON.
+
+                if ($request->ajax()) {
+            // Kita akan mengirim data yang dibutuhkan untuk membangun tabel di JS
+            // dan HTML untuk paginasi
+            return response()->json([
+                'data' => $barangs->items(), // Array data barang
+                'links' => $barangs->links('pagination::bootstrap-4')->toHtml(), // HTML untuk paginasi
+                'current_page' => $barangs->currentPage(),
+                'first_item' => $barangs->firstItem(),
+                'last_item' => $barangs->lastItem(),
+                'total' => $barangs->total(),
+                'per_page' => $barangs->perPage(),
+                // Anda juga bisa mengirimkan nilai filter kembali jika diperlukan
+                'searchKeyword' => $request->input('search_no_asset'),
+                'filterPerusahaan' => $request->input('filter_perusahaan'),
+                'filterJenisBarang' => $request->input('filter_jenis_barang'),
+            ]);
+        }
+
+        // Seharusnya tidak pernah sampai sini jika dipanggil dengan benar oleh JS
+        return response('This endpoint is intended for AJAX requests only.', 400);
+    }
+
+
+    // ... (method getDetailBarang, getUserHistoryBySerialNumber, storeSerahTerimaAset tetap sama) ...
     public function getDetailBarang(Request $request, $id)
     {
         try {
@@ -114,7 +176,7 @@ class DashboardController extends Controller
             }
 
             $latestTrack = Track::where('serial_number', $barang->serial_number)
-                                ->orderBy('created_at', 'desc') 
+                                ->orderBy('created_at', 'desc')
                                 ->first();
 
             return response()->json([
@@ -132,15 +194,13 @@ class DashboardController extends Controller
     public function getUserHistoryBySerialNumber(Request $request, $serial_number)
     {
         try {
-            // Cari semua entri track berdasarkan serial_number, urutkan berdasarkan tanggal_awal (ASC: dari terlama ke terbaru)
             $history = Track::where('serial_number', $serial_number)
-                            ->orderBy('tanggal_awal', 'asc') // Mengurutkan dari yang paling lama
-                            ->get(); // Ambil semua data yang cocok
+                            ->orderBy('tanggal_awal', 'asc')
+                            ->get();
 
             if ($history->isEmpty()) {
-                // Jika tidak ada history, kembalikan array kosong untuk history
                 return response()->json([
-                    'success' => true, // Operasi berhasil, tapi tidak ada data
+                    'success' => true,
                     'history' => []
                 ]);
             }
@@ -152,20 +212,29 @@ class DashboardController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error fetching user history for SN {$serial_number}: " . $e->getMessage());
-            // Kembalikan response error yang jelas
             return response()->json(['success' => false, 'error' => 'Terjadi kesalahan server saat mengambil riwayat pengguna.'], 500);
         }
     }
 
     public function storeSerahTerimaAset(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // PASTIKAN $rules DIDEFINISIKAN DI SINI, SEBELUM VALIDATOR
+        $rules = [
             'serial_number' => 'required|string|exists:barang,serial_number',
             'username' => 'required|string|max:255',
             'status' => 'required|string|in:digunakan,diperbaiki,dipindah,non aktif,tersedia',
             'keterangan' => 'required|string',
-            'asset_id' => 'required|integer|exists:barang,id'
-        ]);
+            'asset_id' => 'required|integer|exists:barang,id',
+            'perusahaan_tujuan' => 'required_if:status,dipindah|nullable|string|in:SCO,SCT,SCP,Migen',
+        ];
+
+        $messages = [
+            'perusahaan_tujuan.required_if' => 'Perusahaan tujuan wajib diisi jika status aset adalah Dipindah.',
+            'perusahaan_tujuan.in' => 'Perusahaan tujuan yang dipilih tidak valid.',
+        ];
+
+        // PASTIKAN VARIABEL YANG DIGUNAKAN DI SINI ADALAH $rules (DENGAN 's')
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             Log::error('Validation failed for serah terima: ', $validator->errors()->toArray());
@@ -173,72 +242,70 @@ class DashboardController extends Controller
         }
 
         $serialNumber = $request->input('serial_number');
-        $currentTime = null;
+        $newStatus = $request->input('status');
+        // $currentTime = null; // Tidak perlu diinisialisasi null jika akan di-assign Carbon::now()
 
         DB::beginTransaction();
         try {
             $currentTime = Carbon::now();
-            Log::info("Attempting serah terima for SN: {$serialNumber}. Current time: " . $currentTime->toDateTimeString());
+            Log::info("Attempting serah terima for SN: {$serialNumber}. New Status: {$newStatus}. Current time: " . $currentTime->toDateTimeString());
 
-            // 1. Update tanggal_ahir untuk track sebelumnya (jika ada yang aktif)
-            Log::info("Searching for previous active track for SN: {$serialNumber}");
+            $barang = Barang::find($request->input('asset_id'));
+            if (!$barang) {
+                Log::error("Barang with ID: {$request->input('asset_id')} not found for SN: {$serialNumber}. Transaction rolled back.");
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Data barang tidak ditemukan.'], 404);
+            }
+
             $previousTrack = Track::where('serial_number', $serialNumber)
-                                ->whereNull('tanggal_ahir') // Cari yang masih aktif
-                                ->orderBy('tanggal_awal', 'desc') // Ambil yang paling baru
+                                ->whereNull('tanggal_ahir')
+                                ->orderBy('tanggal_awal', 'desc') // Seharusnya 'desc' untuk mendapatkan yang terbaru
                                 ->first();
 
             if ($previousTrack) {
-                Log::info("Previous active track found. ID: {$previousTrack->id}, Username: {$previousTrack->username}, Current tanggal_ahir: {$previousTrack->tanggal_ahir}, Tanggal Awal: {$previousTrack->tanggal_awal}");
-                Log::info("Setting tanggal_ahir for previous track to: " . $currentTime->toDateString());
-
-                $previousTrack->tanggal_ahir = $currentTime->toDateString();
-
-                // Pastikan tanggal_ahir tidak lebih awal dari tanggal_awal milik track sebelumnya itu sendiri
-                if (Carbon::parse($previousTrack->tanggal_ahir)->lessThan(Carbon::parse($previousTrack->tanggal_awal))) {
-                    Log::warning("Calculated tanggal_ahir ({$previousTrack->tanggal_ahir}) for previous track is earlier than its tanggal_awal ({$previousTrack->tanggal_awal}). Adjusting tanggal_ahir to be same as tanggal_awal.");
+                // Logika untuk menutup track sebelumnya
+                Log::info("Previous active track found. ID: {$previousTrack->id}, Username: {$previousTrack->username}, Tanggal Awal: {$previousTrack->tanggal_awal}");
+                $previousTrack->tanggal_ahir = $currentTime->toDateString(); // Gunakan toDateString() jika hanya tanggal
+                // Periksa jika tanggal akhir lebih kecil dari tanggal awal (seharusnya tidak terjadi jika currentTime selalu maju)
+                if (Carbon::parse($previousTrack->tanggal_ahir)->lt(Carbon::parse($previousTrack->tanggal_awal))) {
+                    Log::warning("Calculated tanggal_ahir ({$previousTrack->tanggal_ahir}) for previous track is earlier than its tanggal_awal ({$previousTrack->tanggal_awal}). This should not happen. Adjusting to tanggal_awal.");
                     $previousTrack->tanggal_ahir = $previousTrack->tanggal_awal;
                 }
-
-                Log::info("Attempting to save previous track (ID: {$previousTrack->id}) with new tanggal_ahir: {$previousTrack->tanggal_ahir}");
-                if ($previousTrack->save()) {
-                    Log::info("Previous track (ID: {$previousTrack->id}) saved successfully with tanggal_ahir: {$previousTrack->tanggal_ahir}");
-                } else {
-                    Log::error("Failed to save previous track (ID: {$previousTrack->id}) after setting tanggal_ahir.");
-                    // Anda mungkin ingin melempar exception di sini agar transaksi di-rollback
-                    // throw new \Exception("Failed to save previous track data.");
-                }
+                $previousTrack->save();
+                Log::info("Previous track (ID: {$previousTrack->id}) updated with tanggal_ahir: {$previousTrack->tanggal_ahir}");
             } else {
-                Log::info("No active previous track found for SN: {$serialNumber}. No update to tanggal_ahir needed for a previous record.");
+                Log::info("No active previous track found for SN: {$serialNumber}.");
             }
 
-            // 2. Buat entri track baru dengan tanggal_awal = now()
-            Log::info("Creating new track for SN: {$serialNumber}, Username: {$request->input('username')}, Tanggal Awal: " . $currentTime->toDateString());
+            // Membuat track baru
+            Log::info("Creating new track for SN: {$serialNumber}, Username: {$request->input('username')}, Status: {$newStatus}, Tanggal Awal: " . $currentTime->toDateString());
             $newTrack = Track::create([
                 'serial_number' => $serialNumber,
                 'username' => $request->input('username'),
-                'status' => $request->input('status'),
+                'status' => $newStatus,
                 'keterangan' => $request->input('keterangan'),
-                'tanggal_awal' => $currentTime->toDateString(),
+                'tanggal_awal' => $currentTime->toDateString(), // Gunakan toDateString() jika hanya tanggal
                 'tanggal_ahir' => null,
             ]);
             Log::info("New track created with ID: {$newTrack->id}");
 
-            // 3. Update status di tabel barang (master aset)
-            $barang = Barang::find($request->input('asset_id'));
-            if ($barang) {
-                Log::info("Updating status for Barang ID: {$barang->id} to: {$request->input('status')}");
-                $barang->status = $request->input('status');
-                // $barang->user_terakhir = $request->input('username'); // Jika ada field ini
-                // $barang->tgl_serah_terima_terakhir = $currentTime->toDateString(); // Jika ada field ini
-                if ($barang->save()) {
-                    Log::info("Barang ID: {$barang->id} status updated successfully.");
+            // Update status dan perusahaan (jika dipindah) di tabel 'barang'
+            Log::info("Updating status for Barang ID: {$barang->id} to: {$newStatus}");
+            $barang->status = $newStatus; // Selalu update status barang dengan status track terbaru
+
+            if ($newStatus === 'dipindah') {
+                $perusahaanTujuan = $request->input('perusahaan_tujuan');
+                if ($perusahaanTujuan) { // Pastikan perusahaan tujuan ada sebelum di-assign
+                    Log::info("Status is 'dipindah'. Updating perusahaan for Barang ID: {$barang->id} to: {$perusahaanTujuan}");
+                    $barang->perusahaan = $perusahaanTujuan;
                 } else {
-                    Log::error("Failed to update status for Barang ID: {$barang->id}.");
-                    // throw new \Exception("Failed to update barang status.");
+                    // Ini seharusnya sudah ditangani oleh validasi 'required_if', tapi sebagai fallback:
+                    Log::warning("Status is 'dipindah' but perusahaan_tujuan is missing. Barang ID: {$barang->id}");
                 }
-            } else {
-                Log::warning("Barang with ID: {$request->input('asset_id')} not found for SN: {$serialNumber}. Cannot update status.");
             }
+            
+            $barang->save();
+            Log::info("Barang ID: {$barang->id} status (and perusahaan if 'dipindah') updated successfully.");
 
             DB::commit();
             Log::info("Transaction committed successfully for SN: {$serialNumber}");
