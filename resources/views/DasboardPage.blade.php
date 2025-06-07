@@ -820,12 +820,79 @@ html.light .filter-menu .filter-button.reset-filter-in-menu:disabled {
   flex-direction: column; /* Header dan row akan bertumpuk vertikal */
 }
 .tableView .products-header {
-  display: flex; /* Baris header */
-  align-items: center;
-  border-radius: 4px; /* Menggunakan variabel untuk header tabel */
-  position: sticky;
-  top: 0;
-  z-index: 10; /* Agar header tetap di atas saat scroll */
+    background-color: var(--app-content-secondary-color);
+    display: flex; /* Baris header */
+    align-items: center;
+    border-radius: 4px; /* Menggunakan variabel untuk header tabel */
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Agar header tetap di atas saat scroll */
+    border-bottom: 2px solid var(--action-color);
+}
+html.light .tableView .products-header {
+    background-color: #f1f3f5; /* Warna background header yang soft untuk light mode */
+    border-bottom-color: #dee2e6; /* Garis bawah abu-abu di light mode */
+}
+.tableView #productTableRowsContainer .products-row:nth-child(even) {
+    /* Targetkan semua baris genap (ke-2, 4, 6, dst.) */
+    background-color: var(--table-border); /* Warna sedikit beda untuk dark mode */
+}
+html.light .tableView #productTableRowsContainer .products-row:nth-child(even) {
+    background-color: #f9f9f9; /* Warna abu-abu sangat terang untuk light mode */
+}
+.tableView #productTableRowsContainer .products-row:hover {
+    background-color: var(--sidebar-active-link); /* Warna hover yang bagus di dark mode */
+    transition: background-color 0.2s ease-in-out; /* Transisi halus */
+}
+html.light .tableView #productTableRowsContainer .products-row:hover {
+    background-color: #e9ecef; /* Warna hover yang bagus di light mode */
+}
+.products-header .sortable-header {
+    cursor: pointer;
+    user-select: none; /* Mencegah teks ter-highlight saat di-double click */
+    transition: color 0.2s ease-in-out;
+}
+.products-header .sortable-header:hover {
+    color: var(--action-color); /* Warna hover saat kursor di atasnya */
+}
+
+/* Style untuk indikator panah sorting */
+.products-header .sortable-header::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    opacity: 0.4;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Panah default (netral), bisa dikosongkan jika tidak mau */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4-4 4 4M16 15l-4 4-4-4'/%3E%3C/svg%3E");
+}
+
+html.light .products-header .sortable-header::after {
+     /* Ganti warna stroke untuk light mode */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4-4 4 4M16 15l-4 4-4-4'/%3E%3C/svg%3E");
+}
+
+
+/* Saat sorting ASC aktif */
+.products-header .sortable-header.sorted-asc {
+    color: var(--action-color); /* Warna aktif */
+}
+.products-header .sortable-header.sorted-asc::after {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E"); /* Panah ke atas (A-Z) */
+}
+
+/* Saat sorting DESC aktif */
+.products-header .sortable-header.sorted-desc {
+    color: var(--action-color); /* Warna aktif */
+}
+.products-header .sortable-header.sorted-desc::after {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M19 12l-7 7-7-7'/%3E%3C/svg%3E"); /* Panah ke bawah (Z-A) */
 }
 .tableView .products-row {
   display: flex; /* Setiap baris data */
@@ -846,7 +913,7 @@ html.light .filter-menu .filter-button.reset-filter-in-menu:disabled {
   overflow: hidden; /* Sembunyikan teks yang berlebih */
   text-overflow: ellipsis; /* Tampilkan "..." jika teks berlebih */
 }
-.tableView .product-cell.cell-no { flex: 0 0 40px; min-width: 40px; justify-content: center;}
+.tableView .product-cell.cell-no { flex: 0 0 80px; min-width: 80px; justify-content: center;}
 .tableView .product-cell.cell-perusahaan { flex: 1 1 100px; min-width: 100px; }
 .tableView .product-cell.cell-jenis-barang { flex: 1 1 120px; min-width: 120px; }
 .tableView .product-cell.cell-no-asset { flex: 1 1 180px; min-width: 180px; }
@@ -1960,13 +2027,13 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             <div class="products-area-wrapper tableView" id="productTableArea">
                 {{-- Header Tabel (tetap ada atau bisa juga digenerate JS jika mau) --}}
                 <div class="products-header">
-                    <div class="product-cell cell-no">No</div>
-                    <div class="product-cell cell-perusahaan">Perusahaan</div>
-                    <div class="product-cell cell-jenis-barang">Jenis Barang</div>
-                    <div class="product-cell cell-no-asset">No Asset</div>
-                    <div class="product-cell cell-merek">Merek</div>
-                    <div class="product-cell cell-tgl-pengadaan">Tgl. Pengadaan</div>
-                    <div class="product-cell cell-serial-number">Serial Number</div>
+                    <div class="product-cell cell-no sortable-header" data-sort-by="no">No</div>
+                    <div class="product-cell cell-perusahaan sortable-header" data-sort-by="perusahaan">Perusahaan</div>
+                    <div class="product-cell cell-jenis-barang sortable-header" data-sort-by="jenis_barang">Jenis Barang</div>
+                    <div class="product-cell cell-no-asset sortable-header" data-sort-by="no_asset">No Asset</div>
+                    <div class="product-cell cell-merek sortable-header" data-sort-by="merek">Merek</div>
+                    <div class="product-cell cell-tgl-pengadaan sortable-header" data-sort-by="tgl_pengadaan" data-sort-type="date">Tgl. Pengadaan</div>
+                    <div class="product-cell cell-serial-number sortable-header" data-sort-by="serial_number">Serial Number</div>
                     <div class="product-cell cell-aksi">Aksi</div>
                 </div>
 
@@ -2373,8 +2440,118 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const filterToggleButton = document.querySelector(".jsFilter");
             const filterMenu = document.querySelector(".filter-button-wrapper .filter-menu");
 
-            console.log('filterToggleButton:', filterToggleButton);
-            console.log('filterMenu:', filterMenu);
+            const tableHeader = document.querySelector('.products-header');
+            const tableBody = document.getElementById('productTableRowsContainer');
+
+            let originalRowsHTML = ''; // Akan menyimpan HTML asli dari tabel
+            let activeSortKey = null;
+            let activeSortDirection = 'none';
+
+            // Fungsi untuk menangkap kondisi asli tabel sebagai string HTML
+            function captureOriginalState() {
+                if (tableBody) {
+                    originalRowsHTML = tableBody.innerHTML;
+                }
+                // Reset visual dan state saat data baru dimuat
+                activeSortKey = null;
+                activeSortDirection = 'none';
+                tableHeader.querySelectorAll('.sortable-header').forEach(header => {
+                    header.classList.remove('sorted-asc', 'sorted-desc');
+                });
+            }
+
+            // Helper untuk parse tanggal dd-mm-yyyy menjadi objek Date untuk perbandingan
+            function parseDate(dateStr) {
+                if (!dateStr || dateStr.trim() === '-') return new Date(0);
+                const parts = dateStr.split('-');
+                if (parts.length !== 3) return new Date(0);
+                return new Date(parts[2], parts[1] - 1, parts[0]); // Format: YYYY, MM-1, DD
+            }
+
+            // Pasang satu event listener utama pada seluruh header tabel
+            tableHeader.addEventListener('click', (e) => {
+                const headerCell = e.target.closest('.sortable-header');
+                if (!headerCell) return;
+
+                const sortKey = headerCell.dataset.sortBy;
+                const sortType = headerCell.dataset.sortType || 'text';
+
+                // --- MULAI LOGIKA BARU ---
+                if (activeSortKey !== sortKey) {
+                    // Klik pada kolom BARU
+                    activeSortKey = sortKey;
+                    // SPECIAL CASE: Jika kolom 'No' yang diklik, langsung ke 'desc'
+                    if (sortKey === 'no') {
+                        activeSortDirection = 'desc';
+                    } else {
+                        // Kolom lain mulai dari 'asc' seperti biasa
+                        activeSortDirection = 'asc';
+                    }
+                } else {
+                    // Klik pada kolom yang SAMA
+                    // SPECIAL CASE: Jika kolom 'No' yang sedang aktif
+                    if (sortKey === 'no') {
+                        // Siklusnya hanya 'desc' -> 'none'
+                        activeSortDirection = 'none';
+                    } else {
+                        // Siklus normal untuk kolom lain
+                        if (activeSortDirection === 'asc') {
+                            activeSortDirection = 'desc';
+                        } else {
+                            activeSortDirection = 'none';
+                        }
+                    }
+                }
+
+                // 2. Terapkan sorting atau reset
+                if (activeSortDirection === 'none') {
+                    activeSortKey = null;
+                    if (tableBody) {
+                        tableBody.innerHTML = originalRowsHTML; // Kembalikan ke HTML asli
+                    }
+                } else {
+                    const rows = Array.from(tableBody.querySelectorAll('.products-row'));
+                    
+                    // Cari index kolom yang benar berdasarkan 'data-sort-by'
+                    const allHeaders = Array.from(tableHeader.querySelectorAll('.product-cell'));
+                    const columnIndex = allHeaders.findIndex(th => th.dataset.sortBy === sortKey);
+                    
+                    if (columnIndex === -1) return; // Jika kolom tidak ditemukan, keluar
+
+                    rows.sort((rowA, rowB) => {
+                        const cellsA = rowA.querySelectorAll('.product-cell');
+                        const cellsB = rowB.querySelectorAll('.product-cell');
+
+                        const valueA = cellsA[columnIndex] ? cellsA[columnIndex].textContent.trim() : '';
+                        const valueB = cellsB[columnIndex] ? cellsB[columnIndex].textContent.trim() : '';
+                        
+                        let comparison = 0;
+                        if (sortType === 'date') {
+                            comparison = parseDate(valueA) - parseDate(valueB);
+                        } else {
+                            comparison = valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' });
+                        }
+
+                        return activeSortDirection === 'asc' ? comparison : -comparison;
+                    });
+
+                    // Kosongkan tabel dan isi kembali dengan baris yang sudah diurutkan
+                    tableBody.innerHTML = '';
+                    rows.forEach(row => tableBody.appendChild(row));
+                }
+
+                // 3. Perbarui tampilan panah di semua header
+                tableHeader.querySelectorAll('.sortable-header').forEach(header => {
+                    header.classList.remove('sorted-asc', 'sorted-desc');
+                    if (header.dataset.sortBy === activeSortKey) {
+                        if (activeSortDirection === 'asc') {
+                            header.classList.add('sorted-asc');
+                        } else if (activeSortDirection === 'desc') {
+                            header.classList.add('sorted-desc');
+                        }
+                    }
+                });
+            });
 
             // Fungsi helper modal, bisa tetap di sini jika hanya dipakai di dalam DOMContentLoaded
             function openModalElement(modalElement, formToReset = null) {
@@ -2395,6 +2572,30 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                     modalElement.classList.remove('show');
                 }
             }
+
+            function parseDate(dateStr) {
+                const parts = dateStr.split('-');
+                // parts[2] = YYYY, parts[1] = MM, parts[0] = DD
+                return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+
+            /**
+             * Mengupdate tampilan visual (class CSS) pada semua header.
+             */
+            function updateHeaderUI() {
+                tableHeader.querySelectorAll('.sortable-header').forEach((header, index) => {
+                    header.classList.remove('sorted-asc', 'sorted-desc');
+                    // Gunakan activeSortColumnIndex, BUKAN activeSortColumn
+                    if (index === activeSortColumnIndex) {
+                        if (activeSortDirection === 'asc') {
+                            header.classList.add('sorted-asc');
+                        } else if (activeSortDirection === 'desc') {
+                            header.classList.add('sorted-desc');
+                        }
+                    }
+                });
+            }
+        
             
             function displayValidationErrorsOnForm(errors, formElement) {
                 if (!formElement) return;
@@ -2466,6 +2667,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
                     }
                     productTableRowsContainer.innerHTML = tableRowsHtml;
+                    captureOriginalState();
                     if (responseData.links) {
                         paginationContainer.innerHTML = responseData.links;
                         setupAjaxPagination();
@@ -2501,6 +2703,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
 
             setupAjaxPagination();
             checkAndUpdateFilterStates();
+            captureOriginalState();
 
             // Event Listeners untuk Search dan Filter
             if (mainSearchInput) {
