@@ -13,7 +13,7 @@ class BarangController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'perusahaan' => 'required|string|in:SCO,SCT,SCP,Migen',
-            'jenis_barang' => 'required|string|in:Laptop,HP,PC/AIO,Printer,Proyektor',
+            'jenis_barang' => 'required|string|in:Laptop,HP,PC/AIO,Printer,Proyektor,Others',
             'no_asset' => 'required|string|max:255|unique:barang,no_asset',
             'merek' => 'required|string|max:255',
             'tgl_pengadaan' => 'required|date',

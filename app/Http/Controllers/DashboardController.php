@@ -109,7 +109,8 @@ class DashboardController extends Controller
 
         // Ambil opsi untuk dropdown filter (tidak terpengaruh filter aktif)
         $perusahaanOptions = Barang::select('perusahaan')->distinct()->orderBy('perusahaan')->pluck('perusahaan');
-        $jenisBarangOptions = Barang::select('jenis_barang')->distinct()->orderBy('jenis_barang')->pluck('jenis_barang');
+        $jenisBarangOptions = ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor', 'Others'];
+
 
         // Hitung summary inventaris berdasarkan query builder yang sudah difilter
         $inventorySummary = $this->calculateInventorySummary($queryBuilder, $filterJenisBarang);
@@ -133,27 +134,27 @@ class DashboardController extends Controller
         // Dapatkan query builder dasar dengan semua filter dari request AJAX
         $queryBuilder = $this->getBarangQuery($request);
 
+        $tableQuery = clone $queryBuilder;
         $barangs = $queryBuilder->orderBy('id', 'asc')->paginate(10);
-        // Pastikan paginasi AJAX mempertahankan query string filter (kecuali 'page')
         $barangs->appends($request->except('page'));
 
         // Jika Anda ingin summary juga diupdate via AJAX, hitung di sini:
-        // $filterJenisBarangAjax = $request->input('filter_jenis_barang');
-        // $inventorySummaryAjax = $this->calculateInventorySummary($queryBuilder, $filterJenisBarangAjax);
+        $filterJenisBarangAjax = $request->input('filter_jenis_barang');
+        $inventorySummaryAjax = $this->calculateInventorySummary($queryBuilder, $filterJenisBarangAjax);
         // Kemudian kirim 'inventorySummaryAjax' ke view parsial atau sebagai bagian dari JSON.
 
-                if ($request->ajax()) {
+        if ($request->ajax()) {
             // Kita akan mengirim data yang dibutuhkan untuk membangun tabel di JS
             // dan HTML untuk paginasi
             return response()->json([
-                'data' => $barangs->items(), // Array data barang
+                'data' => $barangs->items(),
                 'links' => $barangs->links('pagination::bootstrap-4')->toHtml(), // HTML untuk paginasi
                 'current_page' => $barangs->currentPage(),
                 'first_item' => $barangs->firstItem(),
                 'last_item' => $barangs->lastItem(),
                 'total' => $barangs->total(),
                 'per_page' => $barangs->perPage(),
-                // Anda juga bisa mengirimkan nilai filter kembali jika diperlukan
+                'inventorySummary' => $inventorySummaryAjax,
                 'searchKeyword' => $request->input('search_no_asset'),
                 'filterPerusahaan' => $request->input('filter_perusahaan'),
                 'filterJenisBarang' => $request->input('filter_jenis_barang'),

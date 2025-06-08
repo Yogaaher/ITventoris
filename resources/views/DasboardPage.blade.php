@@ -1841,6 +1841,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                             <option value="PC/AIO">PC/AIO</option>
                             <option value="Printer">Printer</option>
                             <option value="Proyektor">Proyektor</option>
+                            <option value="Others">Others</option>
                         </select>
                         <div class="invalid-feedback" id="jenis_barang_error"></div>
                     </div>
@@ -1953,7 +1954,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i>
                     </div>
                     <div class="summary-box-type">{{ $type }}</div>
-                    <div class="summary-box-count">{{ $count }}</div>
+                    <div class="summary-box-count" id="summary-count-{{ strtolower(str_replace('/', '-', $type)) }}">{{ $count }}</div>
                 </div>
             @endforeach
         </div>
@@ -1969,7 +1970,8 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                            type="text"
                            name="search_no_asset"
                            value="{{ $searchKeyword ?? old('search_no_asset') }}"
-                           id="mainSearchInput">
+                           id="mainSearchInput"
+                           autocomplete="off">
                     <button type="button" class="clear-search-btn" id="clearMainSearchBtn" style="display: none;" title="Hapus pencarian">
                         × {{-- Karakter 'X' (kali) --}}
                     </button>
@@ -2460,14 +2462,6 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 });
             }
 
-            // Helper untuk parse tanggal dd-mm-yyyy menjadi objek Date untuk perbandingan
-            function parseDate(dateStr) {
-                if (!dateStr || dateStr.trim() === '-') return new Date(0);
-                const parts = dateStr.split('-');
-                if (parts.length !== 3) return new Date(0);
-                return new Date(parts[2], parts[1] - 1, parts[0]); // Format: YYYY, MM-1, DD
-            }
-
             // Pasang satu event listener utama pada seluruh header tabel
             tableHeader.addEventListener('click', (e) => {
                 const headerCell = e.target.closest('.sortable-header');
@@ -2578,24 +2572,6 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 // parts[2] = YYYY, parts[1] = MM, parts[0] = DD
                 return new Date(parts[2], parts[1] - 1, parts[0]);
             }
-
-            /**
-             * Mengupdate tampilan visual (class CSS) pada semua header.
-             */
-            function updateHeaderUI() {
-                tableHeader.querySelectorAll('.sortable-header').forEach((header, index) => {
-                    header.classList.remove('sorted-asc', 'sorted-desc');
-                    // Gunakan activeSortColumnIndex, BUKAN activeSortColumn
-                    if (index === activeSortColumnIndex) {
-                        if (activeSortDirection === 'asc') {
-                            header.classList.add('sorted-asc');
-                        } else if (activeSortDirection === 'desc') {
-                            header.classList.add('sorted-desc');
-                        }
-                    }
-                });
-            }
-        
             
             function displayValidationErrorsOnForm(errors, formElement) {
                 if (!formElement) return;
@@ -2672,6 +2648,14 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         paginationContainer.innerHTML = responseData.links;
                         setupAjaxPagination();
                     }
+                    if (responseData.inventorySummary) {
+                        updateInventorySummary(responseData.inventorySummary);
+                    }
+                    captureOriginalState();
+                    if (responseData.links) {
+                        paginationContainer.innerHTML = responseData.links;
+                        setupAjaxPagination();
+                    }
                 })
                 .catch(error => {
                     console.error('Error performing real-time search:', error);
@@ -2691,6 +2675,23 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         performRealtimeSearch(page);
                     });
                 });
+            }
+
+            function updateInventorySummary(summaryData) {
+                if (!summaryData) return;
+
+                for (const type in summaryData) {
+                    const safeIdPart = type.toLowerCase().replace('/', '-'); 
+                    const elementId = `summary-count-${safeIdPart}`;
+                    const countElement = document.getElementById(elementId);
+
+                    if (countElement) {
+                        countElement.textContent = summaryData[type];
+                    } else {
+                        // Ini untuk debugging jika ada ID yang tidak cocok
+                        console.warn(`Elemen summary dengan ID '${elementId}' tidak ditemukan.`);
+                    }
+                }
             }
 
             function checkAndUpdateFilterStates() {
