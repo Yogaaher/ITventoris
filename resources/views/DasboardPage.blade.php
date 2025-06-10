@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITventory</title> <!-- Judul bisa diubah -->
+    <title>ITventory - Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -826,6 +826,7 @@ html.light .filter-menu .filter-button.reset-filter-in-menu:disabled {
     border-radius: 4px; /* Menggunakan variabel untuk header tabel */
     position: sticky;
     top: 0;
+    min-width: 1210px;
     z-index: 10; /* Agar header tetap di atas saat scroll */
     border-bottom: 2px solid var(--action-color);
 }
@@ -898,6 +899,7 @@ html.light .products-header .sortable-header::after {
   display: flex; /* Setiap baris data */
   align-items: center;
   border-radius: 4px;
+  min-width: 1210px;
 }
 
 .tableView .products-row .cell-more-button {
@@ -914,7 +916,7 @@ html.light .products-header .sortable-header::after {
   text-overflow: ellipsis; /* Tampilkan "..." jika teks berlebih */
 }
 .tableView .product-cell.cell-no { flex: 0 0 80px; min-width: 80px; justify-content: center;}
-.tableView .product-cell.cell-perusahaan { flex: 1 1 100px; min-width: 100px; }
+.tableView .product-cell.cell-perusahaan { flex: 1 1 160px; min-width: 160px; }
 .tableView .product-cell.cell-jenis-barang { flex: 1 1 120px; min-width: 120px; }
 .tableView .product-cell.cell-no-asset { flex: 1 1 180px; min-width: 180px; }
 .tableView .product-cell.cell-merek { flex: 1 1 200px; min-width: 200px; }
@@ -1644,7 +1646,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 </div>
                 <div class="morph-modal-body">
                     <div class="device-details-info-header">
-                        <i id="modalDeviceImage" class="device-image fas fa-desktop"></i>
+                        <i id="modalDeviceImage" class="device-image fas"></i>
                         <div class="device-label">
                             <span class="device-name" id="modalDeviceName">Nama Perangkat</span>
                             <span class="device-online-status" id="modalDeviceType">Jenis Barang</span>
@@ -1667,9 +1669,11 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                                 <button class="btn-action btn-detail" id="triggerUserHistoryModalButton">
                                     <i class="fas fa-user-circle"></i> Detail User
                                 </button>
-                                <button class="btn-action btn-update" onclick="alert('Update Aset dari modal detail belum diimplementasikan')">
+                                @if(auth()->user()->role === 'admin')
+                                <button class="btn-action btn-update">
                                     <i class="fas fa-edit"></i> Update Aset
                                 </button>
+                                @endif
                             </div>
                         </div>
                         <div class="info-section">
@@ -1750,6 +1754,7 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         <div class="info-section" style="margin-bottom: 1.5rem;">
                             <dl class="info-item"><dt>Aset:</dt><dd id="serahTerimaInfoNamaAset">_</dd></dl>
                             <dl class="info-item"><dt>Serial Number:</dt><dd id="serahTerimaInfoSN">_</dd></dl>
+                            <dl class="info-item"><dt>Perusahaan:</dt><dd id="serahTerimaInfoPerusahaan">_</dd></dl>
                         </div>
 
                         <div class="form-group" style="margin-bottom: 1rem;">
@@ -1757,15 +1762,26 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                             <input type="date" id="serahTerimaTanggalAwal" name="tanggal_awal" class="form-control" readonly>
                         </div>
 
-                        <!-- Form fields untuk pindah perusahaan (tambahkan perusahaan baru disini) -->
-                         <div class="form-group" id="perusahaanTujuanGroup" style="display: none; margin-bottom: 1rem;">
-                            <label for="serahTerimaPerusahaanTujuan" style="display: block; margin-bottom: .5rem; font-weight: 500;">Pindahkan ke Perusahaan</label>
-                            <select id="serahTerimaPerusahaanTujuan" name="perusahaan_tujuan" class="form-control" style="background-color: var(--app-bg); border-color: var(--table-border); color: var(--app-content-main-color); width: 100%; padding: 8px; border-radius: 4px;">
+                        <div class="form-group" id="noAssetBaruPreviewGroup" style="display: none;">
+                            <label for="no_asset_baru_preview">No. Asset Baru (Otomatis)</label>
+                            
+                            <input type="text" name="no_asset_baru_preview" id="no_asset_baru_preview" class="form-control" readonly 
+                                style="background-color: #4a5568; color: #a0aec0; border: 1px dashed #718096; text-align: center; font-style: italic;" 
+                                value="-- Pilih Perusahaan Tujuan --">
+
+                            <div id="noAssetBaruWarning" style="display: none; font-size: 0.8rem; color: #f6e05e; margin-top: 5px; text-align: center; background-color: rgba(246, 224, 94, 0.1); padding: 4px; border-radius: 4px;">
+                                Nomor Aset ini akan digenerate ulang saat disimpan.
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="perusahaanTujuanGroup" style="display: none; margin-bottom: 1rem;">
+                            <label for="serahTerimaPerusahaanTujuan">Pindahkan ke Perusahaan</label>
+                            <select id="serahTerimaPerusahaanTujuan" name="perusahaan_tujuan" class="form-control">
                                 <option value="">Pilih Perusahaan Tujuan</option>
-                                <option value="SCO">SCO</option>
-                                <option value="SCT">SCT</option>
-                                <option value="SCP">SCP</option>
-                                <option value="Migen">Migen</option>
+                                {{-- Loop untuk mengisi option perusahaan --}}
+                                @foreach($perusahaanOptions as $perusahaan)
+                                    <option value="{{ $perusahaan->id }}" data-singkatan="{{ $perusahaan->singkatan }}">{{ $perusahaan->nama_perusahaan }}</option>
+                                @endforeach
                             </select>
                             <div class="invalid-feedback" id="perusahaan_tujuan_serah_error"></div>
                         </div>
@@ -1820,40 +1836,34 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 <form id="addAssetForm">
                     @csrf <!-- Penting untuk keamanan form Laravel -->
 
+                    <!-- PERUBAHAN: Dropdown Perusahaan Dinamis -->
                     <div class="form-group">
-                        <label for="perusahaan">Perusahaan</label>
-                        <select name="perusahaan" id="perusahaan" class="form-control" required>
+                        <label for="perusahaan_id">Perusahaan</label>
+                        <select name="perusahaan_id" id="perusahaan_id" class="form-control" required>
                             <option value="">Pilih Perusahaan</option>
-                            <option value="SCO">SCO</option>
-                            <option value="SCT">SCT</option>
-                            <option value="SCP">SCP</option>
-                            <option value="Migen">Migen</option>
+                            {{-- Loop dari data yang dikirim DashboardController --}}
+                            @foreach($perusahaanOptions as $perusahaan)
+                                <option value="{{ $perusahaan->id }}">{{ $perusahaan->nama_perusahaan }} ({{ $perusahaan->singkatan }})</option>
+                            @endforeach
                         </select>
-                        <div class="invalid-feedback" id="perusahaan_error"></div>
+                        <div class="invalid-feedback" id="perusahaan_id_error"></div>
                     </div>
 
+                    <!-- PERUBAHAN: Dropdown Jenis Barang Dinamis -->
                     <div class="form-group">
-                        <label for="jenis_barang">Jenis Barang</label>
-                        <select name="jenis_barang" id="jenis_barang" class="form-control" required>
+                        <label for="jenis_barang_id">Jenis Barang</label>
+                        <select name="jenis_barang_id" id="jenis_barang_id" class="form-control" required>
                             <option value="">Pilih Jenis Barang</option>
-                            <option value="Laptop">Laptop</option>
-                            <option value="HP">HP</option>
-                            <option value="PC/AIO">PC/AIO</option>
-                            <option value="Printer">Printer</option>
-                            <option value="Proyektor">Proyektor</option>
-                            <option value="Others">Others</option>
+                            {{-- Loop dari data yang dikirim DashboardController --}}
+                            @foreach($jenisBarangOptions as $jenis)
+                                <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }} ({{ $jenis->singkatan }})</option>
+                            @endforeach
                         </select>
-                        <div class="invalid-feedback" id="jenis_barang_error"></div>
+                        <div class="invalid-feedback" id="jenis_barang_id_error"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="no_asset">No. Asset</label>
-                        <input type="text" name="no_asset" id="no_asset" class="form-control" required>
-                        <div class="invalid-feedback" id="no_asset_error"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="merek">Merek</label> <!-- Mengganti 'No Barang' dengan 'Merek' -->
+                        <label for="merek">Merek</label>
                         <input type="text" name="merek" id="merek" class="form-control" required>
                         <div class="invalid-feedback" id="merek_error"></div>
                     </div>
@@ -1868,6 +1878,20 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         <label for="serial_number">Serial Number</label>
                         <input type="text" name="serial_number" id="serial_number" class="form-control" required>
                         <div class="invalid-feedback" id="serial_number_error"></div>
+                    </div>
+
+                    <!-- PERUBAHAN: No. Asset readonly, akan diisi JS (opsional tapi bagus) -->
+                    <div class="form-group">
+                        <label for="no_asset_preview">No. Asset (Otomatis)</label>
+                        
+                        <!-- Elemen untuk menampilkan preview -->
+                        <input type="text" name="no_asset_preview" id="no_asset_preview" class="form-control" readonly 
+                            style="background-color: #4a5568; color: #a0aec0; border: 1px dashed #718096; text-align: center; font-style: italic;" 
+                            value="-- Pilih Perusahaan, Jenis, dan Tanggal --">
+                        <!-- Pesan Peringatan (awalnya disembunyikan) -->
+                        <div id="noAssetWarning" style="display: none; font-size: 0.8rem; color: #f6e05e; margin-top: 5px; text-align: center; background-color: rgba(246, 224, 94, 0.1); padding: 4px; border-radius: 4px;">
+                            Nomor Aset ini akan dibuat secara otomatis saat disimpan.
+                        </div>
                     </div>
                 </form>
             </div>
@@ -1896,27 +1920,28 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
               </button>
             </div>
             <ul class="sidebar-list">
-              <li class="sidebar-list-item">
+              {{-- Link ke Dashboard --}}
+              <li class="sidebar-list-item {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
                 <a href="{{ route('dashboard.index') }}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                   <span>Dashboard</span>
                 </a>
               </li>
-              <li class="sidebar-list-item">
-                  <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span>User Manage</span>
-                  </a>
-              </li>
+              {{-- Link ke Manajemen User --}}
+                @if(auth()->user()->role === 'admin')
+                <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                    <a href="{{ route('users.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>Manage User</span>
+                    </a>
+                </li>
+                @endif
             </ul>
             <div class="account-info">
               <div class="account-info-picture">
-                <img src="{{ asset('img/Logo-scuto.png') }}" alt="Account">
+                <img src="/img/Logo-scuto.png" alt="Account"> <!-- Ganti dengan path yang benar -->
               </div>
-              <div class="account-info-name">Monica G.</div>
-              <button class="account-info-more">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-              </button>
+              <div class="account-info-name">{{ auth()->user()->name ?? 'Guest' }}</div>
             </div>
           </div>
 
@@ -1932,7 +1957,12 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
                 </svg>
             </button>
-            <button id="logoutButton" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">Logout</button>
+            <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');" style="display: inline;">
+                @csrf
+                <button type="submit" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">
+                    Logout
+                </button>
+            </form>
             </div>
         </div>
 
@@ -1941,8 +1971,8 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             @php
                 $typeIcons = [
                     'Laptop' => 'fas fa-laptop',
-                    'HP' => 'fas fa-mobile-alt',
-                    'PC/AIO' => 'fas fa-desktop',
+                    'Handphone' => 'fas fa-mobile-alt',
+                    'PC / AIO' => 'fas fa-desktop',
                     'Printer' => 'fas fa-print',
                     'Proyektor' => 'fas fa-video',
                     'Others' => 'fas fa-boxes'
@@ -1979,10 +2009,12 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 
                 {{-- Tombol aksi (Tambah & Filter) dipindahkan ke sini --}}
                 <div class="app-content-actions-buttons">
-                    <button type="button" id="openAddAssetModalButton" class="action-button add-asset-btn" title="Tambah Aset">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Tambah Asset</span>
-                    </button>
+                    @if(auth()->user()->role === 'admin')
+                        <button type="button" id="openAddAssetModalButton" class="action-button add-asset-btn">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Tambah Asset</span>
+                        </button>
+                    @endif
                     <div class="filter-button-wrapper">
                         <button type="button" class="action-button filter jsFilter" title="Filter">
                             <span>Filter</span>
@@ -1994,8 +2026,9 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                                     <option value="">Semua Perusahaan</option>
                                     @if(isset($perusahaanOptions))
                                         @foreach($perusahaanOptions as $perusahaan)
-                                            <option value="{{ $perusahaan }}" {{ (isset($filterPerusahaan) && $filterPerusahaan == $perusahaan) ? 'selected' : '' }}>
-                                                {{ $perusahaan }}
+                                            {{-- VALUE SEKARANG ADALAH ID, BUKAN SINGKATAN --}}
+                                            <option value="{{ $perusahaan->id }}" {{ (isset($filterPerusahaan) && $filterPerusahaan == $perusahaan->id) ? 'selected' : '' }}>
+                                                {{ $perusahaan->nama_perusahaan }}
                                             </option>
                                         @endforeach
                                     @endif
@@ -2004,10 +2037,11 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                                 <label for="filter_jenis_barang">Jenis Barang</label>
                                 <select name="filter_jenis_barang" id="filter_jenis_barang">
                                     <option value="">Semua Jenis Barang</option>
-                                     @if(isset($jenisBarangOptions))
+                                    @if(isset($jenisBarangOptions))
                                         @foreach($jenisBarangOptions as $jenis)
-                                            <option value="{{ $jenis }}" {{ (isset($filterJenisBarang) && $filterJenisBarang == $jenis) ? 'selected' : '' }}>
-                                                {{ $jenis }}
+                                            {{-- VALUE SEKARANG ADALAH ID, BUKAN NAMA JENIS --}}
+                                            <option value="{{ $jenis->id }}" {{ (isset($filterJenisBarang) && $filterJenisBarang == $jenis->id) ? 'selected' : '' }}>
+                                                {{ $jenis->nama_jenis }}
                                             </option>
                                         @endforeach
                                     @endif
@@ -2046,14 +2080,16 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         @foreach($barangs as $index => $barang)
                         <div class="products-row">
                             <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
-                            <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan }}">{{ $barang->perusahaan }}</div>
-                            <div class="product-cell cell-jenis-barang" title="{{ $barang->jenis_barang }}">{{ $barang->jenis_barang }}</div>
+                            {{-- PERUBAHAN: Ambil dari relasi --}}
+                            <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan->singkatan ?? '' }}">{{ $barang->perusahaan->nama_perusahaan ?? 'N/A' }}</div>
+                            <div class="product-cell cell-jenis-barang" title="{{ $barang->jenisBarang->nama_jenis ?? '' }}">{{ $barang->jenisBarang->nama_jenis ?? 'N/A' }}</div>
+                            {{-- Akhir Perubahan --}}
                             <div class="product-cell cell-no-asset" title="{{ $barang->no_asset }}">{{ $barang->no_asset }}</div>
                             <div class="product-cell cell-merek" title="{{ $barang->merek }}">{{ $barang->merek }}</div>
                             <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
                             <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
                             <div class="product-cell cell-aksi">
-                                <button class="action-btn-table detail-btn-table-js" onclick="openDetailModal({{ $barang->id }})" title="Detail Aset">
+                                <button class="action-btn-table detail-btn-table-js" data-id="{{ $barang->id }}" title="Detail Aset">
                                     <i class="fas fa-info-circle"></i>
                                     <span>Detail</span>
                                 </button>
@@ -2066,7 +2102,6 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                         </div>
                     @endif
                 </div>
-            </div>
 
             {{-- Container untuk Paginasi --}}
             <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center;" id="realtimePaginationContainer">
@@ -2091,6 +2126,133 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
         let debounceTimer;
         let lastKnownUserFromDetail = '-';
         const DEBOUNCE_DELAY = 500;
+
+    function openDetailModal(barangId) {
+        const detailModalOverlay = document.getElementById('deviceInfoModal');
+        if (!detailModalOverlay) return;
+
+        // Ambil semua elemen UI yang PASTI ada
+        const modalDeviceName = document.getElementById('modalDeviceName');
+        const modalDeviceType = document.getElementById('modalDeviceType');
+        const modalNo = document.getElementById('modalNo');
+        const modalPerusahaan = document.getElementById('modalPerusahaan');
+        const modalNoAsset = document.getElementById('modalNoAsset');
+        const modalTglPengadaan = document.getElementById('modalTglPengadaan');
+        const modalSerialNumber = document.getElementById('modalSerialNumber');
+        const modalUser = document.getElementById('modalUser');
+        const modalTglPenyerahan = document.getElementById('modalTglPenyerahan');
+        const modalTglPengembalian = document.getElementById('modalTglPengembalian');
+        const modalStatus = document.getElementById('modalStatus');
+        const modalKeterangan = document.getElementById('modalKeterangan');
+        const deviceImage = document.getElementById('modalDeviceImage');
+
+        // Cek elemen-elemen wajib
+        if (!modalDeviceName || !deviceImage) {
+            console.error('Elemen wajib pada modal detail (seperti nama atau gambar) tidak ditemukan.');
+            return;
+        }
+
+        // Reset UI modal detail ke status loading
+        modalDeviceName.textContent = 'Memuat...';
+        modalDeviceType.textContent = '_';
+        modalNo.textContent = '_';
+        modalPerusahaan.textContent = '_';
+        modalNoAsset.textContent = '_';
+        modalTglPengadaan.textContent = '_';
+        modalSerialNumber.textContent = '_';
+        modalUser.textContent = '_';
+        modalTglPenyerahan.textContent = '_';
+        modalTglPengembalian.textContent = '_';
+        modalStatus.innerHTML = '_';
+        modalKeterangan.textContent = '_';
+        deviceImage.className = 'device-image fas fa-spinner fa-spin';
+
+        fetch(`/barang/detail/${barangId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.barang) {
+                    const barang = data.barang;
+                    const track = data.track;
+
+                    // Isi semua data ke modal
+                    modalDeviceName.textContent = barang.merek || 'N/A';
+                    modalDeviceType.textContent = barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A';
+                    modalNo.textContent = barang.id || 'N/A';
+                    modalPerusahaan.textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
+                    modalNoAsset.textContent = barang.no_asset || 'N/A';
+                    modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
+                    modalSerialNumber.textContent = barang.serial_number || 'N/A';
+
+                    if (track) {
+                        modalUser.textContent = track.username || 'N/A';
+                        lastKnownUserFromDetail = track.username || '-';
+                        modalTglPenyerahan.textContent = formatDate(track.tanggal_awal);
+                        modalTglPengembalian.textContent = track.tanggal_ahir ? formatDate(track.tanggal_ahir) : '-';
+                        modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${track.status || 'N/A'}</span>`;
+                        modalKeterangan.textContent = track.keterangan || 'Tidak ada keterangan.';
+                    } else {
+                        modalUser.textContent = '-';
+                        lastKnownUserFromDetail = '-';
+                        modalTglPenyerahan.textContent = '-';
+                        modalTglPengembalian.textContent = '-';
+                        modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${barang.status || 'N/A'}</span>`;
+                        modalKeterangan.textContent = 'Belum ada riwayat serah terima.';
+                    }
+
+                    // =========================================================
+                    // === PENANGANAN TOMBOL UPDATE ASET YANG AMAN & BERSIH ===
+                    // =========================================================
+                    // 1. Cari tombolnya
+                    const btnUpdateAset = document.querySelector('#deviceInfoModal .btn-action.btn-update');
+
+                    // 2. Jika tombol itu ADA (artinya login sebagai admin)
+                    if (btnUpdateAset) {
+                        // Setel semua data yang dibutuhkan ke tombol tersebut
+                        btnUpdateAset.dataset.assetId = barang.id;
+                        btnUpdateAset.dataset.serialNumber = barang.serial_number;
+                        
+                        // Pasang event kliknya
+                        btnUpdateAset.onclick = handleOpenSerahTerimaModal;
+                    }
+                    // Jika tombol tidak ada (login sebagai user biasa), blok ini akan dilewati dan tidak ada error.
+
+                    // Handle tombol History User
+                    const triggerHistoryButton = document.getElementById('triggerUserHistoryModalButton');
+                    if (triggerHistoryButton && barang.serial_number) {
+                        const newTriggerHistoryButton = triggerHistoryButton.cloneNode(true);
+                        triggerHistoryButton.parentNode.replaceChild(newTriggerHistoryButton, triggerHistoryButton);
+                        const deviceFullName = `${barang.merek || 'N/A'} (${barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A'})`;
+                        const currentCompany = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
+                        newTriggerHistoryButton.addEventListener('click', () => openUserHistoryModal(barang.serial_number, deviceFullName, currentCompany));
+                    }
+
+                    // Update Ikon
+                    let iconClass = 'fas fa-desktop';
+                    const jenisNama = barang.jenis_barang ? barang.jenis_barang.nama_jenis.trim() : '';
+                    if (jenisNama === 'Laptop') iconClass = 'fas fa-laptop';
+                    else if (jenisNama === 'Handphone') iconClass = 'fas fa-mobile-alt';
+                    else if (jenisNama === 'Printer') iconClass = 'fas fa-print';
+                    else if (jenisNama === 'Proyektor') iconClass = 'fas fa-video';
+                    else if (jenisNama === 'Others') iconClass = 'fas fa-box-open';
+                    else if (jenisNama === 'PC / AIO') iconClass = 'fas fa-desktop';
+                    deviceImage.className = `device-image ${iconClass}`;
+
+                    // Tampilkan modal setelah semuanya siap
+                    detailModalOverlay.style.display = 'flex';
+
+                } else {
+                    alert(data.error || 'Data tidak ditemukan.');
+                    modalDeviceName.textContent = 'Error';
+                    deviceImage.className = 'device-image fas fa-exclamation-triangle';
+                }
+            })
+            .catch(error => {
+                console.error('Error selama proses fetch detail barang:', error);
+                alert('Gagal mengambil detail barang. Lihat konsol untuk detail.');
+                modalDeviceName.textContent = 'Error';
+                deviceImage.className = 'device-image fas fa-exclamation-triangle';
+            });
+    }
 
         function formatDate(dateString) {
             if (!dateString) return '-';
@@ -2171,162 +2333,61 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             }
         }
 
-        function openDetailModal(barangId) {
-            const detailModalOverlay = document.getElementById('deviceInfoModal');
-            if (!detailModalOverlay) return;
+// File: DasboardPage.blade.php (di luar DOMContentLoaded)
 
-            const modalDeviceName = document.getElementById('modalDeviceName');
-            const modalDeviceType = document.getElementById('modalDeviceType');
-            const modalNo = document.getElementById('modalNo');
-            const modalPerusahaan = document.getElementById('modalPerusahaan');
-            const modalNoAsset = document.getElementById('modalNoAsset');
-            const modalTglPengadaan = document.getElementById('modalTglPengadaan');
-            const modalSerialNumber = document.getElementById('modalSerialNumber');
-            const modalUser = document.getElementById('modalUser');
-            const modalTglPenyerahan = document.getElementById('modalTglPenyerahan');
-            const modalTglPengembalian = document.getElementById('modalTglPengembalian');
-            const modalStatus = document.getElementById('modalStatus');
-            const modalKeterangan = document.getElementById('modalKeterangan');
-            const deviceImage = document.getElementById('modalDeviceImage');
-            const modalPerusahaanTeks = document.getElementById('modalPerusahaan');
-            const btnUpdateAsetModalDetail = detailModalOverlay.querySelector('.btn-action.btn-update');
-
-            if (!modalDeviceName || !btnUpdateAsetModalDetail /* ...tambahkan cek null untuk elemen lain jika perlu...*/) {
-                console.error('Beberapa elemen modal detail tidak ditemukan.');
-                return;
-            }
-
-            // Reset UI modal detail
-            modalDeviceName.textContent = 'Memuat...';
-            modalDeviceType.textContent = '_';
-            modalNo.textContent = '_';
-            modalPerusahaan.textContent = '_';
-            modalNoAsset.textContent = '_';
-            modalTglPengadaan.textContent = '_';
-            modalSerialNumber.textContent = '_';
-            modalUser.textContent = '_';
-            modalTglPenyerahan.textContent = '_';
-            modalTglPengembalian.textContent = '_';
-            modalStatus.innerHTML = '_';
-            modalKeterangan.textContent = '_';
-            deviceImage.className = 'device-image fas fa-spinner fa-spin';
-
-            currentAssetIdForSerahTerima = barangId;
-
-            fetch(`/barang/detail/${barangId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.barang) {
-                        const barang = data.barang;
-                        const track = data.track;
-
-                        modalDeviceName.textContent = barang.merek || 'N/A';
-                        modalDeviceType.textContent = barang.jenis_barang || 'N/A';
-                        modalNo.textContent = barang.id || 'N/A';
-                        modalPerusahaan.textContent = barang.perusahaan || 'N/A';
-                        modalNoAsset.textContent = barang.no_asset || 'N/A';
-                        modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
-                        modalSerialNumber.textContent = barang.serial_number || 'N/A';
-                        modalPerusahaanTeks.textContent = barang.perusahaan || 'N/A';
-
-                        if (track) {
-                            modalUser.textContent = track.username || 'N/A';
-                            lastKnownUserFromDetail = track.username || '-';
-                            modalTglPenyerahan.textContent = formatDate(track.tanggal_awal);
-                            modalTglPengembalian.textContent = track.tanggal_ahir ? formatDate(track.tanggal_ahir) : '-';
-                            modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${track.status || 'N/A'}</span>`;
-                            modalKeterangan.textContent = track.keterangan || 'Tidak ada keterangan.';
-                        } else {
-                            modalUser.textContent = '-';
-                            modalTglPenyerahan.textContent = '-';
-                            modalTglPengembalian.textContent = '-';
-                            lastKnownUserFromDetail = '-';
-                            modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${barang.status || 'N/A'}</span>`; // Fallback ke status barang
-                            modalKeterangan.textContent = 'Belum ada riwayat serah terima.';
-                        }
-
-                        const triggerHistoryButton = document.getElementById('triggerUserHistoryModalButton');
-                        if (triggerHistoryButton && barang.serial_number) {
-                            const newTriggerHistoryButton = triggerHistoryButton.cloneNode(true);
-                            triggerHistoryButton.parentNode.replaceChild(newTriggerHistoryButton, triggerHistoryButton);
-                            const deviceFullName = `${barang.merek || ''} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
-                            const currentCompany = barang.perusahaan || 'N/A';
-                            newTriggerHistoryButton.addEventListener('click', () => openUserHistoryModal(barang.serial_number, deviceFullName, currentCompany));
-                        }
-
-                        // Setup tombol "Update Aset" di modal detail untuk memanggil handleOpenSerahTerimaModal
-                        btnUpdateAsetModalDetail.dataset.assetId = barang.id;
-                        btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
-                        // Pastikan nama perangkat tidak mengandung karakter yang bisa merusak HTML jika tidak di-escape
-                        const deviceNameForModal = `${barang.merek || 'Aset'} (${barang.jenis_barang || 'Tipe Tidak Diketahui'})`;
-                        btnUpdateAsetModalDetail.dataset.assetId = barang.id;
-                        btnUpdateAsetModalDetail.dataset.serialNumber = barang.serial_number;
-                        btnUpdateAsetModalDetail.dataset.deviceName = deviceNameForModal.replace(/"/g, '"');
-
-                        const newBtnUpdate = btnUpdateAsetModalDetail.cloneNode(true); // Reclone untuk listener baru
-                        btnUpdateAsetModalDetail.parentNode.replaceChild(newBtnUpdate, btnUpdateAsetModalDetail);
-                        newBtnUpdate.removeAttribute('onclick');
-                        newBtnUpdate.addEventListener('click', handleOpenSerahTerimaModal);
-
-
-                        let iconClass = 'fas fa-desktop'; // default
-                        if (barang.jenis_barang === 'Laptop') iconClass = 'fas fa-laptop';
-                        else if (barang.jenis_barang === 'HP') iconClass = 'fas fa-mobile-alt';
-                        else if (barang.jenis_barang === 'Printer') iconClass = 'fas fa-print';
-                        else if (barang.jenis_barang === 'Proyektor') iconClass = 'fas fa-video';
-                        else if (barang.jenis_barang === 'Others') iconClass = 'fas fa-box-open';
-                        deviceImage.className = `device-image ${iconClass}`;
-
-                        detailModalOverlay.style.display = 'flex';
-                    } else {
-                        alert(data.error || 'Data tidak ditemukan.');
-                        // Reset UI ke keadaan error jika perlu
-                        modalDeviceName.textContent = 'Error';
-                        deviceImage.className = 'device-image fas fa-exclamation-triangle';
-                        lastKnownUserFromDetail = '-';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching detail barang:', error);
-                    alert('Gagal mengambil detail barang.');
-                    modalDeviceName.textContent = 'Error';
-                    deviceImage.className = 'device-image fas fa-exclamation-triangle';
-                    lastKnownUserFromDetail = '-';
-                });
-        }
-
-        function handleOpenSerahTerimaModal(event) {
+        async function handleOpenSerahTerimaModal(event) {
             const assetId = event.currentTarget.dataset.assetId;
-            const serialNumber = event.currentTarget.dataset.serialNumber;
-            const deviceName = event.currentTarget.dataset.deviceName;
+            
+            try {
+                const response = await fetch(`/barang/detail/${assetId}`);
+                const result = await response.json();
 
-            const serahModal = document.getElementById('serahTerimaAsetModal');
-            const serahForm = document.getElementById('serahTerimaAsetForm');
+                if (!result.success || !result.barang) {
+                    alert('Gagal mengambil detail aset untuk serah terima.');
+                    return;
+                }
+                
+                const barang = result.barang;
+                window.setCurrentBarangForSerahTerima(barang);
+                
+                const serahModal = document.getElementById('serahTerimaAsetModal');
+                const serahForm = document.getElementById('serahTerimaAsetForm');
 
-            if (!serahModal || !serahForm) {
-                console.error("Modal serah terima atau formnya tidak ditemukan.");
-                return;
+                serahForm.reset();
+                
+                document.getElementById('serahTerimaAssetId').value = assetId;
+                document.getElementById('serahTerimaSerialNumber').value = barang.serial_number;
+                document.getElementById('serahTerimaInfoNamaAset').textContent = barang.merek;
+                document.getElementById('serahTerimaInfoSN').textContent = barang.serial_number;
+                document.getElementById('serahTerimaInfoPerusahaan').textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
+                document.getElementById('serahTerimaTanggalAwal').value = new Date().toISOString().slice(0, 10);
+                
+                // --- PERUBAHAN UTAMA DI SINI ---
+                const perusahaanTujuanSelect = document.getElementById('serahTerimaPerusahaanTujuan');
+                const currentPerusahaanId = barang.perusahaan_id.toString(); // Ambil ID perusahaan saat ini
+
+                // Loop melalui semua option di dropdown
+                Array.from(perusahaanTujuanSelect.options).forEach(option => {
+                    // Jika value option sama dengan ID perusahaan saat ini
+                    if (option.value === currentPerusahaanId) {
+                        option.disabled = true; // Nonaktifkan pilihan ini
+                        option.style.display = 'none'; // Sembunyikan dari tampilan
+                    } else {
+                        option.disabled = false; // Aktifkan lagi pilihan lain (penting jika modal dibuka ulang)
+                        option.style.display = 'block'; // Tampilkan lagi
+                    }
+                });
+                // --- AKHIR PERUBAHAN ---
+                
+                document.getElementById('perusahaanTujuanGroup').style.display = 'none';
+                document.getElementById('noAssetBaruPreviewGroup').style.display = 'none';
+
+                serahModal.style.display = 'flex';
+
+            } catch (error) {
+                console.error("Gagal membuka modal serah terima:", error);
+                alert("Terjadi kesalahan saat membuka form serah terima.");
             }
-
-            serahForm.reset(); // Reset form, termasuk select status
-
-            document.getElementById('serahTerimaAssetId').value = assetId;
-            document.getElementById('serahTerimaSerialNumber').value = serialNumber;
-            document.getElementById('serahTerimaInfoNamaAset').textContent = deviceName;
-            document.getElementById('serahTerimaInfoSN').textContent = serialNumber;
-
-            const today = new Date().toISOString().slice(0, 10);
-            document.getElementById('serahTerimaTanggalAwal').value = today;
-
-            // PENTING: Panggil handleSerahTerimaStatusChange SETELAH form direset
-            // Ini akan mengatur UI berdasarkan nilai default dari select status (yang akan kosong)
-            handleSerahTerimaStatusChange();
-
-            // Bersihkan pesan error validasi sebelumnya jika ada
-            serahForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-            serahForm.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-            serahModal.style.display = 'flex';
         }
 
         function openUserHistoryModal(serialNumber, deviceName, company) {
@@ -2427,12 +2488,11 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const filterJenisBarangSelect = document.getElementById('filter_jenis_barang');
 
             const addAssetModal = document.getElementById('addAssetModal');
-            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton');
             const closeAddAssetModalBtn = document.getElementById('closeAddAssetModalBtn');
             const cancelAddAssetModalBtn = document.getElementById('cancelAddAssetModalBtn');
-            const addAssetForm = document.getElementById('addAssetForm');
             const submitAddAssetBtn = document.getElementById('submitAddAssetBtn');
             const resetFilterInMenuBtn = document.getElementById('resetFilterInMenuBtn');
+            const openAddAssetModalButton = document.getElementById('openAddAssetModalButton');
 
             const detailModalOverlayElement = document.getElementById('deviceInfoModal');
             const closeDetailModalButtonElement = document.getElementById('closeDetailModalButton');
@@ -2445,10 +2505,168 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             const tableHeader = document.querySelector('.products-header');
             const tableBody = document.getElementById('productTableRowsContainer');
 
+
             let originalRowsHTML = ''; // Akan menyimpan HTML asli dari tabel
             let activeSortKey = null;
             let activeSortDirection = 'none';
 
+            if (productTableRowsContainer) {
+                productTableRowsContainer.addEventListener('click', function(event) {
+                    const detailButton = event.target.closest('.detail-btn-table-js');
+                    if (detailButton) {
+                        const barangId = detailButton.dataset.id;
+                        if (barangId) {
+                            openDetailModal(barangId);
+                        }
+                    }
+                });
+            }
+
+            function setupAssetPreview() {
+                console.log("Memulai setup untuk preview No. Aset...");
+
+                // Ambil semua elemen form di dalam fungsi ini
+                const perusahaanSelect = document.getElementById('perusahaan_id');
+                const jenisBarangSelect = document.getElementById('jenis_barang_id');
+                const tglPengadaanInput = document.getElementById('tgl_pengadaan');
+                const noAssetPreviewInput = document.getElementById('no_asset_preview');
+                const noAssetWarning = document.getElementById('noAssetWarning');
+                const addAssetForm = document.getElementById('addAssetForm');
+
+                // Cek apakah semua elemen penting ada
+                if (!perusahaanSelect || !jenisBarangSelect || !tglPengadaanInput || !noAssetPreviewInput || !noAssetWarning) {
+                    console.error("Satu atau lebih elemen form untuk preview tidak ditemukan. Periksa ID HTML.");
+                    return; // Hentikan fungsi jika ada elemen yang hilang
+                }
+
+                // Buat satu fungsi update yang akan dipanggil oleh semua event
+                const updateNoAssetPreview = async () => { // Tambahkan async
+                    const perusahaanOption = perusahaanSelect.options[perusahaanSelect.selectedIndex];
+                    const jenisBarangOption = jenisBarangSelect.options[jenisBarangSelect.selectedIndex];
+                    const tglPengadaan = tglPengadaanInput.value;
+
+                    if (perusahaanOption.value && jenisBarangOption.value && tglPengadaan) {
+                        
+                        noAssetPreviewInput.value = 'Menghitung nomor seri...';
+                        if(noAssetWarning) noAssetWarning.style.display = 'none';
+
+                        try {
+                            // Panggil API yang sama
+                            const perusahaanId = perusahaanOption.value;
+                            const response = await fetch(`{{ url('/aset/nomor-seri-berikutnya') }}/${perusahaanId}`);
+                            const data = await response.json();
+
+                            if (data.success) {
+                                const nomorSeri = data.nomor_seri;
+                                const ptMatch = perusahaanOption.text.match(/\(([^)]+)\)/);
+                                const jenisMatch = jenisBarangOption.text.match(/\(([^)]+)\)/);
+
+                                if (ptMatch && jenisMatch) {
+                                    const singkatanPT = ptMatch[1];
+                                    const singkatanJenis = jenisMatch[1];
+                                    const tahun = new Date(tglPengadaan).getFullYear();
+                                    const bulan = ('0' + (new Date(tglPengadaan).getMonth() + 1)).slice(-2);
+                                    
+                                    // Gabungkan dengan nomor seri asli dari API
+                                    const previewText = `${singkatanPT}/${singkatanJenis}/${tahun}/${bulan}/${nomorSeri}`;
+                                    noAssetPreviewInput.value = previewText;
+                                    if(noAssetWarning) noAssetWarning.style.display = 'block';
+                                }
+                            } else {
+                                throw new Error('Gagal mendapatkan nomor seri dari API.');
+                            }
+                        } catch (error) {
+                            console.error("Error saat fetch no seri untuk Tambah Aset:", error);
+                            noAssetPreviewInput.value = 'Gagal memuat nomor.';
+                        }
+                    } else {
+                        noAssetPreviewInput.value = '-- Pilih Perusahaan, Jenis, dan Tanggal --';
+                        if(noAssetWarning) noAssetWarning.style.display = 'none';
+                    }
+                };
+
+                // Pasang event listener ke elemen yang sudah kita definisikan
+                perusahaanSelect.addEventListener('change', updateNoAssetPreview);
+                jenisBarangSelect.addEventListener('change', updateNoAssetPreview);
+                tglPengadaanInput.addEventListener('change', updateNoAssetPreview);
+                console.log("Semua event listener untuk preview berhasil dipasang.");
+                
+                // Event listener untuk tombol buka modal, untuk mereset form
+                if (openAddAssetModalButton) {
+                    openAddAssetModalButton.addEventListener('click', () => {
+                        if(addAssetForm) addAssetForm.reset();
+                        updateNoAssetPreview(); // Pastikan preview juga ikut reset ke state awal
+                    });
+                }
+            }
+
+            function setupSerahTerimaPreview() {
+                const serahTerimaStatusSelect = document.getElementById('serahTerimaStatus');
+                const perusahaanTujuanGroup = document.getElementById('perusahaanTujuanGroup');
+                const perusahaanTujuanSelect = document.getElementById('serahTerimaPerusahaanTujuan');
+                const noAssetBaruPreviewGroup = document.getElementById('noAssetBaruPreviewGroup');
+                const noAssetBaruPreviewInput = document.getElementById('no_asset_baru_preview');
+                const noAssetBaruWarning = document.getElementById('noAssetBaruWarning');
+                
+                // Variabel untuk menyimpan data aset saat ini
+                let currentBarangData = null; 
+
+                // Fungsi untuk membuat preview nomor aset baru
+                const updateNoAssetBaruPreview = async () => {
+                    const perusahaanTujuanOption = perusahaanTujuanSelect.options[perusahaanTujuanSelect.selectedIndex];
+
+                    if (!currentBarangData || !perusahaanTujuanOption.value) {
+                        noAssetBaruPreviewInput.value = '-- Pilih Perusahaan Tujuan --';
+                        noAssetBaruWarning.style.display = 'none';
+                        return;
+                    }
+
+                    noAssetBaruPreviewInput.value = 'Menghitung nomor seri...';
+                    try {
+                        const perusahaanId = perusahaanTujuanOption.value;
+                        const response = await fetch(`{{ url('/aset/nomor-seri-berikutnya') }}/${perusahaanId}`);
+                        const data = await response.json();
+
+                        if (data.success) {
+                            const nomorSeri = data.nomor_seri;
+                            const singkatanPT = perusahaanTujuanOption.dataset.singkatan;
+                            const singkatanJenis = currentBarangData.jenis_barang.singkatan;
+                            const tahun = new Date().getFullYear();
+                            const bulan = ('0' + (new Date().getMonth() + 1)).slice(-2);
+                            
+                            const previewText = `${singkatanPT}/${singkatanJenis}/${tahun}/${bulan}/${nomorSeri}`;
+                            noAssetBaruPreviewInput.value = previewText;
+                            noAssetBaruWarning.style.display = 'block';
+                        } else {
+                            throw new Error('Gagal mendapatkan nomor seri.');
+                        }
+                    } catch (error) {
+                        noAssetBaruPreviewInput.value = 'Gagal memuat nomor.';
+                    }
+                };
+
+                // Tampilkan/sembunyikan field berdasarkan status
+                serahTerimaStatusSelect.addEventListener('change', () => {
+                    if (serahTerimaStatusSelect.value === 'dipindah') {
+                        perusahaanTujuanGroup.style.display = 'block';
+                        noAssetBaruPreviewGroup.style.display = 'block';
+                    } else {
+                        perusahaanTujuanGroup.style.display = 'none';
+                        noAssetBaruPreviewGroup.style.display = 'none';
+                        perusahaanTujuanSelect.value = ''; // Reset pilihan
+                    }
+                });
+
+                // Panggil API saat perusahaan tujuan dipilih
+                perusahaanTujuanSelect.addEventListener('change', updateNoAssetBaruPreview);
+
+                // Kita perlu cara untuk mendapatkan data barang saat modal serah terima dibuka
+                // Kita akan modifikasi `handleOpenSerahTerimaModal`
+                window.setCurrentBarangForSerahTerima = (barang) => {
+                    currentBarangData = barang;
+                };
+            }
+    
             // Fungsi untuk menangkap kondisi asli tabel sebagai string HTML
             function captureOriginalState() {
                 if (tableBody) {
@@ -2580,88 +2798,89 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                 formElement.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
                 for (const field in errors) {
-                    let errorElement = formElement.querySelector(`#${field}_error`); // Default untuk Add Asset
-                    if (formElement.id === 'serahTerimaAsetForm' && !errorElement) { // Fallback untuk Serah Terima
-                        errorElement = formElement.querySelector(`#${field}_serah_error`);
+                    // PERUBAHAN KECIL DI SINI:
+                    // Cek ID error dulu, baru cari berdasarkan name
+                    let errorElement = formElement.querySelector(`#${field}_error`);
+                    let inputElement = formElement.querySelector(`#${field}`); // Cari berdasarkan ID dulu
+
+                    if (!inputElement) { // Jika tidak ketemu by ID, cari by name
+                        inputElement = formElement.querySelector(`[name="${field}"]`);
                     }
                     
-                    const inputElement = formElement.querySelector(`[name="${field}"]`);
-                    if (errorElement) {
+                    if (errorElement && inputElement) {
                         errorElement.textContent = errors[field][0];
-                    }
-                    if (inputElement) {
                         inputElement.classList.add('is-invalid');
+                    } else {
+                        // Fallback jika tidak ada elemen error spesifik
+                        console.warn(`Elemen error untuk field '${field}' tidak ditemukan.`);
                     }
                 }
             }
 
-            function performRealtimeSearch(page = 1) {
-                if (!productTableRowsContainer || !paginationContainer) return;
-                const keyword = mainSearchInput ? mainSearchInput.value : '';
-                const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
-                const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
+        function performRealtimeSearch(page = 1) {
+            if (!productTableRowsContainer || !paginationContainer) return;
 
-                productTableRowsContainer.innerHTML = '<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat data... <i class="fas fa-spinner fa-spin"></i></div></div>';
-                paginationContainer.innerHTML = '';
+            const keyword = mainSearchInput ? mainSearchInput.value : '';
+            const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
+            const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
 
-                const params = new URLSearchParams({
-                    search_no_asset: keyword,
-                    filter_perusahaan: perusahaan,
-                    filter_jenis_barang: jenisBarang,
-                    page: page
-                });
+            productTableRowsContainer.innerHTML = '<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat data... <i class="fas fa-spinner fa-spin"></i></div></div>';
+            paginationContainer.innerHTML = '';
 
-                fetch(`{{ route('dashboard.search.realtime') }}?${params.toString()}`, {
-                    method: 'GET',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-                })
-                .then(response => response.json())
-                .then(responseData => {
-                    let tableRowsHtml = '';
-                    if (responseData.data && responseData.data.length > 0) {
-                        let currentItemNumber = responseData.first_item || 1;
-                        responseData.data.forEach(barang => {
-                            let tglPengadaanFormatted = formatDate(barang.tgl_pengadaan);
-                            tableRowsHtml += `
-                                <div class="products-row">
-                                    <div class="product-cell cell-no">${currentItemNumber++}</div>
-                                    <div class="product-cell cell-perusahaan" title="${barang.perusahaan || ''}">${barang.perusahaan || ''}</div>
-                                    <div class="product-cell cell-jenis-barang" title="${barang.jenis_barang || ''}">${barang.jenis_barang || ''}</div>
-                                    <div class="product-cell cell-no-asset" title="${barang.no_asset || ''}">${barang.no_asset || ''}</div>
-                                    <div class="product-cell cell-merek" title="${barang.merek || ''}">${barang.merek || ''}</div>
-                                    <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
-                                    <div class="product-cell cell-serial-number" title="${barang.serial_number || ''}">${barang.serial_number || ''}</div>
-                                    <div class="product-cell cell-aksi">
-                                        <button class="action-btn-table detail-btn-table-js" onclick="openDetailModal(${barang.id})" title="Detail Aset">
-                                            <i class="fas fa-info-circle"></i>
-                                            <span>Detail</span>
-                                        </button>
-                                    </div>
-                                </div>`;
-                        });
-                    } else {
-                        tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
-                    }
-                    productTableRowsContainer.innerHTML = tableRowsHtml;
-                    captureOriginalState();
-                    if (responseData.links) {
-                        paginationContainer.innerHTML = responseData.links;
-                        setupAjaxPagination();
-                    }
-                    if (responseData.inventorySummary) {
-                        updateInventorySummary(responseData.inventorySummary);
-                    }
-                    captureOriginalState();
-                    if (responseData.links) {
-                        paginationContainer.innerHTML = responseData.links;
-                        setupAjaxPagination();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error performing real-time search:', error);
-                    productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
-                });
-            }
+            const params = new URLSearchParams({
+                search_no_asset: keyword,
+                filter_perusahaan: perusahaan,
+                filter_jenis_barang: jenisBarang,
+                page: page
+            });
+
+            fetch(`{{ route('dashboard.search.realtime') }}?${params.toString()}`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                let tableRowsHtml = '';
+
+                if (responseData.data && responseData.data.length > 0) {
+                    let currentItemNumber = responseData.first_item || 1;
+                    responseData.data.forEach(barang => {
+                        let tglPengadaanFormatted = formatDate(barang.tgl_pengadaan);
+                        tableRowsHtml += `
+                            <div class="products-row">
+                                <div class="product-cell cell-no">${currentItemNumber++}</div>
+                                <div class="product-cell cell-perusahaan" title="${barang.perusahaan_singkatan || ''}">${barang.perusahaan_nama || 'N/A'}</div>
+                                <div class="product-cell cell-jenis-barang" title="${barang.jenis_barang || ''}">${barang.jenis_barang || 'N/A'}</div>
+                                <div class="product-cell cell-no-asset" title="${barang.no_asset || ''}">${barang.no_asset || ''}</div>
+                                <div class="product-cell cell-merek" title="${barang.merek || ''}">${barang.merek || ''}</div>
+                                <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
+                                <div class="product-cell cell-serial-number" title="${barang.serial_number || ''}">${barang.serial_number || ''}</div>
+                                <div class="product-cell cell-aksi">
+                                    <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Detail</span>
+                                    </button>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
+                }
+                productTableRowsContainer.innerHTML = tableRowsHtml;
+                if (responseData.inventorySummary) {
+                    updateInventorySummary(responseData.inventorySummary);
+                }
+                captureOriginalState();
+                if (responseData.links) {
+                    paginationContainer.innerHTML = responseData.links;
+                    setupAjaxPagination();
+                }
+            })
+            .catch(error => {
+                console.error('Error performing real-time search:', error);
+                productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
+            });
+        }
 
             function setupAjaxPagination() {
                 if (!paginationContainer) return;
@@ -2705,6 +2924,8 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
             setupAjaxPagination();
             checkAndUpdateFilterStates();
             captureOriginalState();
+            setupAssetPreview();
+            setupSerahTerimaPreview();
 
             // Event Listeners untuk Search dan Filter
             if (mainSearchInput) {
@@ -2846,13 +3067,12 @@ html.light #serahTerimaAsetModal .modal-footer .btn-secondary {
                     .then(data => {
                         if (data.success) {
                             alert(data.message || 'Data serah terima berhasil disimpan.');
-                            if(serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
-                            // Cek apakah modal detail terbuka untuk aset yang sama
-                            if (detailModalOverlayElement && detailModalOverlayElement.style.display === 'flex' && currentAssetIdForSerahTerima == formData.get('asset_id')) {
-                                openDetailModal(currentAssetIdForSerahTerima); // Re-fetch dan buka lagi modal detail
-                            } else {
-                                performRealtimeSearch(); // Refresh tabel jika modal detail tidak terbuka atau beda aset
-                            }
+                            const serahTerimaAsetModalElement = document.getElementById('serahTerimaAsetModal');
+                            if (serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
+                            const detailModalOverlayElement = document.getElementById('deviceInfoModal');
+                            if (detailModalOverlayElement) detailModalOverlayElement.style.display = 'none';
+                            console.log("Submit sukses, memanggil performRealtimeSearch untuk refresh tabel.");
+                            performRealtimeSearch(); 
                         } else if (data.errors) {
                             displayValidationErrorsOnForm(data.errors, serahTerimaForm);
                         } else {

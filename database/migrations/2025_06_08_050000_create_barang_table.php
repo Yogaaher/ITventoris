@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('barang', function (Blueprint $table) {
         $table->id();
-        $table->enum('perusahaan', ['SCO', 'SCT', 'SCP', 'Migen']);
-        $table->enum('jenis_barang', ['Laptop', 'HP', 'PC/AIO', 'Printer', 'Proyektor', 'Others']);
-        $table->string('no_asset');
+        $table->foreignId('perusahaan_id')->constrained('perusahaans');
+        $table->foreignId('jenis_barang_id')->constrained('jenis_barangs');
+        $table->string('no_asset')->unique();
         $table->string('merek');
         $table->date('tgl_pengadaan');
         $table->string('serial_number')->unique();

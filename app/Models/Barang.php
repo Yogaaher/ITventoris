@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 class Barang extends Model
@@ -12,8 +13,8 @@ class Barang extends Model
     protected $table = 'barang';
 
     protected $fillable = [
-        'perusahaan',
-        'jenis_barang',
+        'perusahaan_id',
+        'jenis_barang_id',
         'no_asset',
         'merek',
         'tgl_pengadaan',
@@ -31,6 +32,16 @@ class Barang extends Model
                 'tanggal_ahir' => null,
             ]);
         });
+    }
+
+    public function perusahaan(): BelongsTo
+    {
+        return $this->belongsTo(Perusahaan::class, 'perusahaan_id');
+    }
+
+    public function jenisBarang(): BelongsTo
+    {
+        return $this->belongsTo(JenisBarang::class, 'jenis_barang_id');
     }
 
     public function tracks(): HasMany
