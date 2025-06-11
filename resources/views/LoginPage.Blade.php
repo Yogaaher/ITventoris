@@ -155,7 +155,7 @@
     <div class="login-form-container">
         <div class="form-header">
             <img src="img/Scuto-logo.svg" alt="Logo ITventoris">
-            <h2>ITventoris</h2>
+            <h2>ITventory</h2>
         </div>
         <div class="form-title">
             <h3>Selamat Datang!</h3>
