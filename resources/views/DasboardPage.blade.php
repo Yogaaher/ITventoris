@@ -1,5 +1,5 @@
     <!DOCTYPE html>
-    <html lang="id"> <!-- Class 'light' akan ditambahkan oleh JS dashboard jika mode light aktif -->
+    <html lang="id">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,10 +12,10 @@
         <style>
 
         /* === CSS MODAL TAMBAH ASET (DARI DASHBOARD ANDA) === */
-    .modal { /* Ini untuk modal TAMBAH ASET */
+    .modal {
         display: none;
         position: fixed;
-        z-index: 1050; /* Lebih rendah dari modal detail jika perlu tumpang tindih */
+        z-index: 1050;
         left: 0;
         top: 0;
         width: 100%;
@@ -30,19 +30,19 @@
         display: flex;
     }
 
-    .modal-content { /* Ini untuk modal TAMBAH ASET */
-        background-color: var(--color-modal-background); /* Ambil dari modal yang konsisten */
-        color: var(--color-text-light); /* Sesuaikan warna teks utama */
+    .modal-content {
+        background-color: var(--color-modal-background);
+        color: var(--color-text-light);
         margin: auto;
-        border: none; /* Hapus border lama */
-        border-radius: 0.8rem; /* Samakan radiusnya */
+        border: none;
+        border-radius: 0.8rem;
         width: 90%;
-        max-width: 60rem; /* Samakan max-width */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35); /* Bayangan yang lebih dramatis */
+        max-width: 60rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
         position: relative;
-        display: flex; /* Gunakan flexbox untuk struktur internal */
-        flex-direction: column; /* Konten ditumpuk vertikal */
-        padding: 2rem; /* Padding utama di wrapper */
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
     }
 
     html.light .modal-content {
@@ -50,12 +50,12 @@
         box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
-    .modal-header { /* Ini untuk modal TAMBAH ASET */
+    .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0; /* Hapus padding lama */
-        padding-bottom: 1rem; /* Padding bawah saja */
+        padding: 0;
+        padding-bottom: 1rem;
         border-bottom: 0.1rem solid var(--color-neutral-medium);
         margin-bottom: 1.5rem;
     }
@@ -80,12 +80,11 @@
     font-size: 2.0rem;
     }
 
-    /* Tombol close untuk modal TAMBAH ASET */
     #addAssetModal .close-button {
         background: none;
         border: none;
-        color: var(--color-neutral-light); /* Warna netral */
-        font-size: 2.5rem; /* Ukuran yang pas */
+        color: var(--color-neutral-light);
+        font-size: 2.5rem;
         cursor: pointer;
         padding: 0.4rem;
         line-height: 1;
@@ -96,13 +95,13 @@
     }
     #addAssetModal .close-button:hover,
     #addAssetModal .close-button:focus {
-        color: var(--color-text-light); /* Warna lebih terang saat hover */
+        color: var(--color-text-light);
         text-decoration: none;
     }
     html.light #addAssetModal .close-button:hover {
     color: #333;
     }
-    .modal-body form label { /* Ini untuk modal TAMBAH ASET */
+    .modal-body form label {
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
@@ -110,7 +109,7 @@
 
     .modal-body form input[type="text"],
     .modal-body form input[type="date"],
-    .modal-body form select { /* Ini untuk modal TAMBAH ASET */
+    .modal-body form select {
         width: 100%;
         padding: 10px;
         margin-bottom: 15px;
@@ -128,20 +127,20 @@
     }
 
     .modal-body form input:focus,
-    .modal-body form select:focus { /* Ini untuk modal TAMBAH ASET */
+    .modal-body form select:focus {
         border-color: var(--action-color);
         outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(40, 105, 255, 0.25); /* Ganti RGB jika --action-color berbeda */
+        box-shadow: 0 0 0 0.2rem rgba(40, 105, 255, 0.25);
     }
 
-    .modal-footer { /* Ini untuk modal TAMBAH ASET */
+    .modal-footer {
         padding-top: 15px;
-        border-top: 1px solid var(--color-neutral-medium); /* Disesuaikan dengan modal lain */
+        border-top: 1px solid var(--color-neutral-medium);
         margin-top: 20px;
         text-align: right;
-        display: flex; /* Tambahkan ini */
-        justify-content: flex-end; /* Tambahkan ini */
-        gap: 12px; /* Tambahkan ini untuk jarak */
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
     }
     html.light .modal-footer {
         border-top-color: #eee;
@@ -153,9 +152,9 @@
         border: none;
         cursor: pointer;
         font-weight: 500;
-        font-size: 1.4rem; /* Samakan ukuran font */
+        font-size: 1.4rem;
         transition: all 0.25s ease-in-out;
-        display: inline-flex; /* Agar ikon dan teks sejajar rapi */
+        display: inline-flex;
         align-items: center;
         gap: 8px;
     }
@@ -165,30 +164,30 @@
     }
     .modal-footer .btn-primary:hover {
         background-color: var(--action-color-hover);
-        transform: translateY(-3px); /* Efek sedikit terangkat */
-        box-shadow: 0 4px 12px rgba(40, 105, 255, 0.3); /* Bayangan biru */
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(40, 105, 255, 0.3);
     }
     .modal-footer .btn-primary::before {
-    content: '\f0c7'; /* Kode ikon save dari Font Awesome */
+    content: '\f0c7';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     }
     .modal-footer .btn-secondary {
-        background-color: #4a5568; /* DIUBAH: Warna abu-abu gelap seperti screenshot */
-        color: #e2e8f0; /* Warna teks terang */
+        background-color: #4a5568;
+        color: #e2e8f0;
     }
     .modal-footer .btn-secondary:hover {
-        background-color: #dc3545; /* DIUBAH: Warna MERAH saat hover */
+        background-color: #dc3545;
         color: white;
-        transform: translateY(-3px); /* Efek terangkat saat hover */
-        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); /* Bayangan merah */
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
     }
     html.light .modal-footer .btn-secondary {
         background-color: #4a5568; /s* Tetap abu-abu gelap di light mode */
         color: #e2e8f0;
     }
     html.light .modal-footer .btn-secondary:hover {
-        background-color: #dc3545; /* Tetap merah saat di-hover */
+        background-color: #dc3545;
         color: white;
     }
     .invalid-feedback {
@@ -204,111 +203,102 @@
     /* === CSS UNTUK SUMMARY BOX INVENTARIS === */
     .inventory-summary-container {
         display: flex;
-        flex-wrap: wrap; /* Agar box turun ke baris baru jika tidak muat */
-        gap: 16px; /* Jarak antar box */
-        margin-bottom: 20px; /* Jarak ke elemen di bawahnya */
-        padding: 0 4px; /* Samakan dengan padding products-area-wrapper */
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 20px;
+        padding: 0 4px;
     }
 
     .summary-box {
-        background-color: var(--app-content-secondary-color); /* Warna background dari tema */
-        color: var(--app-content-main-color); /* Warna teks dari tema */
+        background-color: var(--app-content-secondary-color);
+        color: var(--app-content-main-color);
         padding: 20px 15px;
-        border-radius: 8px; /* Samakan dengan elemen lain */
+        border-radius: 8px;
         text-align: center;
-        flex: 1 1 150px; /* flex-grow, flex-shrink, flex-basis. Biarkan tumbuh, bisa menyusut, basis minimal 150px */
-        min-width: 120px; /* Lebar minimal box */
-        box-shadow: var(--filter-shadow); /* Bayangan seperti filter */
+        flex: 1 1 150px;
+        min-width: 120px;
+        box-shadow: var(--filter-shadow);
         transition: transform 0.2s ease-in-out;
     }
 
     .summary-box:hover {
-        transform: translateY(-10px); /* Efek hover sedikit naik */
+        transform: translateY(-10px);
     }
 
     html.light .summary-box {
-        background-color: #f9f9f9; /* Warna background light mode, bisa disesuaikan */
+        background-color: #f9f9f9;
         border: 1px solid #eee;
     }
 
     .summary-box-icon {
-        font-size: 2.8rem; /* Ukuran ikon */
+        font-size: 2.8rem;
         margin-bottom: 10px;
-        color: var(--action-color); /* Warna ikon, bisa disesuaikan */
+        color: var(--action-color);
     }
 
     html.light .summary-box-icon {
-        color: var(--action-color); /* Pastikan warna ikon juga bagus di light mode */
+        color: var(--action-color);
     }
 
-
     .summary-box-type {
-        font-size: 1.4rem; /* Ukuran teks tipe barang */
+        font-size: 1.4rem;
         font-weight: 500;
         margin-bottom: 8px;
-        text-transform: capitalize; /* Opsional: agar huruf depan besar */
+        text-transform: capitalize;
     }
 
     .summary-box-count {
-        font-size: 2.4rem; /* Ukuran angka count */
+        font-size: 2.4rem;
         font-weight: bold;
     }
     /* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
 
     /* === CSS DASHBOARD (BAGIAN UTAMA) === */
     :root {
-    /* Variabel dari Dashboard */
     --app-bg: #101827;
     --sidebar: rgba(21, 30, 47,1);
     --sidebar-main-color: #fff;
     --table-border: #1a2131;
     --table-header: #1a2131;
-    --app-content-main-color: #fff; /* Teks utama di konten dashboard */
+    --app-content-main-color: #fff;
     --sidebar-link: #fff;
     --sidebar-active-link: #1d283c;
     --sidebar-hover-link: #1a2539;
     --action-color: #2869ff;
     --action-color-hover: #6291fd;
-    --app-content-secondary-color: #1d283c; /* Background sekunder/konten di dashboard */
+    --app-content-secondary-color: #1d283c;
     --filter-reset: #2c394f;
     --filter-shadow: rgba(16, 24, 39, 0.8) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     --sidebar-width-expanded: 200px;
     --sidebar-width-collapsed: 65px;
-
-    /* Variabel dari Modal Detail AWAL (digabungkan) */
-    --color-neutral-light: #b0b5b8;       /* Untuk teks/border netral di modal detail */
-    --color-neutral-medium: #545e61;     /* Untuk teks/border netral lebih gelap di modal detail */
-    --color-modal-background: #394144;  /* Background utama modal detail (dark mode) */
-    --color-text-light: #fff;           /* Teks utama di modal detail (dark mode), bisa sama dengan --app-content-main-color */
-    --color-accent: #36d3b4;            /* Warna aksen (hijau toska) di modal detail */
-    --color-button-secondary: #6c757d; /* Tombol sekunder di modal detail */
+    --color-neutral-light: #b0b5b8;
+    --color-neutral-medium: #545e61;
+    --color-modal-background: #394144;
+    --color-text-light: #fff;
+    --color-accent: #36d3b4;
+    --color-button-secondary: #6c757d;
     }
 
     html.light:root {
-    /* Variabel Dashboard Light Mode */
     --app-bg: #fff;
     --sidebar: #f3f6fd;
     --app-content-secondary-color: #f3f6fd;
-    --app-content-main-color: #1f1c2e; /* Teks utama di konten dashboard (light mode) */
+    --app-content-main-color: #1f1c2e;
     --sidebar-link: #1f1c2e;
     --sidebar-hover-link: rgba(195, 207, 244, 0.5);
     --sidebar-active-link: rgba(195, 207, 244, 1);
     --sidebar-main-color: #1f1c2e;
     --filter-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-
-    /* Sesuaikan variabel modal detail untuk light mode */
-    --color-modal-background: #ffffff;      /* Background modal detail (light mode) */
-    --color-text-light: #212529;        /* Teks utama di modal detail (light mode) */
-    --color-neutral-light: #6c757d;      /* Teks/border netral di modal detail (light mode) */
-    --color-neutral-medium: #495057;     /* Teks/border netral lebih gelap di modal detail (light mode) */
-    /* --color-accent tetap sama atau bisa diubah jika perlu kontras berbeda */
-    /* --color-button-secondary tetap sama atau bisa diubah */
+    --color-modal-background: #ffffff;
+    --color-text-light: #212529;
+    --color-neutral-light: #6c757d;
+    --color-neutral-medium: #495057;
     }
 
     /* CSS Global Dashboard (pertahankan ini) */
     html {
         box-sizing: border-box;
-        font-size: 62.5%; /* 1rem = 10px */
+        font-size: 62.5%;
         scroll-behavior: smooth;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -325,10 +315,10 @@
     padding: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    font-family: 'Poppins', sans-serif; /* Font utama dashboard */
-    font-size: 1.6rem; /* Default font size 16px */
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
     background-color: var(--app-bg);
-    color: var(--app-content-main-color); /* Warna teks default untuk body dari dashboard */
+    color: var(--app-content-main-color);
     letter-spacing: 1px;
     transition: background 0.2s ease;
     }
@@ -345,7 +335,7 @@
     height: 100%;
     display: flex;
     overflow: hidden;
-    box-shadow: var(--filter-shadow); /* Menggunakan variabel shadow dari dashboard */
+    box-shadow: var(--filter-shadow);
     max-width: 2000px;
     margin: 0 auto;
     }
@@ -353,7 +343,7 @@
     .sidebar {
     flex-basis: var(--sidebar-width-expanded);
     max-width: var(--sidebar-width-expanded);
-    min-width: var(--sidebar-width-expanded); /* Diubah agar konsisten */
+    min-width: var(--sidebar-width-expanded);
     flex-shrink: 0;
     background-color: var(--sidebar);
     display: flex;
@@ -551,12 +541,11 @@
     }
     .app-content {
     padding: 16px;
-    /* height: 100%; */ /* Bisa menyebabkan masalah jika flex-grow digunakan */
     flex: 1;
     max-height: 100%;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden; /* Konten utama bisa scroll vertikal jika perlu */
+    overflow-x: hidden;
     }
     .app-content-header {
     display: flex;
@@ -587,8 +576,7 @@
     }
     .app-content-header-actions-right {
         display: flex;
-        align-items: center; /* Pastikan tombol sejajar vertikal */
-        /* margin-left: auto; Tidak perlu jika .app-content-header sudah space-between */
+        align-items: center;
     }
     .app-content-header-actions-right .mode-switch.action-button {
         margin-right: 8px;
@@ -637,19 +625,19 @@
     .app-content-actions {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px; /* Jarak vertikal antar elemen */
+        gap: 10px
     }
     .app-content-actions .search-bar {
-        order: 1; /* Search bar di atas */
+        order: 1;
     }
     .app-content-actions-buttons {
-        order: 2; /* Tombol-tombol di bawah */
-        justify-content: flex-start; /* Mulai dari kiri */
+        order: 2;
+        justify-content: flex-start;
     }
     .app-content-actions .search-bar-container {
-        flex-grow: 1; /* Biarkan container yang mengisi ruang jika perlu */
-        max-width: 320px; /* Atur max-width pada container */
-        margin-right: 8px; /* Atur margin pada container */
+        flex-grow: 1;
+        max-width: 320px;
+        margin-right: 8px;
         }
     }
     @media screen and (max-width: 520px) {
@@ -702,7 +690,7 @@
         color: red;
     }
     html.light .clear-search-btn {
-        color: #555; /* Warna 'X' untuk light mode */
+        color: #555;
     }
     html.light .search-bar {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
@@ -715,7 +703,7 @@
     outline: none;
     border-color: var(--action-color);
     }
-    .action-button { /* Untuk tombol filter, dll. di dashboard */
+    .action-button {
     border-radius: 4px;
     height: 32px;
     background-color: var(--app-content-secondary-color);
@@ -748,7 +736,7 @@
     border-radius: 4px;
     padding: 8px;
     width: 220px;
-    z-index: 1000; /* Pastikan ini di bawah z-index modal jika filter terbuka di belakang modal */
+    z-index: 1000;
     box-shadow: var(--filter-shadow);
     visibility: hidden;
     opacity: 0;
@@ -840,65 +828,63 @@
         color: #fff;
     }
     .filter-menu .filter-button.reset-filter-in-menu:disabled {
-        background-color: var(--filter-reset); /* Atau warna yang lebih pudar */
-        opacity: 0.5; /* Buat lebih transparan agar terlihat disabled */
-        color: rgba(255, 255, 255, 0.6); /* Teks putih yang lebih pudar */
+        background-color: var(--filter-reset);
+        opacity: 0.5;
+        color: rgba(255, 255, 255, 0.6);
         cursor: not-allowed;
     }
     html.light .filter-menu .filter-button.reset-filter-in-menu:disabled {
-        background-color: #adb5bd; /* Abu-abu lebih terang untuk background disabled di light mode */
-        color: #6c757d; /* Teks abu-abu lebih gelap */
-        opacity: 0.7; /* Atau sesuaikan opacity */
+        background-color: #adb5bd;
+        color: #6c757d;
+        opacity: 0.7;
     }
     .products-area-wrapper {
     width: 100%;
-    max-height: 100%; /* Memastikan tabel tidak melebihi kontainer */
-    overflow: auto; /* Memungkinkan scroll pada tabel jika kontennya besar */
+    max-height: 100%;
+    overflow: auto;
     padding: 0 4px;
     }
-    .products-area-wrapper.tableView { /* Pastikan class ini ada pada wrapper tabel */
+    .products-area-wrapper.tableView {
     display: flex;
-    flex-direction: column; /* Header dan row akan bertumpuk vertikal */
+    flex-direction: column;
     }
     .tableView .products-header {
         background-color: var(--app-content-secondary-color);
-        display: flex; /* Baris header */
+        display: flex;
         align-items: center;
-        border-radius: 4px; /* Menggunakan variabel untuk header tabel */
+        border-radius: 4px;
         position: sticky;
         top: 0;
         min-width: 1210px;
-        z-index: 10; /* Agar header tetap di atas saat scroll */
+        z-index: 10;
         border-bottom: 2px solid var(--action-color);
     }
     html.light .tableView .products-header {
-        background-color: #f1f3f5; /* Warna background header yang soft untuk light mode */
-        border-bottom-color: #dee2e6; /* Garis bawah abu-abu di light mode */
+        background-color: #f1f3f5;
+        border-bottom-color: #dee2e6;
     }
     .tableView #productTableRowsContainer .products-row:nth-child(even) {
-        /* Targetkan semua baris genap (ke-2, 4, 6, dst.) */
-        background-color: var(--table-border); /* Warna sedikit beda untuk dark mode */
+        background-color: var(--table-border);
     }
     html.light .tableView #productTableRowsContainer .products-row:nth-child(even) {
-        background-color: #f9f9f9; /* Warna abu-abu sangat terang untuk light mode */
+        background-color: #f9f9f9;
     }
     .tableView #productTableRowsContainer .products-row:hover {
-        background-color: var(--sidebar-active-link); /* Warna hover yang bagus di dark mode */
-        transition: background-color 0.2s ease-in-out; /* Transisi halus */
+        background-color: var(--sidebar-active-link);
+        transition: background-color 0.2s ease-in-out;
     }
     html.light .tableView #productTableRowsContainer .products-row:hover {
-        background-color: #e9ecef; /* Warna hover yang bagus di light mode */
+        background-color: #e9ecef;
     }
     .products-header .sortable-header {
         cursor: pointer;
-        user-select: none; /* Mencegah teks ter-highlight saat di-double click */
+        user-select: none;
         transition: color 0.2s ease-in-out;
     }
     .products-header .sortable-header:hover {
-        color: var(--action-color); /* Warna hover saat kursor di atasnya */
+        color: var(--action-color);
     }
 
-    /* Style untuk indikator panah sorting */
     .products-header .sortable-header::after {
         content: '';
         display: inline-block;
@@ -909,42 +895,37 @@
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        /* Panah default (netral), bisa dikosongkan jika tidak mau */
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4-4 4 4M16 15l-4 4-4-4'/%3E%3C/svg%3E");
     }
 
     html.light .products-header .sortable-header::after {
-        /* Ganti warna stroke untuk light mode */
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231f1c2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4-4 4 4M16 15l-4 4-4-4'/%3E%3C/svg%3E");
     }
 
-
-    /* Saat sorting ASC aktif */
     .products-header .sortable-header.sorted-asc {
-        color: var(--action-color); /* Warna aktif */
+        color: var(--action-color);
     }
     .products-header .sortable-header.sorted-asc::after {
         opacity: 1;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E"); /* Panah ke atas (A-Z) */
     }
 
-    /* Saat sorting DESC aktif */
     .products-header .sortable-header.sorted-desc {
-        color: var(--action-color); /* Warna aktif */
+        color: var(--action-color);
     }
     .products-header .sortable-header.sorted-desc::after {
         opacity: 1;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M19 12l-7 7-7-7'/%3E%3C/svg%3E"); /* Panah ke bawah (Z-A) */
     }
     .tableView .products-row {
-    display: flex; /* Setiap baris data */
+    display: flex;
     align-items: center;
     border-radius: 4px;
     min-width: 1210px;
     }
 
     .tableView .products-row .cell-more-button {
-    display: none; /* Jika ada, biasanya untuk tampilan mobile */
+    display: none;
     }
     .tableView .product-cell {
     padding: 8px 12px;
@@ -952,9 +933,9 @@
     font-size: 14px;
     display: flex;
     align-items: center;
-    white-space: nowrap; /* Mencegah teks wrap */
-    overflow: hidden; /* Sembunyikan teks yang berlebih */
-    text-overflow: ellipsis; /* Tampilkan "..." jika teks berlebih */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     }
     .tableView .product-cell.cell-no { flex: 0 0 80px; min-width: 80px; justify-content: center;}
     .tableView .product-cell.cell-perusahaan { flex: 1 1 160px; min-width: 160px; }
@@ -964,10 +945,10 @@
     .tableView .product-cell.cell-tgl-pengadaan { flex: 1 1 140px; min-width: 140px; }
     .tableView .product-cell.cell-serial-number { flex: 1 1 150px; min-width: 150px; }
     .tableView .product-cell.cell-aksi {
-        flex: 0 0 180px; /* Cukupkan lebar untuk dua tombol */
+        flex: 0 0 180px;
         min-width: 180px;
         justify-content: center;
-        overflow: visible; /* Agar tombol tidak terpotong */
+        overflow: visible;
     }
     .tableView .product-cell img {
     width: 32px;
@@ -988,7 +969,7 @@
     .tableView .sort-button:hover { color: var(--action-color); }
     .tableView .sort-button svg { width: 12px; }
     .tableView .cell-label {
-    display: none; /* Biasanya untuk tampilan mobile */
+    display: none;
     }
     .status {
     border-radius: 4px;
@@ -1018,7 +999,6 @@
     .status.disabled:before {
     background-color: #59719d;
     }
-    /* Tombol aksi di dalam tabel */
     .product-cell.cell-aksi .action-btn-table {
         padding: 6px 12px;
         margin: 0 4px;
@@ -1030,17 +1010,14 @@
         font-size: 13px;
         font-weight: 500;
         transition: all 0.2s ease-in-out;
-        white-space: nowrap; /* Agar teks tombol tidak wrap */
+        white-space: nowrap;
     }
     .product-cell.cell-aksi .action-btn-table:hover {
         background-color: var(--action-color);
         color: #fff;
     }
-    .product-cell.cell-aksi .action-btn-table.update-btn {
-        /* Style khusus jika ada */
-    }
     .product-cell.cell-aksi .action-btn-table.detail-btn {
-        border-color: #5cb85c; /* Warna hijau untuk tombol detail di tabel */
+        border-color: #5cb85c;
         color: #5cb85c;
     }
     .product-cell.cell-aksi .action-btn-table.detail-btn:hover {
@@ -1070,7 +1047,7 @@
         width: 65rem;
         max-width: calc(100vw - 4rem);
         max-height: calc(100vh - 4rem);
-        overflow: hidden; /* Wrapper tidak scroll, body-nya yang scroll */
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -1085,7 +1062,7 @@
         align-items: stretch;
         padding: 2.5rem;
         flex-grow: 1;
-        overflow: hidden; /* Container tidak scroll */
+        overflow: hidden;
     }
 
     #deviceInfoModal .morph-modal-title {
@@ -1102,8 +1079,6 @@
     #deviceInfoModal .morph-modal-title .fa {
         margin-right: 1rem;
     }
-
-    /* Tombol close di modal DETAIL */
     #deviceInfoModal .btn-close {
         background: none;
         border: none;
@@ -1119,7 +1094,7 @@
 
     #deviceInfoModal .morph-modal-body {
         flex: 1 1 auto;
-        overflow-y: auto; /* Ini yang akan scroll */
+        overflow-y: auto;
         font-size: 1.5rem;
     }
 
@@ -1177,7 +1152,7 @@
         min-width: 160px;
         padding-right: 1rem;
         flex-shrink: 0;
-        color: inherit; /* Mengambil warna dari parent (.modal-content-wrapper) */
+        color: inherit;
     }
 
     #deviceInfoModal .asset-detail-content .info-item dd {
@@ -1214,7 +1189,7 @@
 
     #deviceInfoModal .asset-detail-content .btn-action.btn-detail {
         background-color: var(--color-accent);
-        color: var(--color-modal-background); /* Warna teks kontras dengan background tombol */
+        color: var(--color-modal-background);
     }
     #deviceInfoModal .asset-detail-content .btn-action.btn-detail:hover {
         background-color: #2cbda2;
@@ -1222,7 +1197,7 @@
 
     #deviceInfoModal .asset-detail-content .btn-action.btn-update {
         background-color: var(--color-button-secondary);
-        color: var(--color-text-light); /* Warna teks kontras dengan background tombol */
+        color: var(--color-text-light);
     }
     #deviceInfoModal .asset-detail-content .btn-action.btn-update:hover {
         background-color: #5a6268;
@@ -1234,24 +1209,22 @@
     }
     /* === AKHIR CSS MODAL DETAIL === */
 
-
     /* === CSS TAMBAHAN UNTUK MODAL HISTORY USER === */
     #userHistoryModal.modal-overlay {
-        display: none; /* Awalnya display: none, dikontrol oleh JS */
+        display: none;
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.7); /* Latar belakang overlay standar */
-        z-index: 1053; /* LEBIH TINGGI DARI deviceInfoModal (1051) dan addAssetModal (1050) */
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1053;
         justify-content: center;
         align-items: center;
-        padding: 1.5rem; /* Samakan dengan deviceInfoModal jika diinginkan */
-        overflow: auto; /* Tambahkan jika kontennya bisa lebih tinggi dari viewport */
+        padding: 1.5rem;
+        overflow: auto;
     }
 
-    /* Konten wrapper modal history, sama seperti deviceInfoModal */
     #userHistoryModal .modal-content-wrapper.device-entry-info-modal {
         background-color: var(--color-modal-background);
         border-radius: 0.8rem;
@@ -1267,7 +1240,6 @@
         z-index: 1054;
     }
 
-    /* Kontainer morph modal di dalam history, sama seperti deviceInfoModal */
     #userHistoryModal .morph-modal-container {
         display: flex;
         flex-flow: column nowrap;
@@ -1277,12 +1249,11 @@
         overflow: hidden;
     }
 
-    /* Judul modal history, sama seperti deviceInfoModal */
     #userHistoryModal .morph-modal-title {
         flex: 0 0 auto;
         padding-bottom: 1rem;
         border-bottom: 0.1rem solid var(--color-neutral-medium);
-        font-size: 1.8rem; /* Ukuran bisa disesuaikan */
+        font-size: 1.8rem;
         font-weight: 500;
         display: flex;
         justify-content: space-between;
@@ -1294,7 +1265,6 @@
         font-size: 1.7rem;
     }
 
-    /* Tombol close modal history, sama seperti deviceInfoModal */
     #userHistoryModal .btn-close {
         background: none;
         border: none;
@@ -1308,35 +1278,32 @@
         color: var(--color-text-light);
     }
 
-    /* Body modal history, sama seperti deviceInfoModal */
     #userHistoryModal .morph-modal-body {
         flex: 1 1 auto;
         overflow-y: auto;
-        font-size: 1.4rem; /* Ukuran bisa disesuaikan */
+        font-size: 1.4rem;
     }
 
-    /* Style tabel di dalam modal history (yang sudah Anda buat sebelumnya) */
-    #userHistoryModal .morph-modal-body p:first-child { /* Target paragraf SN */
-        margin-bottom: 1rem; /* Sesuaikan margin bawahnya */
-        font-size: 1.3rem; /* Perkecil font-size untuk info SN */
+    #userHistoryModal .morph-modal-body p:first-child {
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
     }
 
     #userHistoryModal .morph-modal-body p:first-child strong {
-        font-weight: 600; /* Pastikan SN tetap bold */
+        font-weight: 600;
     }
 
     #userHistoryModal .user-history-table-wrapper {
-        max-height: 350px; /* Sesuaikan tinggi maksimal sesuai kebutuhan modal */
+        max-height: 350px;
         overflow-y: auto;
-        overflow-x: auto; /* Aktifkan jika tabel bisa lebih lebar dari wrapper */
+        overflow-x: auto;
         border: 1px solid var(--color-neutral-medium);
         border-radius: 0.5rem;
     }
 
     #userHistoryModal .user-history-table {
         width: 100%;
-        border-collapse: collapse; /* Penting untuk border antar sel */
-        /* Font size akan diwarisi dari .morph-modal-body (1.4rem) atau bisa diatur spesifik */
+        border-collapse: collapse;
     }
 
     #userHistoryModal .user-history-table th,
@@ -2529,24 +2496,18 @@
                 }
 
                 function setupAssetPreview() {
-                    console.log("Memulai setup untuk preview No. Aset...");
-
-                    // Ambil semua elemen form di dalam fungsi ini
                     const perusahaanSelect = document.getElementById('perusahaan_id');
                     const jenisBarangSelect = document.getElementById('jenis_barang_id');
                     const tglPengadaanInput = document.getElementById('tgl_pengadaan');
                     const noAssetPreviewInput = document.getElementById('no_asset_preview');
                     const noAssetWarning = document.getElementById('noAssetWarning');
                     const addAssetForm = document.getElementById('addAssetForm');
-
-                    // Cek apakah semua elemen penting ada
                     if (!perusahaanSelect || !jenisBarangSelect || !tglPengadaanInput || !noAssetPreviewInput || !noAssetWarning) {
                         console.error("Satu atau lebih elemen form untuk preview tidak ditemukan. Periksa ID HTML.");
-                        return; // Hentikan fungsi jika ada elemen yang hilang
+                        return;
                     }
 
-                    // Buat satu fungsi update yang akan dipanggil oleh semua event
-                    const updateNoAssetPreview = async () => { // Tambahkan async
+                    const updateNoAssetPreview = async () => {
                         const perusahaanOption = perusahaanSelect.options[perusahaanSelect.selectedIndex];
                         const jenisBarangOption = jenisBarangSelect.options[jenisBarangSelect.selectedIndex];
                         const tglPengadaan = tglPengadaanInput.value;
@@ -2557,7 +2518,6 @@
                             if(noAssetWarning) noAssetWarning.style.display = 'none';
 
                             try {
-                                // Panggil API yang sama
                                 const perusahaanId = perusahaanOption.value;
                                 const response = await fetch(`{{ url('/aset/nomor-seri-berikutnya') }}/${perusahaanId}`);
                                 const data = await response.json();
@@ -2594,9 +2554,7 @@
                     // Pasang event listener ke elemen yang sudah kita definisikan
                     perusahaanSelect.addEventListener('change', updateNoAssetPreview);
                     jenisBarangSelect.addEventListener('change', updateNoAssetPreview);
-                    tglPengadaanInput.addEventListener('change', updateNoAssetPreview);
-                    console.log("Semua event listener untuk preview berhasil dipasang.");
-                    
+                    tglPengadaanInput.addEventListener('change', updateNoAssetPreview);  
                     // Event listener untuk tombol buka modal, untuk mereset form
                     if (openAddAssetModalButton) {
                         openAddAssetModalButton.addEventListener('click', () => {
@@ -3077,7 +3035,6 @@
                                 if (serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
                                 const detailModalOverlayElement = document.getElementById('deviceInfoModal');
                                 if (detailModalOverlayElement) detailModalOverlayElement.style.display = 'none';
-                                console.log("Submit sukses, memanggil performRealtimeSearch untuk refresh tabel.");
                                 performRealtimeSearch(); 
                             } else if (data.errors) {
                                 displayValidationErrorsOnForm(data.errors, serahTerimaForm);
