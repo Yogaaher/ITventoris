@@ -9,7 +9,7 @@ use App\Models\AssetCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; 
-use Illuminate\Support\Facades\Validator; // Penting untuk validasi
+use Illuminate\Support\Facades\Validator;   
 
 class BarangController extends Controller
 {
@@ -21,11 +21,13 @@ class BarangController extends Controller
             'jenis_barang_id' => 'required|exists:jenis_barangs,id',
             'merek' => 'required|string|max:255',
             'tgl_pengadaan' => 'required|date',
-            'serial_number' => 'required|string|max:255',
+            'serial_number' => 'required|string|max:255|unique:barang,serial_number',
+        ], [
+            'serial_number.unique' => 'Serial number ini sudah terdaftar di sistem.'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422); // Kirim error validasi
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         try {

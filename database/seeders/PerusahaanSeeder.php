@@ -13,38 +13,30 @@ class PerusahaanSeeder extends Seeder
      */
     public function run(): void
     {
-        // Kosongkan tabel terlebih dahulu untuk menghindari duplikasi jika seeder dijalankan ulang
-        // DB::table('perusahaans')->truncate();
+        // Praktik terbaik: nonaktifkan foreign key check saat truncate dan seeding
+        Schema::disableForeignKeyConstraints();
+        
+        // Kosongkan tabel untuk menghindari duplikasi jika seeder dijalankan ulang
+        DB::table('perusahaans')->truncate();
 
         DB::table('perusahaans')->insert([
-            [
-                'id' => 1, // Kita set ID manual agar konsisten dengan seeder barang
-                'nama_perusahaan' => 'Scuto Indonesia',
-                'singkatan' => 'SCO',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 2,
-                'nama_perusahaan' => 'Scuto Bike Indonesia',
-                'singkatan' => 'SCT',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 3,
-                'nama_perusahaan' => 'Scuto Paint Indonesia',
-                'singkatan' => 'SCP',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 4,
-                'nama_perusahaan' => 'Migen',
-                'singkatan' => 'MIG',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ['id' => 1, 'nama_perusahaan' => 'PT SCUTO INDONESIA', 'singkatan' => 'SCO', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'nama_perusahaan' => 'CV PERISAI DISTRIBUSI', 'singkatan' => 'PDI', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'nama_perusahaan' => 'CV PERISAI INDONESIA', 'singkatan' => 'PIN', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'nama_perusahaan' => 'PT PROTEKSI ABADI OTOMOTIF INDONESIA', 'singkatan' => 'PAO', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 5, 'nama_perusahaan' => 'PT SCUTO TOTAL SOLUSI', 'singkatan' => 'STS', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 6, 'nama_perusahaan' => 'PT SCUTO WARNA INDONESIA', 'singkatan' => 'SWI', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 7, 'nama_perusahaan' => 'PT WARNA EKA PALEMBANG', 'singkatan' => 'WEP', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 8, 'nama_perusahaan' => 'PT WARNA EKA JAKARTA', 'singkatan' => 'WEJ', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 9, 'nama_perusahaan' => 'PT WARNA DWI JAKARTA', 'singkatan' => 'WDJ', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 10, 'nama_perusahaan' => 'PT WARNA PERKASA EKA', 'singkatan' => 'WPE', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 11, 'nama_perusahaan' => 'PT MIGEN KREASI BANGSA', 'singkatan' => 'MKB', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 12, 'nama_perusahaan' => 'PT WARNA PERKASA CEMERLANG', 'singkatan' => 'WPC', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 13, 'nama_perusahaan' => 'PT SCUTO DETAILING INDONESIA', 'singkatan' => 'SDI', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 14, 'nama_perusahaan' => 'PT SCT MOTOR INDONESIA', 'singkatan' => 'SCT', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 15, 'nama_perusahaan' => 'PT SCUTO TOTAL OTO', 'singkatan' => 'STO', 'created_at' => now(), 'updated_at' => now()],
         ]);
+
+        Schema::enableForeignKeyConstraints();
     }
 }

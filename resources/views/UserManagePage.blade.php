@@ -1163,21 +1163,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('userSearchInput');
     const tableContainer = document.getElementById('productTableRowsContainer');
     const paginationContainer = document.getElementById('pagination-links');
+    const burgerMenuButton = document.getElementById('burger-menu');
+    const sidebarElement = document.querySelector('.sidebar');
+    const modeSwitch = document.querySelector('.mode-switch');
+    let debounceTimer;
+
+    // Variabel Modal Tambah User
     const addUserModal = document.getElementById('addUserModal');
     const openAddUserBtn = document.getElementById('openAddUserModalButton');
     const closeAddUserBtn = document.getElementById('closeAddUserModalBtn');
     const cancelAddUserBtn = document.getElementById('cancelAddUserModalBtn');
     const addUserForm = document.getElementById('addUserForm');
     const submitAddUserBtn = document.getElementById('submitAddUserBtn');
-    const burgerMenuButton = document.getElementById('burger-menu');
-    const sidebarElement = document.querySelector('.sidebar');
-    const modeSwitch = document.querySelector('.mode-switch');
+
+    // Variabel Modal Edit User
     const editUserModal = document.getElementById('editUserModal');
     const closeEditUserBtn = document.getElementById('closeEditUserModalBtn');
     const cancelEditUserBtn = document.getElementById('cancelEditUserModalBtn');
     const editUserForm = document.getElementById('editUserForm');
-    let debounceTimer;
-
 
     // ==========================================================
     // FUNGSI-FUNGSI UTAMA
@@ -1185,30 +1188,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fungsi untuk mengambil data user via AJAX
     function fetchUsers(url) {
+        if (!tableContainer || !paginationContainer) return;
         tableContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat... <i class="fas fa-spinner fa-spin"></i></div></div>`;
         paginationContainer.innerHTML = '';
         
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            if (data.table_html !== undefined && data.pagination_html !== undefined) {
-                tableContainer.innerHTML = data.table_html;
-                paginationContainer.innerHTML = data.pagination_html;
-            } else {
-                throw new Error('Invalid JSON response from server');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching users:', error);
-            tableContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data. Silakan coba lagi.</div></div>`;
-        });
+            .then(response => response.ok ? response.json() : Promise.reject('Network response was not ok'))
+            .then(data => {
+                tableContainer.innerHTML = data.table_html || '';
+                paginationContainer.innerHTML = data.pagination_html || '';
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                tableContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
+            });
     }
-
-    // Fungsi untuk menutup modal tambah user
-    const closeAddModal = () => addUserModal.style.display = 'none';
 
     // Fungsi untuk inisialisasi status sidebar
     function initializeSidebarState() {
@@ -1225,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fungsi untuk modal edit user
-        const closeEditModal = () => editUserModal.style.display = 'none';
+    const closeEditModal = () => editUserModal.style.display = 'none';
     closeEditUserBtn.addEventListener('click', closeEditModal);
     cancelEditUserBtn.addEventListener('click', closeEditModal);
 
@@ -1297,6 +1291,44 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = false;
             submitButton.innerHTML = '<i class="fas fa-save"></i><span>Simpan Perubahan</span>';
         });
+    });
+
+    function setupSmartModalClosure(modalElement, closeFunction) {
+        if (!modalElement) return;
+        let isMouseDownOnOverlay = false;
+        modalElement.addEventListener('mousedown', (event) => {
+            if (event.target === modalElement) isMouseDownOnOverlay = true;
+        });
+        modalElement.addEventListener('mouseup', (event) => {
+            if (event.target === modalElement && isMouseDownOnOverlay) closeFunction();
+            isMouseDownOnOverlay = false;
+        });
+        modalElement.addEventListener('mouseleave', () => {
+            isMouseDownOnOverlay = false;
+        });
+    }
+
+    const closeAddModal = () => { if (addUserModal) addUserModal.style.display = 'none'; };
+    if (openAddUserBtn) openAddUserBtn.addEventListener('click', () => {
+        if(addUserForm) addUserForm.reset();
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+        if(addUserModal) addUserModal.style.display = 'flex';
+    });
+    if (closeAddUserBtn) closeAddUserBtn.addEventListener('click', closeAddModal);
+    if (cancelAddUserBtn) cancelAddUserBtn.addEventListener('click', closeAddModal);
+    setupSmartModalClosure(addUserModal, closeAddModal);
+
+    // 2. Modal Edit User
+    if (closeEditUserBtn) closeEditUserBtn.addEventListener('click', closeEditModal);
+    if (cancelEditUserBtn) cancelEditUserBtn.addEventListener('click', closeEditModal);
+    setupSmartModalClosure(editUserModal, closeEditModal);
+
+    // 3. Penanganan Tombol Escape untuk semua modal di halaman ini
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (addUserModal && addUserModal.style.display === 'flex') closeAddModal();
+            if (editUserModal && editUserModal.style.display === 'flex') closeEditModal();
+        }
     });
 
 
@@ -1521,14 +1553,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(modeSwitch) {
+    if (modeSwitch) {
+        const applyTheme = () => {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'light') {
+                document.documentElement.classList.add('light');
+                modeSwitch.classList.add('active');
+            } else {
+                document.documentElement.classList.remove('light');
+                modeSwitch.classList.remove('active');
+            }
+        };
+
         modeSwitch.addEventListener('click', () => {
             document.documentElement.classList.toggle('light');
-            localStorage.setItem('theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+            modeSwitch.classList.toggle('active');
+            const theme = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
         });
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.add('light');
-        }
+
+        applyTheme();
     }
 
     // Inisialisasi awal

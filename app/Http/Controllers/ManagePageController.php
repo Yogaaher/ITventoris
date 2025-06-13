@@ -81,7 +81,7 @@ class ManagePageController extends Controller
         return response()->json(['success' => 'User berhasil ditambahkan.']);
     }
 
-     public function validateField(Request $request)
+    public function validateField(Request $request)
     {
         $triggerField = $request->input('field_trigger');
         

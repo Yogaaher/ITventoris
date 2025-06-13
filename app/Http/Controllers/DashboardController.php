@@ -249,6 +249,13 @@
                 return response()->json(['success' => false, 'message' => 'Data barang tidak ditemukan.'], 404);
             }
 
+            if ($barang->status === 'non aktif') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aset yang berstatus "non aktif" tidak dapat diupdate lagi.'
+                ], 403);
+            }
+
             if ($request->input('status') === 'dipindah') {
                 // Cek jika perusahaan tujuan sama dengan perusahaan saat ini
                 if ($request->input('perusahaan_tujuan') == $barang->perusahaan_id) {

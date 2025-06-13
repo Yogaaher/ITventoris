@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class BarangSeeder extends Seeder
 {
@@ -14,78 +15,69 @@ class BarangSeeder extends Seeder
      */
     public function run(): void
     {
-        $perusahaanMapping = ['SCO' => 1, 'SCT' => 2, 'SCP' => 3, 'Migen' => 4];
+        Schema::disableForeignKeyConstraints();
+        DB::table('barang')->truncate();
+
+        // Data master untuk generate barang
+        $perusahaan = DB::table('perusahaans')->get()->keyBy('id');
         $jenisBarangMapping = [
-            'Laptop' => 1, 'HP' => 2, 'PC/AIO' => 3, 'Printer' => 4, 'Proyektor' => 5, 'Others' => 6
+            1 => ['nama' => 'Laptop', 'kode' => 'LTP'],
+            2 => ['nama' => 'HP', 'kode' => 'HP'],
+            3 => ['nama' => 'PC/AIO', 'kode' => 'PC'],
+            4 => ['nama' => 'Printer', 'kode' => 'PRT'],
+            5 => ['nama' => 'Proyektor', 'kode' => 'PYK'],
+            6 => ['nama' => 'Others', 'kode' => 'OTH'],
         ];
 
-        DB::table('barang')->insert([
-            [
-                'perusahaan_id' => $perusahaanMapping['SCO'],
-                'jenis_barang_id' => $jenisBarangMapping['Laptop'],
-                'no_asset' => 'SCO/LTP/2023/01/0001',
-                'merek' => 'Lenovo ThinkPad X1 Carbon',
-                'tgl_pengadaan' => '2023-01-15',
-                'serial_number' => 'PF2S9X8Y',
-                'status' => 'digunakan',
+        $merekPerJenis = [
+            1 => ['Lenovo ThinkPad T14', 'Dell XPS 13', 'HP Spectre x360', 'Macbook Pro 14"', 'Asus Zenbook Duo'],
+            2 => ['Samsung Galaxy S23', 'iPhone 15 Pro', 'Xiaomi 13T', 'Oppo Reno10', 'Google Pixel 8'],
+            3 => ['HP EliteOne 800 G9 AIO', 'Dell OptiPlex 7010', 'Lenovo IdeaCentre AIO 3', 'PC Rakitan Core i7'],
+            4 => ['Epson L3210', 'HP Smart Tank 515', 'Canon PIXMA G3010', 'Brother DCP-T520W'],
+            5 => ['Epson EB-X51', 'BenQ MW560', 'InFocus IN114xv', 'Anker Nebula Capsule'],
+            6 => ['WD My Passport 1TB', 'Logitech C920 Webcam', 'JBL Flip 6 Speaker', 'Mikrotik RB951Ui'],
+        ];
+
+        $statuses = ['digunakan', 'tersedia', 'diperbaiki', 'non aktif'];
+        $barangData = [];
+        $assetCounters = []; // Untuk nomor urut asset
+
+        for ($i = 0; $i < 30; $i++) { // Membuat 30 data barang
+            $perusahaanId = $perusahaan->keys()->random();
+            $perusahaanSingkatan = $perusahaan[$perusahaanId]->singkatan;
+            
+            $jenisBarangId = array_rand($jenisBarangMapping);
+            $jenisBarang = $jenisBarangMapping[$jenisBarangId];
+            
+            $merek = $merekPerJenis[$jenisBarangId][array_rand($merekPerJenis[$jenisBarangId])];
+            
+            // Generate tanggal pengadaan dalam 4 tahun terakhir
+            $tglPengadaan = now()->subYears(rand(0, 4))->subMonths(rand(0, 11))->subDays(rand(0, 28));
+            
+            // Generate nomor asset yang unik
+            $year = $tglPengadaan->year;
+            $month = str_pad($tglPengadaan->month, 2, '0', STR_PAD_LEFT);
+            $counterKey = "{$perusahaanSingkatan}/{$year}";
+            
+            if (!isset($assetCounters[$counterKey])) {
+                $assetCounters[$counterKey] = 1;
+            }
+            $sequence = str_pad($assetCounters[$counterKey]++, 4, '0', STR_PAD_LEFT);
+
+            $barangData[] = [
+                'perusahaan_id' => $perusahaanId,
+                'jenis_barang_id' => $jenisBarangId,
+                'no_asset' => "{$perusahaanSingkatan}/{$jenisBarang['kode']}/{$year}/{$month}/{$sequence}",
+                'merek' => $merek,
+                'tgl_pengadaan' => $tglPengadaan->toDateString(),
+                'serial_number' => Str::upper(Str::random(10)), // Serial number acak
+                'status' => $statuses[array_rand($statuses)],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'perusahaan_id' => $perusahaanMapping['SCT'],
-                'jenis_barang_id' => $jenisBarangMapping['PC/AIO'],
-                'no_asset' => 'SCT/PC/2022/11/0001',
-                'merek' => 'HP EliteOne 800 G6 AIO',
-                'tgl_pengadaan' => '2022-11-20',
-                'serial_number' => '8CC1234ABC',
-                'status' => 'tersedia',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'perusahaan_id' => $perusahaanMapping['Migen'],
-                'jenis_barang_id' => $jenisBarangMapping['Printer'],
-                'no_asset' => 'Migen/PRT/2024/03/0001',
-                'merek' => 'Canon PIXMA G3010',
-                'tgl_pengadaan' => '2024-03-01',
-                'serial_number' => 'ABCD12345',
-                'status' => 'digunakan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'perusahaan_id' => $perusahaanMapping['SCP'],
-                'jenis_barang_id' => $jenisBarangMapping['HP'],
-                'no_asset' => 'SCP/HP/2023/05/0001',
-                'merek' => 'Samsung Galaxy A54 5G',
-                'tgl_pengadaan' => '2023-05-22',
-                'serial_number' => '358765432109876',
-                'status' => 'diperbaiki',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'perusahaan_id' => $perusahaanMapping['SCO'],
-                'jenis_barang_id' => $jenisBarangMapping['Proyektor'],
-                'no_asset' => 'SCO/PYK/2024/02/0002',
-                'merek' => 'Epson EB-X51',
-                'tgl_pengadaan' => '2024-02-10',
-                'serial_number' => 'X8YZA7BCDE',
-                'status' => 'non aktif',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [ 
-                'perusahaan_id' => $perusahaanMapping['SCP'],
-                'jenis_barang_id' => $jenisBarangMapping['HP'],
-                'no_asset' => 'SCP/HP/2025/06/0002',
-                'merek' => 'Samsung J2 Prime',
-                'tgl_pengadaan' => '2025-06-08',
-                'serial_number' => '351234567890123',
-                'status' => 'digunakan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ];
+        }
+
+        DB::table('barang')->insert($barangData);
+        Schema::enableForeignKeyConstraints();
     }
 }
