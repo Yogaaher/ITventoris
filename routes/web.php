@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\ManagePageController; 
+use App\Http\Controllers\ManagePageController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -21,7 +21,7 @@ Route::middleware('guest')->group(function () {
 // === GRUP 2: RUTE UNTUK SEMUA USER YANG SUDAH LOGIN ===
 // Memerlukan autentikasi (harus sudah login).
 Route::middleware('auth')->group(function () {
-    
+
     // Rute Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     // Dashboard adalah halaman utama yang bisa dilihat semua orang.
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard/search-realtime', [DashboardController::class, 'searchRealtime'])->name('dashboard.search.realtime');
-    
+
     // Semua user boleh melihat detail barang dan riwayatnya.
     Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
     Route::get('/history/user/{serial_number}', [DashboardController::class, 'getUserHistoryBySerialNumber'])->name('history.user.serial_number');
@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     // === GRUP 3: RUTE KHUSUS UNTUK ADMIN ===
     // Memerlukan middleware 'is_admin' yang sudah kita buat.
     Route::middleware('is_admin')->group(function () {
-        
+
         // --- Manajemen User (Hanya Admin) ---
         Route::get('/users', [ManagePageController::class, 'index'])->name('users.index');
         // Rute untuk search real-time user juga harus dilindungi
@@ -54,6 +54,5 @@ Route::middleware('auth')->group(function () {
         Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
         Route::post('/aset/serah-terima/store', [DashboardController::class, 'storeSerahTerimaAset'])->name('aset.serahterima.store');
         Route::get('/aset/nomor-seri-berikutnya/{perusahaan_id}', [BarangController::class, 'getNomorSeriBerikutnya'])->name('aset.get_nomor_seri');
-        
     });
 });
