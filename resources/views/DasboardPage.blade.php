@@ -2407,7 +2407,7 @@
                             <div class="asset-detail-content">
                                 <div class="info-section">
                                     <dl class="info-item">
-                                        <dt>No:</dt>
+                                        <dt>ID Database:</dt>
                                         <dd id="modalNo">_</dd>
                                     </dl>
                                     <dl class="info-item">
