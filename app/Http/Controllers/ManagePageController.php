@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -18,16 +19,29 @@ class ManagePageController extends Controller
             $searchKeyword = $request->input('search');
             $query->where(function ($subQuery) use ($searchKeyword) {
                 $subQuery->where('name', 'like', '%' . $searchKeyword . '%')
-                         ->orWhere('email', 'like', '%' . $searchKeyword . '%');
+                    ->orWhere('email', 'like', '%' . $searchKeyword . '%');
             });
         }
 
-        $users = $query->latest()->paginate(10)->appends($request->all());
+        $perPage = $request->input('per_page', 10);
+
+        $query = User::query();
+        if ($request->filled('search')) {
+            $searchKeyword = $request->input('search');
+            $query->where(function ($subQuery) use ($searchKeyword) {
+                $subQuery->where('name', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('email', 'like', '%' . $searchKeyword . '%');
+            });
+        }
+
+        // Gunakan variabel $perPage untuk paginasi
+        $users = $query->latest()->paginate($perPage)->appends($request->except('page'));
 
         if ($request->ajax()) {
             return response()->json([
                 'table_html' => view('partials.user_table_rows', compact('users'))->render(),
-                'pagination_html' => (string) $users->links()
+                // INI PERUBAHAN UTAMA: Kirim seluruh objek pagination
+                'pagination' => $users->toArray()
             ]);
         }
 
@@ -55,13 +69,13 @@ class ManagePageController extends Controller
     private function getValidationRules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
         ];
     }
 
-   public function store(Request $request)
+    public function store(Request $request)
     {
         // Panggil helper method untuk mendapatkan aturan dan pesan
         $rules = $this->getValidationRules();
@@ -84,17 +98,17 @@ class ManagePageController extends Controller
     public function validateField(Request $request)
     {
         $triggerField = $request->input('field_trigger');
-        
+
         // Panggil helper method untuk mendapatkan aturan dan pesan
         $allRules = $this->getValidationRules();
         $messages = $this->getValidationMessages();
-        
+
         // ... sisa logika validateField() sama seperti sebelumnya ...
         $rulesToValidate = [];
         if (array_key_exists($triggerField, $allRules)) {
             $rulesToValidate[$triggerField] = $allRules[$triggerField];
         }
-        
+
         if ($triggerField === 'password' || $triggerField === 'password_confirmation') {
             $rulesToValidate['password'] = $allRules['password'];
         }
@@ -125,7 +139,7 @@ class ManagePageController extends Controller
     public function update(Request $request, User $user)
     {
         if (strtolower($user->role) === 'admin' && $request->has('role') && $request->role !== $user->role) {
-             return response()->json(['error' => 'Role Admin tidak dapat diubah.'], 403);
+            return response()->json(['error' => 'Role Admin tidak dapat diubah.'], 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -142,7 +156,7 @@ class ManagePageController extends Controller
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-        
+
         $user->save();
 
         return response()->json(['success' => 'User berhasil diperbarui.']);

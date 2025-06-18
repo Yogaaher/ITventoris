@@ -311,6 +311,7 @@
                     --color-text-light: #212529;
                     --color-neutral-light: #6c757d;
                     --color-neutral-medium: #495057;
+                    --table-border: #e9ecef;
                 }
 
                 /* CSS Global Dashboard (pertahankan ini) */
@@ -599,6 +600,7 @@
                     display: flex;
                     flex-direction: column;
                     overflow-x: hidden;
+                    min-width: 0;
                 }
 
                 .app-content-header {
@@ -666,7 +668,6 @@
                 .app-content-actions .search-bar {
                     flex-grow: 1;
                     max-width: none;
-                    margin-right: 8px;
                 }
 
                 .app-content-actions-buttons {
@@ -685,45 +686,6 @@
                 .action-button.add-asset-btn svg,
                 .action-button.add-asset-btn i.fas {
                     margin-right: 6px !important;
-                }
-
-                @media screen and (max-width: 768px) {
-                    .app-content-actions {
-                        flex-direction: column;
-                        align-items: stretch;
-                        gap: 10px
-                    }
-
-                    .app-content-actions .search-bar {
-                        order: 1;
-                    }
-
-                    .app-content-actions-buttons {
-                        order: 2;
-                        justify-content: flex-start;
-                    }
-
-                    .app-content-actions .search-bar-container {
-                        flex-grow: 1;
-                        max-width: 320px;
-                        margin-right: 8px;
-                    }
-                }
-
-                @media screen and (max-width: 520px) {
-                    .app-content-actions {
-                        flex-direction: column;
-                    }
-
-                    .app-content-actions .search-bar {
-                        max-width: 100%;
-                        order: 2;
-                    }
-
-                    .app-content-actions .app-content-actions-wrapper {
-                        padding-bottom: 16px;
-                        order: 1;
-                    }
                 }
 
                 .search-bar {
@@ -979,7 +941,7 @@
                     border-radius: 4px;
                     position: sticky;
                     top: 0;
-                    min-width: 1210px;
+                    min-width: 1200px;
                     z-index: 10;
                     border-bottom: 2px solid var(--action-color);
                 }
@@ -2065,6 +2027,359 @@
                     padding: 0 8px;
                     color: var(--color-neutral-light);
                 }
+
+                /* ======================================================= */
+                /* ===  KODE CSS RESPONSIVE UNTUK DASHBOARD ITVENTORY  === */
+                /* ======================================================= */
+                #mobile-burger-menu {
+                    display: none;
+                }
+
+                @media screen and (max-width: 1024px) {
+                    .sidebar {
+                        position: fixed;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        z-index: 2000;
+                        transform: translateX(-100%);
+                        transition: transform 0.3s ease-in-out;
+                    }
+
+                    .sidebar.mobile-open {
+                        transform: translateX(0);
+                        box-shadow: 5px 0px 25px -5px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .sidebar.collapsed {
+                        min-width: var(--sidebar-width-expanded);
+                        max-width: var(--sidebar-width-expanded);
+                    }
+
+                    .sidebar.collapsed .sidebar-list-item a span,
+                    .sidebar.collapsed .app-icon {
+                        opacity: 1;
+                        width: auto;
+                        margin-left: 0;
+                        transform: none;
+                    }
+
+                    .sidebar.collapsed .sidebar-header .app-icon,
+                    .sidebar.collapsed .sidebar-list-item a svg,
+                    .sidebar.collapsed .account-info-name,
+                    .sidebar.collapsed .account-info-more {
+                        display: flex;
+                    }
+
+                    .app-content {
+                        margin-left: 0;
+                    }
+
+                    .app-content-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                    }
+
+                    #mobile-burger-menu {
+                        display: flex;
+                    }
+
+                    #burger-menu {
+                        display: none;
+                    }
+
+                    .app-content-headerText {
+                        flex-grow: 1;
+                        margin: 0;
+                    }
+
+                    body.sidebar-open-overlay::after {
+                        content: '';
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 1999;
+                    }
+                }
+
+                @media screen and (max-width: 768px),
+                screen and (orientation: landscape) and (max-height: 500px) {
+                    .app-content {
+                        padding: 0 16px 16px 16px;
+                    }
+
+                    .app-content-header {
+                        padding-top: 16px;
+                    }
+
+                    .app-content-headerText {
+                        font-size: 1.6rem;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        min-width: 0;
+                        padding-top: 20px;
+                        padding-bottom: none;
+                    }
+
+                    .inventory-summary-container,
+                    .products-area-wrapper {
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    .app-content-actions {
+                        flex-direction: column;
+                        align-items: stretch;
+                        gap: 12px;
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    .app-content-actions .search-bar-container {
+                        order: 1;
+                        max-width: none;
+                        margin-right: 0;
+                    }
+
+                    .app-content-actions .app-content-actions-buttons {
+                        order: 2;
+                        display: flex;
+                        justify-content: stretch;
+                        gap: 10px;
+                        padding-right: 1rem;
+                    }
+
+                    .app-content-actions-buttons .action-button {
+                        flex-grow: 1;
+                        justify-content: center;
+                    }
+
+                    .app-content-actions .search-bar {
+                        max-width: none;
+                    }
+
+                    .summary-box {
+                        display: grid;
+                        grid-template-columns: min-content 1fr;
+                        grid-template-rows: auto auto;
+                        gap: 0 16px;
+                        align-items: center;
+                        text-align: left;
+                        padding: 12px 16px;
+                        flex-basis: calc(50% - 8px);
+                    }
+
+                    .summary-box-icon {
+                        grid-row: 1 / 3;
+                        font-size: 3rem;
+                        margin-bottom: 0;
+                    }
+
+                    .summary-box-type {
+                        font-size: 1.4rem;
+                        margin-bottom: 2px;
+                        align-self: end;
+                    }
+
+                    .summary-box-count {
+                        font-size: 1.8rem;
+                        align-self: start;
+                    }
+
+                    .products-area-wrapper.tableView {
+                        overflow: visible;
+                    }
+
+                    .tableView .products-header {
+                        display: none;
+                    }
+
+                    .tableView .products-row {
+                        display: block;
+                        min-width: 0;
+                        margin-bottom: 2rem;
+                        padding: 1.5rem;
+                        border-radius: 8px;
+                        background-color: var(--app-content-secondary-color);
+                        box-shadow: var(--filter-shadow);
+                        border-left: 4px solid var(--action-color);
+                    }
+
+                    html.light .tableView .products-row {
+                        background-color: #f9f9f9;
+                        border: 1px solid #eee;
+                        border-left: 4px solid var(--action-color);
+                    }
+
+                    .tableView .product-cell {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1rem 0;
+                        text-align: right;
+                        white-space: normal;
+                        border-bottom: 1px dashed var(--table-border);
+                    }
+
+                    .tableView .product-cell:last-child {
+                        border-bottom: none;
+                    }
+
+                    .tableView .product-cell[data-label]::before {
+                        content: attr(data-label);
+                        font-weight: 500;
+                        text-align: left;
+                        padding-right: 1rem;
+                        color: var(--app-content-main-color);
+                    }
+
+                    html.light .tableView .product-cell[data-label]::before {
+                        color: #6c757d;
+                    }
+
+                    .tableView .product-cell.cell-no {
+                        display: none;
+                    }
+
+                    .tableView .product-cell.cell-aksi {
+                        justify-content: center;
+                        padding-top: 1.5rem;
+                        margin-top: 1rem;
+                    }
+
+                    .tableView .product-cell.cell-aksi .action-btn-table {
+                        width: 100%;
+                        padding: 12px 10px;
+                    }
+
+                    .app-content-actions {
+                        flex-direction: column;
+                        align-items: stretch;
+                        gap: 12px;
+                    }
+
+                    .app-content-actions .search-bar-container {
+                        order: 1;
+                        max-width: none;
+                    }
+
+                    .app-content-actions .app-content-actions-buttons {
+                        order: 2;
+                        display: flex;
+                        justify-content: stretch;
+                        gap: 10px;
+                    }
+
+                    .app-content-actions-buttons .add-asset-btn,
+                    .app-content-actions-buttons .filter-button-wrapper {
+                        flex-grow: 1;
+                        flex-basis: 0;
+                        margin-left: 0;
+                    }
+
+                    .app-content-actions-buttons .filter-button-wrapper .action-button.filter {
+                        width: 100%;
+                    }
+
+                    .table-footer-controls {
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 20px;
+                    }
+
+                    .table-footer-controls .footer-section {
+                        width: 100%;
+                        justify-content: center;
+                    }
+
+                    .modal-content,
+                    .modal-overlay .modal-content-wrapper {
+                        width: calc(100% - 2.5rem);
+                        max-width: 450px;
+                        margin: 1.25rem;
+                        padding: 1.5rem;
+                        max-height: calc(100% - 2.5rem);
+                    }
+
+                    #deviceInfoModal .asset-detail-content .info-item,
+                    #userHistoryModal .history-info-item,
+                    #serahTerimaAsetModal .info-item {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 4px;
+                        margin-bottom: 1.2rem;
+                    }
+
+                    #deviceInfoModal .asset-detail-content .info-item dt,
+                    #userHistoryModal .history-info-item dt,
+                    #serahTerimaAsetModal .info-item dt {
+                        min-width: auto;
+                        font-weight: 500;
+                        font-size: 1.3rem;
+                        color: var(--color-neutral-light);
+                    }
+
+                    #deviceInfoModal .asset-detail-content .info-item dd,
+                    #userHistoryModal .history-info-item dd,
+                    #serahTerimaAsetModal .info-item dd {
+                        margin-left: 0;
+                        font-weight: 600;
+                        font-size: 1.4rem;
+                        color: var(--color-text-light);
+                        word-break: break-word;
+                    }
+
+                    #userHistoryModal .history-info-item dt::after,
+                    #serahTerimaAsetModal .info-item dt::after {
+                        display: none;
+                    }
+
+                    #deviceInfoModal .action-buttons {
+                        flex-direction: column;
+                        align-items: stretch;
+                        gap: 12px;
+                    }
+
+                    #deviceInfoModal .action-buttons .btn-action {
+                        width: 100%;
+                        justify-content: center;
+                    }
+
+                    .modal-title {
+                        font-size: 1.8rem;
+                    }
+
+                    .modal-title::before {
+                        font-size: 1.7rem;
+                    }
+
+                    #deviceInfoModal .device-details-info-header {
+                        margin-bottom: 1.5rem;
+                    }
+
+                    #deviceInfoModal .device-image {
+                        font-size: 4rem;
+                        margin-right: 1.5rem;
+                    }
+
+                    #deviceInfoModal .device-name {
+                        font-size: 1.6rem;
+                    }
+
+                    .morph-modal-body {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+
+                    .morph-modal-body::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
             </style>
         </head>
 
@@ -2432,8 +2747,12 @@
                     {{-- KONTEN UTAMA APLIKASI (AREA FILTER DAN TABEL) --}}
                     <div class="app-content">
                         <div class="app-content-header">
+                            <button id="mobile-burger-menu" class="burger-button" title="Buka Menu">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
                             <h1 class="app-content-headerText">Data Aset Inventaris</h1>
-                            {{-- Tombol Mode dan Logout dipindahkan ke sini dan dibungkus --}}
                             <div class="app-content-header-actions-right"> {{-- Wrapper baru untuk tombol kanan atas --}}
                                 <button class="mode-switch action-button" title="Switch Theme"> {{-- Tambahkan class action-button --}}
                                     <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" height="20" viewBox="0 0 24 24"> {{-- Ukuran ikon bisa disesuaikan --}}
@@ -2566,14 +2885,12 @@
                                 @foreach($barangs as $index => $barang)
                                 <div class="products-row">
                                     <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
-                                    {{-- PERUBAHAN: Ambil dari relasi --}}
-                                    <div class="product-cell cell-perusahaan" title="{{ $barang->perusahaan->singkatan ?? '' }}">{{ $barang->perusahaan->nama_perusahaan ?? 'N/A' }}</div>
-                                    <div class="product-cell cell-jenis-barang" title="{{ $barang->jenisBarang->nama_jenis ?? '' }}">{{ $barang->jenisBarang->nama_jenis ?? 'N/A' }}</div>
-                                    {{-- Akhir Perubahan --}}
-                                    <div class="product-cell cell-no-asset" title="{{ $barang->no_asset }}">{{ $barang->no_asset }}</div>
-                                    <div class="product-cell cell-merek" title="{{ $barang->merek }}">{{ $barang->merek }}</div>
-                                    <div class="product-cell cell-tgl-pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
-                                    <div class="product-cell cell-serial-number" title="{{ $barang->serial_number }}">{{ $barang->serial_number }}</div>
+                                    <div class="product-cell cell-perusahaan" data-label="Perusahaan">{{ $barang->perusahaan->nama_perusahaan ?? 'N/A' }}</div>
+                                    <div class="product-cell cell-jenis-barang" data-label="Jenis Barang">{{ $barang->jenisBarang->nama_jenis ?? 'N/A' }}</div>
+                                    <div class="product-cell cell-no-asset" data-label="No Asset">{{ $barang->no_asset }}</div>
+                                    <div class="product-cell cell-merek" data-label="Merek">{{ $barang->merek }}</div>
+                                    <div class="product-cell cell-tgl-pengadaan" data-label="Tgl. Pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
+                                    <div class="product-cell cell-serial-number" data-label="Serial Number">{{ $barang->serial_number }}</div>
                                     <div class="product-cell cell-aksi">
                                         <button class="action-btn-table detail-btn-table-js" data-id="{{ $barang->id }}" title="Detail Aset">
                                             <i class="fas fa-info-circle"></i>
@@ -2595,8 +2912,8 @@
                                     <div class="rows-per-page-wrapper">
                                         <label for="rows-per-page-select">Baris Halaman:</label>
                                         <select id="rows-per-page-select">
-                                            <option value="10">10</option>
-                                            <option value="20" selected>20</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
                                             <option value="30">30</option>
                                             <option value="40">40</option>
                                             <option value="50">50</option>
@@ -2893,6 +3210,18 @@
                             }
                         }
 
+                        function escapeHtml(unsafe) {
+                            if (typeof unsafe !== 'string') {
+                                return unsafe;
+                            }
+                            return unsafe
+                                .replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;")
+                                .replace(/"/g, "&quot;")
+                                .replace(/'/g, "&#039;");
+                        }
+
                         function openUserHistoryModal(serialNumber, deviceName, company) {
                             const historyModal = document.getElementById('userHistoryModal');
                             const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
@@ -2947,20 +3276,27 @@
                             `;
                                     if (data && data.success && Array.isArray(data.history) && data.history.length > 0) {
                                         let tableRowsHTML = '';
+
+                                        // --- MULAI PERUBAHAN DI SINI ---
                                         data.history.forEach(item => {
-                                            const username = (item && item.username) ? item.username : '-';
+                                            // Panggil escapeHtml() pada data yang berasal dari input user
+                                            const usernameAman = escapeHtml(item.username || '-');
+                                            const statusAman = escapeHtml(item.status || '-');
+                                            const keteranganAman = escapeHtml(item.keterangan || '-');
+
+                                            // Data tanggal aman karena sudah diformat
                                             const tglAwal = (item && item.tanggal_awal) ? formatDate(item.tanggal_awal) : '-';
                                             const tglAkhir = (item && item.tanggal_ahir) ? formatDate(item.tanggal_ahir) : '-';
-                                            const status = (item && item.status) ? item.status : '-';
-                                            const keterangan = (item && item.keterangan) ? item.keterangan : '-';
+
+                                            // Gunakan variabel yang sudah aman
                                             tableRowsHTML += `
-                                        <tr>
-                                            <td class="cell-history-user" title="${username}">${username}</td>
-                                            <td class="cell-history-tgl-awal">${tglAwal}</td>
-                                            <td class="cell-history-tgl-akhir">${tglAkhir}</td>
-                                            <td class="cell-history-status" title="${status}">${status}</td>
-                                            <td class="cell-history-keterangan" title="${keterangan}">${keterangan}</td>
-                                        </tr>`;
+                                            <tr>
+                                                <td class="cell-history-user" title="${usernameAman}">${usernameAman}</td>
+                                                <td class="cell-history-tgl-awal">${tglAwal}</td>
+                                                <td class="cell-history-tgl-akhir">${tglAkhir}</td>
+                                                <td class="cell-history-status" title="${statusAman}">${statusAman}</td>
+                                                <td class="cell-history-keterangan" title="${keteranganAman}">${keteranganAman}</td>
+                                            </tr>`;
                                         });
                                         historyTableBodyEl.innerHTML = tableRowsHTML;
                                     } else {
@@ -3035,6 +3371,7 @@
                             const modeSwitch = document.querySelector('.mode-switch');
                             const burgerMenuButton = document.getElementById('burger-menu');
                             const sidebarElement = document.querySelector('.sidebar');
+                            const mobileBurgerButton = document.getElementById('mobile-burger-menu');
 
                             // Variabel State
                             let originalRowsHTML = '';
@@ -3125,6 +3462,24 @@
                                     });
                                 }
                             }
+
+                            if (mobileBurgerButton && sidebarElement) {
+                                mobileBurgerButton.addEventListener('click', () => {
+                                    sidebarElement.classList.toggle('mobile-open');
+                                    document.body.classList.toggle('sidebar-open-overlay');
+                                    mobileBurgerButton.classList.toggle('active');
+                                });
+                            }
+
+                            document.body.addEventListener('click', function(event) {
+                                if (event.target === document.body && document.body.classList.contains('sidebar-open-overlay')) {
+                                    sidebarElement.classList.remove('mobile-open');
+                                    document.body.classList.remove('sidebar-open-overlay');
+                                    if (mobileBurgerButton) {
+                                        mobileBurgerButton.classList.remove('active');
+                                    }
+                                }
+                            });
 
                             function setupSmartModalClosure(modalElement, closeFunction) {
                                 if (!modalElement) return;
@@ -3470,22 +3825,31 @@
                                             let currentItemNumber = responseData.pagination.first_item || 1;
                                             responseData.data.forEach(barang => {
                                                 let tglPengadaanFormatted = formatDate(barang.tgl_pengadaan);
+
+                                                // PANGGIL FUNGSI escapeHtml() UNTUK SETIAP DATA DARI USER
+                                                const merekAman = escapeHtml(barang.merek || '');
+                                                const serialNumberAman = escapeHtml(barang.serial_number || '');
+                                                const noAssetAman = escapeHtml(barang.no_asset || '');
+                                                const perusahaanNamaAman = escapeHtml(barang.perusahaan_nama || 'N/A');
+                                                const jenisBarangAman = escapeHtml(barang.jenis_barang || 'N/A');
+
+                                                // Gunakan variabel yang sudah aman di dalam template literal
                                                 tableRowsHtml += `
-                                        <div class="products-row">
-                                            <div class="product-cell cell-no">${currentItemNumber++}</div>
-                                            <div class="product-cell cell-perusahaan" title="${barang.perusahaan_singkatan || ''}">${barang.perusahaan_nama || 'N/A'}</div>
-                                            <div class="product-cell cell-jenis-barang" title="${barang.jenis_barang || ''}">${barang.jenis_barang || 'N/A'}</div>
-                                            <div class="product-cell cell-no-asset" title="${barang.no_asset || ''}">${barang.no_asset || ''}</div>
-                                            <div class="product-cell cell-merek" title="${barang.merek || ''}">${barang.merek || ''}</div>
-                                            <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
-                                            <div class="product-cell cell-serial-number" title="${barang.serial_number || ''}">${barang.serial_number || ''}</div>
-                                            <div class="product-cell cell-aksi">
-                                                <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
-                                                    <i class="fas fa-info-circle"></i>
-                                                    <span>Detail</span>
-                                                </button>
-                                            </div>
-                                        </div>`;
+                                                <div class="products-row">
+                                                    <div class="product-cell cell-no">${currentItemNumber++}</div>
+                                                    <div class="product-cell cell-perusahaan" title="${perusahaanNamaAman}">${perusahaanNamaAman}</div>
+                                                    <div class="product-cell cell-jenis-barang" title="${jenisBarangAman}">${jenisBarangAman}</div>
+                                                    <div class="product-cell cell-no-asset" title="${noAssetAman}">${noAssetAman}</div>
+                                                    <div class="product-cell cell-merek" title="${merekAman}">${merekAman}</div>
+                                                    <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
+                                                    <div class="product-cell cell-serial-number" title="${serialNumberAman}">${serialNumberAman}</div>
+                                                    <div class="product-cell cell-aksi">
+                                                        <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
+                                                            <i class="fas fa-info-circle"></i>
+                                                            <span>Detail</span>
+                                                        </button>
+                                                    </div>
+                                                </div>`;
                                             });
                                         } else {
                                             tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
@@ -3820,20 +4184,40 @@
                             const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsedITventory'; // Gunakan nama unik
                             function initializeSidebarState() {
                                 if (!burgerMenuButton || !sidebarElement) return;
-                                const isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
-                                if (isCollapsed) {
-                                    sidebarElement.classList.add('collapsed');
-                                    burgerMenuButton.classList.remove('active');
+
+                                if (window.innerWidth > 1024) {
+                                    const isCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+                                    if (isCollapsed) {
+                                        sidebarElement.classList.add('collapsed');
+                                        burgerMenuButton.classList.remove('active');
+                                    } else {
+                                        sidebarElement.classList.remove('collapsed');
+                                        burgerMenuButton.classList.add('active');
+                                    }
                                 } else {
-                                    sidebarElement.classList.remove('collapsed');
-                                    burgerMenuButton.classList.add('active');
+                                    sidebarElement.classList.remove('mobile-open', 'collapsed');
+                                    document.body.classList.remove('sidebar-open-overlay');
+                                    burgerMenuButton.classList.remove('active');
                                 }
                             }
                             if (burgerMenuButton && sidebarElement) {
                                 burgerMenuButton.addEventListener('click', () => {
-                                    sidebarElement.classList.toggle('collapsed');
+                                    if (window.innerWidth <= 1024) {
+                                        sidebarElement.classList.toggle('mobile-open');
+                                        document.body.classList.toggle('sidebar-open-overlay');
+                                    } else {
+                                        sidebarElement.classList.toggle('collapsed');
+                                        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, sidebarElement.classList.contains('collapsed'));
+                                    }
                                     burgerMenuButton.classList.toggle('active');
-                                    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, sidebarElement.classList.contains('collapsed'));
+                                });
+
+                                document.body.addEventListener('click', function(event) {
+                                    if (event.target === document.body && document.body.classList.contains('sidebar-open-overlay')) {
+                                        sidebarElement.classList.remove('mobile-open');
+                                        document.body.classList.remove('sidebar-open-overlay');
+                                        burgerMenuButton.classList.remove('active');
+                                    }
                                 });
                             }
 
