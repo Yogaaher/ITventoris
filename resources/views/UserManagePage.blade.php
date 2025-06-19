@@ -78,10 +78,10 @@
             .modal-content-wrapper.device-entry-info-modal {
                 background-color: var(--color-modal-background, var(--app-content-secondary-color));
                 border-radius: 1rem;
-                width: 100%;
-                max-width: 55rem;
-                max-height: calc(100vh - 4rem);
-                overflow: hidden;
+                width: calc(100% - 2.5rem);
+                max-width: 600px;
+                max-height: calc(100% - 2.5rem);
+                overflow: auto;
                 display: flex;
                 flex-direction: column;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -128,6 +128,12 @@
             .morph-modal-body {
                 flex: 1 1 auto;
                 overflow-y: auto;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .morph-modal-body::-webkit-scrollbar {
+                display: none;
             }
 
             .morph-modal-body .form-group label {
@@ -639,6 +645,13 @@
                 display: flex;
                 flex-direction: column;
                 overflow-x: hidden;
+                overflow-y: auto;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .app-content::-webkit-scrollbar {
+                display: none;
             }
 
             .app-content-header {
@@ -1259,6 +1272,10 @@
                     background: rgba(0, 0, 0, 0.5);
                     z-index: 1999;
                 }
+
+                body.modal-open {
+                    overflow: hidden;
+                }
             }
 
             @media screen and (max-width: 768px),
@@ -1354,28 +1371,37 @@
                 }
 
                 .tableView .product-cell {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 1rem 0;
-                    text-align: right;
+                    display: block;
+                    padding: 0.25rem 0;
+                    text-align: left;
                     white-space: normal;
-                }
-
-                .tableView .product-cell:last-child {
                     border-bottom: none;
                 }
 
-                .tableView .product-cell[data-label]::before {
-                    content: attr(data-label);
-                    font-weight: 500;
-                    text-align: left;
-                    padding-right: 1rem;
-                    color: var(--app-content-main-color);
+                .tableView .product-cell:last-child {
+                    padding-bottom: 0;
                 }
 
-                html.light .tableView .product-cell[data-label]::before {
-                    color: #6c757d;
+                .tableView .product-cell[data-label]::before {
+                    content: '';
+                    display: none;
+                }
+
+                .tableView .product-cell[data-label]::before {
+                    content: '';
+                    display: none;
+                }
+
+                .tableView .product-cell.cell-nama-perusahaan {
+                    font-weight: 500;
+                    font-size: 1.6rem;
+                    margin-bottom: 0.5rem;
+                }
+
+                .tableView .product-cell.cell-singkatan,
+                .tableView .product-cell.cell-dibuat-pada {
+                    font-size: 1.3rem;
+                    opacity: 0.8;
                 }
 
                 .tableView .product-cell.cell-no {
@@ -1404,15 +1430,41 @@
 
                 .modal-content,
                 .modal-overlay .modal-content-wrapper {
-                    width: calc(100% - 2.5rem);
+                    width: calc(100% - 2rem);
                     max-width: 450px;
-                    margin: 1.25rem;
-                    padding: 1.5rem;
-                    max-height: calc(100% - 2.5rem);
+                    margin: 1rem auto;
+                    padding: 1.5rem 1.25rem;
+                    max-height: calc(100% - 2rem);
                 }
 
                 .modal-title {
-                    font-size: 1.8rem;
+                    font-size: 1.4rem;
+                }
+
+                .morph-modal-body .form-group label {
+                    margin-bottom: 0.5rem;
+                }
+
+                .morph-modal-body .form-group input[type="text"],
+                .morph-modal-body .form-group input[type="email"],
+                .morph-modal-body .form-group input[type="password"],
+                .form-group select {
+                    font-size: 1.4rem;
+                    padding: 10px 12px;
+                }
+
+                .modal-footer {
+                    padding-top: 1.25rem;
+                    margin-top: 1.25rem;
+                    gap: 0.8rem;
+                    flex-wrap: wrap;
+                }
+
+                .modal-footer .btn {
+                    font-size: 1.4rem;
+                    padding: 10px 16px;
+                    flex-grow: 1;
+                    text-align: center;
                 }
             }
         </style>
@@ -1839,9 +1891,12 @@
                 }
 
                 // Fungsi untuk modal edit user
-                const closeEditModal = () => editUserModal.style.display = 'none';
-                closeEditUserBtn.addEventListener('click', closeEditModal);
-                cancelEditUserBtn.addEventListener('click', closeEditModal);
+                const closeEditModal = () => {
+                    closeModal(editUserModal);
+                };
+                if (closeEditUserBtn) closeEditUserBtn.addEventListener('click', closeEditModal);
+                if (cancelEditUserBtn) cancelEditUserBtn.addEventListener('click', closeEditModal);
+
                 tableContainer.addEventListener('click', function(event) {
                     const editButton = event.target.closest('.edit-btn');
                     if (!editButton || editButton.disabled) return;
@@ -1865,7 +1920,7 @@
                                 roleSelect.disabled = false;
                             }
 
-                            editUserModal.style.display = 'flex';
+                            openModal(editUserModal);
                         })
                         .catch(error => console.error('Gagal mengambil data user:', error));
                 });
@@ -1917,6 +1972,20 @@
                         });
                 });
 
+                function openModal(modalElement) {
+                    if (modalElement) {
+                        modalElement.style.display = 'flex';
+                        document.body.classList.add('modal-open');
+                    }
+                }
+
+                function closeModal(modalElement) {
+                    if (modalElement) {
+                        modalElement.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                    }
+                }
+
                 function setupSmartModalClosure(modalElement, closeFunction) {
                     if (!modalElement) return;
                     let isMouseDownOnOverlay = false;
@@ -1934,14 +2003,14 @@
 
                 const closeAddModal = () => {
                     if (addUserModal) {
-                        addUserModal.style.display = 'none';
+                        closeModal(addUserModal);
                         resetAddUserFormState();
                     }
                 };
                 if (openAddUserBtn) {
                     openAddUserBtn.addEventListener('click', () => {
                         resetAddUserFormState();
-                        if (addUserModal) addUserModal.style.display = 'flex';
+                        openModal(addUserModal);
                     });
                 }
                 if (closeAddUserBtn) closeAddUserBtn.addEventListener('click', closeAddModal);
