@@ -1,18 +1,17 @@
     <!DOCTYPE html>
-    <html lang="id"> <!-- Class 'light' akan ditambahkan oleh JS dashboard jika mode light aktif -->
+    <html lang="id">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>ITventory - User Manage</title> <!-- Judul bisa diubah -->
+        <title>ITventory - User Manage</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
         <link rel="icon" href="{{ asset('img/Scuto-logo.svg') }}" type="image/x-icon">
         <style>
-            /* === CSS MODAL TAMBAH ASET (DARI DASHBOARD ANDA) - DIpertahankan jika modal 'Tambah User' akan mirip === */
             .modal {
                 display: none;
                 position: fixed;
@@ -36,7 +35,6 @@
                 height: 100%;
                 background-color: rgba(0, 0, 0, 0.6);
                 z-index: 1051;
-                /* Pastikan z-index tinggi */
                 justify-content: center;
                 align-items: center;
                 padding: 2rem;
@@ -79,11 +77,9 @@
 
             .modal-content-wrapper.device-entry-info-modal {
                 background-color: var(--color-modal-background, var(--app-content-secondary-color));
-                /* Fallback ke variabel dashboard */
                 border-radius: 1rem;
                 width: 100%;
                 max-width: 55rem;
-                /* Sedikit lebih kecil dari serah terima aset */
                 max-height: calc(100vh - 4rem);
                 overflow: hidden;
                 display: flex;
@@ -134,7 +130,6 @@
                 overflow-y: auto;
             }
 
-            /* Style untuk form di dalam modal baru */
             .morph-modal-body .form-group label {
                 display: block;
                 margin-bottom: 0.8rem;
@@ -171,7 +166,6 @@
                 border-color: #ced4da;
             }
 
-            /* Style untuk footer modal */
             .modal-footer {
                 padding-top: 2rem;
                 border-top: 1px solid var(--color-neutral-medium, var(--table-border));
@@ -183,6 +177,11 @@
             }
 
             .modal-footer .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+
                 padding: 12px 24px;
                 border-radius: 6px;
                 border: none;
@@ -204,7 +203,6 @@
 
             .modal-footer .btn-secondary {
                 background-color: #e74c3c;
-                /* Warna merah untuk Batal */
                 color: white;
             }
 
@@ -219,7 +217,6 @@
                 margin: 0;
             }
 
-            /* Tombol close untuk modal TAMBAH USER */
             #addUserModal .close-button {
                 color: var(--app-content-main-color);
                 font-size: 1.8rem;
@@ -709,7 +706,6 @@
             .app-content-actions .search-bar {
                 flex-grow: 1;
                 max-width: none;
-                /* margin-right: 8px; */
             }
 
             .app-content-actions-buttons {
@@ -875,14 +871,12 @@
 
             .password-wrapper input[type="password"],
             .password-wrapper input[type="text"] {
-                /* Pastikan padding kanan cukup untuk ikon */
                 padding-right: 45px !important;
             }
 
             .toggle-password {
                 position: absolute;
                 right: 15px;
-                /* Sesuaikan jarak dari kanan */
                 cursor: pointer;
                 color: var(--color-neutral-light, #94a3b8);
                 transition: color 0.2s ease;
@@ -898,7 +892,6 @@
                 overflow: auto;
                 padding: 0 4px;
                 margin-top: 16px;
-                /* Memberi jarak dari search bar */
             }
 
             .products-area-wrapper.tableView {
@@ -914,7 +907,6 @@
                 position: sticky;
                 top: 0;
                 min-width: 1200px;
-                /* Lebar minimum disesuaikan untuk kolom baru */
                 z-index: 10;
                 border-bottom: 2px solid var(--action-color);
             }
@@ -946,7 +938,6 @@
                 align-items: center;
                 border-radius: 4px;
                 min-width: 900px;
-                /* Lebar minimum disesuaikan untuk kolom baru */
             }
 
             .tableView .product-cell {
@@ -960,7 +951,6 @@
                 text-overflow: ellipsis;
             }
 
-            /* === PERUBAHAN CSS UNTUK KOLOM BARU (MANAJEMEN USER) === */
             .tableView .product-cell.cell-no {
                 flex: 0 0 60px;
                 min-width: 60px;
@@ -989,11 +979,9 @@
 
             .tableView .product-cell.cell-aksi {
                 flex: 0 0 220px;
-                /* Lebar cukup untuk dua tombol */
                 min-width: 220px;
                 justify-content: center;
                 gap: 8px;
-                /* Jarak antar tombol */
                 overflow: visible;
             }
 
@@ -1010,10 +998,8 @@
                 display: none;
             }
 
-            /* Tombol aksi di dalam tabel */
             .product-cell.cell-aksi .action-btn-table {
                 padding: 6px 14px;
-                /* Sedikit lebih lebar */
                 margin: 0 4px;
                 border: 1px solid transparent;
                 background-color: transparent;
@@ -1029,7 +1015,6 @@
                 gap: 5px;
             }
 
-            /* === PERUBAHAN CSS UNTUK TOMBOL AKSI BARU === */
             .product-cell.cell-aksi .action-btn-table.edit-btn {
                 border-color: var(--action-color);
                 color: var(--action-color);
@@ -1042,7 +1027,6 @@
 
             .product-cell.cell-aksi .action-btn-table.delete-btn {
                 border-color: #e74c3c;
-                /* Warna merah */
                 color: #e74c3c;
             }
 
@@ -1054,7 +1038,7 @@
             /* === AKHIR PERUBAHAN CSS TOMBOL AKSI === */
 
 
-            /* === CSS UNTUK TOMBOL BURGER (TIDAK DIUBAH) === */
+            /* === CSS UNTUK TOMBOL BURGER === */
             .burger-button {
                 background: none;
                 border: none;
@@ -1108,7 +1092,6 @@
                 align-items: center;
             }
 
-            /* Kolom Kiri */
             .table-footer-controls .footer-left {
                 justify-content: flex-start;
                 flex: 1;
@@ -1442,7 +1425,7 @@
         <!-- =================================== -->
         <div id="dashboard-page">
             <div class="app-container">
-                <div class="sidebar"> <!-- Akan diberi class .collapsed oleh JS -->
+                <div class="sidebar">
                     <div class="sidebar-header">
                         <div class="app-icon">
                             <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
@@ -1480,7 +1463,7 @@
                     </ul>
                     <div class="account-info">
                         <div class="account-info-picture">
-                            <img src="/img/Logo-scuto.png" alt="Account"> <!-- Ganti dengan path yang benar -->
+                            <img src="/img/Logo-scuto.png" alt="Account">
                         </div>
                         <div class="account-info-name">{{ auth()->user()->name ?? 'Guest' }}</div>
                     </div>
@@ -1502,7 +1485,6 @@
                                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
                                 </svg>
                             </button>
-                            <!-- Tombol Logout Tetap Ada -->
                             <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');" style="display: inline;">
                                 @csrf
                                 <button type="submit" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">
@@ -1512,7 +1494,6 @@
                         </div>
                     </div>
 
-                    <!-- ================== AREA AKSI (SEARCH & TOMBOL) ================== -->
                     <div class="app-content-actions">
                         <div class="search-bar-container">
                             <input class="search-bar"
@@ -1593,6 +1574,15 @@
                             </div>
 
                             <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="add_role">Role</label>
+                                <select name="role" id="add_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
+                                    <option value="user" selected>User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <div class="invalid-feedback" id="role_error"></div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label for="password">Password</label>
                                 <div class="password-wrapper">
                                     <input type="password" name="password" id="password" required>
@@ -1651,6 +1641,15 @@
                                 <label for="edit_name">Username</label>
                                 <input type="text" name="name" id="edit_name" required>
                                 <div class="invalid-feedback" id="edit_name_error"></div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="edit_role">Role</label>
+                                <select name="role" id="edit_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <div class="invalid-feedback" id="edit_role_error"></div>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -1761,6 +1760,19 @@
                         });
                 }
 
+                // Fungsi untuk reset form
+                function resetAddUserFormState() {
+                    if (!addUserForm) return;
+
+                    addUserForm.reset();
+                    addUserForm.querySelectorAll('.invalid-feedback').forEach(el => {
+                        el.textContent = '';
+                    });
+                    addUserForm.querySelectorAll('.is-invalid').forEach(el => {
+                        el.classList.remove('is-invalid');
+                    });
+                }
+
                 // Fungsi untuk inisialisasi status sidebar
                 function initializeSidebarState() {
                     if (!sidebarElement) return;
@@ -1830,35 +1842,34 @@
                 const closeEditModal = () => editUserModal.style.display = 'none';
                 closeEditUserBtn.addEventListener('click', closeEditModal);
                 cancelEditUserBtn.addEventListener('click', closeEditModal);
-
-                // Event Delegation untuk membuka modal edit
                 tableContainer.addEventListener('click', function(event) {
                     const editButton = event.target.closest('.edit-btn');
-                    if (!editButton || editButton.disabled) return; // Abaikan jika tombol disabled
-
+                    if (!editButton || editButton.disabled) return;
                     const userRow = editButton.closest('.products-row');
                     const userId = userRow.dataset.userId;
 
-                    // 1. Ambil data user dari server
                     fetch(`/users/${userId}/edit`)
                         .then(response => response.json())
                         .then(user => {
-                            // 2. Isi form dengan data yang didapat
                             editUserForm.reset();
                             editUserForm.querySelector('#edit_user_id').value = user.id;
                             editUserForm.querySelector('#edit_name').value = user.name;
                             editUserForm.querySelector('#edit_email').value = user.email;
-
-                            // Set action form secara dinamis
+                            editUserForm.querySelector('#edit_role').value = user.role;
                             editUserForm.action = `/users/${user.id}`;
 
-                            // 3. Tampilkan modal
+                            const roleSelect = editUserForm.querySelector('#edit_role');
+                            if (user.role.toLowerCase() === 'admin') {
+                                roleSelect.disabled = true;
+                            } else {
+                                roleSelect.disabled = false;
+                            }
+
                             editUserModal.style.display = 'flex';
                         })
                         .catch(error => console.error('Gagal mengambil data user:', error));
                 });
 
-                // Event listener untuk submit form edit
                 editUserForm.addEventListener('submit', function(event) {
                     event.preventDefault();
                     const submitButton = document.getElementById('submitEditUserBtn');
@@ -1869,7 +1880,7 @@
                     const actionUrl = this.action;
 
                     fetch(actionUrl, {
-                            method: 'POST', // Gunakan POST, tapi _method='PUT' akan menimpanya
+                            method: 'POST',
                             body: formData,
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1887,9 +1898,8 @@
                             if (status === 200 && body.success) {
                                 alert(body.success);
                                 closeEditModal();
-                                fetchUsers(`{{ route('users.index') }}`); // Refresh tabel
+                                fetchUsers(`{{ route('users.index') }}`);
                             } else {
-                                // Tampilkan error validasi atau error lainnya
                                 if (body.errors) {
                                     Object.keys(body.errors).forEach(key => {
                                         const errorEl = document.getElementById(`edit_${key}_error`);
@@ -1923,23 +1933,25 @@
                 }
 
                 const closeAddModal = () => {
-                    if (addUserModal) addUserModal.style.display = 'none';
+                    if (addUserModal) {
+                        addUserModal.style.display = 'none';
+                        resetAddUserFormState();
+                    }
                 };
-                if (openAddUserBtn) openAddUserBtn.addEventListener('click', () => {
-                    if (addUserForm) addUserForm.reset();
-                    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-                    if (addUserModal) addUserModal.style.display = 'flex';
-                });
+                if (openAddUserBtn) {
+                    openAddUserBtn.addEventListener('click', () => {
+                        resetAddUserFormState();
+                        if (addUserModal) addUserModal.style.display = 'flex';
+                    });
+                }
                 if (closeAddUserBtn) closeAddUserBtn.addEventListener('click', closeAddModal);
                 if (cancelAddUserBtn) cancelAddUserBtn.addEventListener('click', closeAddModal);
                 setupSmartModalClosure(addUserModal, closeAddModal);
 
-                // 2. Modal Edit User
                 if (closeEditUserBtn) closeEditUserBtn.addEventListener('click', closeEditModal);
                 if (cancelEditUserBtn) cancelEditUserBtn.addEventListener('click', closeEditModal);
                 setupSmartModalClosure(editUserModal, closeEditModal);
 
-                // 3. Penanganan Tombol Escape untuk semua modal di halaman ini
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         if (addUserModal && addUserModal.style.display === 'flex') closeAddModal();
@@ -2017,7 +2029,6 @@
                     });
                 }
 
-                // Buka Modal Tambah User
                 if (openAddUserBtn) {
                     openAddUserBtn.addEventListener('click', () => {
                         if (addUserForm) addUserForm.reset();
@@ -2027,11 +2038,8 @@
                     });
                 }
 
-                // Tutup Modal
                 if (closeAddUserBtn) closeAddUserBtn.addEventListener('click', closeAddModal);
                 if (cancelAddUserBtn) cancelAddUserBtn.addEventListener('click', closeAddModal);
-
-                // Submit Form Tambah User
                 if (addUserForm) {
                     addUserForm.addEventListener('submit', function(event) {
                         event.preventDefault();
@@ -2046,7 +2054,6 @@
                                 method: 'POST',
                                 body: formData,
                                 headers: {
-                                    // Cara yang benar untuk mengambil token CSRF
                                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                     'Accept': 'application/json'
                                 }
@@ -2082,16 +2089,14 @@
                 const togglePasswordButtons = document.querySelectorAll('.toggle-password');
                 togglePasswordButtons.forEach(button => {
                     button.addEventListener('click', function() {
-                        // Dapatkan target input berdasarkan data-attribute
                         const targetInputId = this.dataset.target;
                         const targetInput = document.getElementById(targetInputId);
 
                         if (targetInput) {
-                            // Ganti tipe input
+
                             const type = targetInput.getAttribute('type') === 'password' ? 'text' : 'password';
                             targetInput.setAttribute('type', type);
 
-                            // Ganti ikon mata
                             const icon = this.querySelector('i');
                             if (icon) {
                                 icon.classList.toggle('fa-eye');
@@ -2140,7 +2145,6 @@
                             status,
                             body
                         }) => {
-                            // Selalu bersihkan semua error sebelum menampilkan yang baru
                             formInputs.forEach(input => {
                                 input.classList.remove('is-invalid');
                                 const errorDiv = document.getElementById(`${input.name}_error`);
@@ -2148,7 +2152,6 @@
                             });
 
                             if (status !== 200 && body.errors) {
-                                // Jika ada error, tampilkan
                                 Object.keys(body.errors).forEach(key => {
                                     const input = document.getElementById(key);
                                     const errorDiv = document.getElementById(`${key}_error`);
@@ -2215,7 +2218,6 @@
                     applyTheme();
                 }
 
-                // Inisialisasi awal
                 initializeSidebarState();
             });
         </script>

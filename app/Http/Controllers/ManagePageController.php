@@ -40,7 +40,6 @@ class ManagePageController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'table_html' => view('partials.user_table_rows', compact('users'))->render(),
-                // INI PERUBAHAN UTAMA: Kirim seluruh objek pagination
                 'pagination' => $users->toArray()
             ]);
         }
@@ -63,6 +62,8 @@ class ManagePageController extends Controller
             'password.min' => 'Password minimal harus 6 karakter.',
             'password.letters' => 'Password harus mengandung setidaknya satu huruf.',
             'password.numbers' => 'Password harus mengandung setidaknya satu angka.',
+                    'role.required' => 'Role wajib dipilih.',
+        'role.in' => 'Role yang dipilih tidak valid.', 
         ];
     }
 
@@ -72,12 +73,12 @@ class ManagePageController extends Controller
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
+            'role' => ['required', Rule::in(['admin', 'user'])],
         ];
     }
 
     public function store(Request $request)
     {
-        // Panggil helper method untuk mendapatkan aturan dan pesan
         $rules = $this->getValidationRules();
         $messages = $this->getValidationMessages();
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -90,7 +91,7 @@ class ManagePageController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+             'role' => $request->role,
         ]);
         return response()->json(['success' => 'User berhasil ditambahkan.']);
     }
@@ -98,12 +99,8 @@ class ManagePageController extends Controller
     public function validateField(Request $request)
     {
         $triggerField = $request->input('field_trigger');
-
-        // Panggil helper method untuk mendapatkan aturan dan pesan
         $allRules = $this->getValidationRules();
         $messages = $this->getValidationMessages();
-
-        // ... sisa logika validateField() sama seperti sebelumnya ...
         $rulesToValidate = [];
         if (array_key_exists($triggerField, $allRules)) {
             $rulesToValidate[$triggerField] = $allRules[$triggerField];
@@ -145,20 +142,19 @@ class ManagePageController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
+            'role' => ['required', Rule::in(['admin', 'user'])],
         ], $this->getValidationMessages());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Update data
         $user->name = $request->name;
+        $user->role = $request->role;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-
         $user->save();
-
         return response()->json(['success' => 'User berhasil diperbarui.']);
     }
 }
