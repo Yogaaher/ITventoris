@@ -1781,14 +1781,12 @@
                 /* Style untuk input tanggal yang readonly */
                 #serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only {
                     background-color: var(--color-neutral-medium);
-                    /* Lebih gelap untuk menunjukkan non-interaktif */
                     color: var(--color-neutral-light);
                     cursor: not-allowed;
                 }
 
                 html.light #serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only {
                     background-color: #e9ecef;
-                    /* Standar Bootstrap readonly background */
                     color: #495057;
                 }
 
@@ -2407,10 +2405,6 @@
                             <div class="asset-detail-content">
                                 <div class="info-section">
                                     <dl class="info-item">
-                                        <dt>ID Database:</dt>
-                                        <dd id="modalNo">_</dd>
-                                    </dl>
-                                    <dl class="info-item">
                                         <dt>Perusahaan:</dt>
                                         <dd id="modalPerusahaan">_</dd>
                                     </dl>
@@ -2955,7 +2949,6 @@
                             // Ambil semua elemen UI yang PASTI ada
                             const modalDeviceName = document.getElementById('modalDeviceName');
                             const modalDeviceType = document.getElementById('modalDeviceType');
-                            const modalNo = document.getElementById('modalNo');
                             const modalPerusahaan = document.getElementById('modalPerusahaan');
                             const modalNoAsset = document.getElementById('modalNoAsset');
                             const modalTglPengadaan = document.getElementById('modalTglPengadaan');
@@ -2976,7 +2969,6 @@
                             // Reset UI modal detail ke status loading
                             modalDeviceName.textContent = 'Memuat...';
                             modalDeviceType.textContent = '_';
-                            modalNo.textContent = '_';
                             modalPerusahaan.textContent = '_';
                             modalNoAsset.textContent = '_';
                             modalTglPengadaan.textContent = '_';
@@ -2998,7 +2990,6 @@
                                         // Isi semua data ke modal
                                         modalDeviceName.textContent = barang.merek || 'N/A';
                                         modalDeviceType.textContent = barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A';
-                                        modalNo.textContent = barang.id || 'N/A';
                                         modalPerusahaan.textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
                                         modalNoAsset.textContent = barang.no_asset || 'N/A';
                                         modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
@@ -3138,7 +3129,6 @@
                             const previousUser = (lastKnownUserFromDetail && lastKnownUserFromDetail !== '-' && lastKnownUserFromDetail.trim() !== '') ? lastKnownUserFromDetail : 'User Sebelumnya Tidak Diketahui';
 
                             if (selectedStatus === 'digunakan') {
-                                // Input pengguna biasa, tidak ada perubahan dari reset di atas.
                             } else if (selectedStatus === 'tersedia') {
                                 serahTerimaUserInput.value = 'Team IT';
                                 serahTerimaUserInput.readOnly = true;
