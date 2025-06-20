@@ -23,7 +23,7 @@ class ManagePageController extends Controller
             });
         }
 
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 20);
 
         $query = User::query();
         if ($request->filled('search')) {

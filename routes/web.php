@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ManagePageController;
+use App\Http\Controllers\PerusahaanPageController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -54,5 +55,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
         Route::post('/aset/serah-terima/store', [DashboardController::class, 'storeSerahTerimaAset'])->name('aset.serahterima.store');
         Route::get('/aset/nomor-seri-berikutnya/{perusahaan_id}', [BarangController::class, 'getNomorSeriBerikutnya'])->name('aset.get_nomor_seri');
+
+        // --- Manajemen Perusahaan (Hanya Admin) ---
+        // Aksi seperti menambahkan perusahaan baru adalah tugas admin.
+        Route::get('/companies', [App\Http\Controllers\PerusahaanPageController::class, 'index'])->name('companies.index');
+        Route::post('/companies', [App\Http\Controllers\PerusahaanPageController::class, 'store'])->name('companies.store');
     });
 });
