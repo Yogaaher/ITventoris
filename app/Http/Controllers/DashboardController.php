@@ -22,7 +22,11 @@ class DashboardController extends Controller
      */
     private function getBarangQuery(Request $request)
     {
-        $queryBuilder = Barang::query()->with(['perusahaan', 'jenisBarang']);
+        $queryBuilder = Barang::query()
+            ->select('barang.*')
+            ->leftJoin('perusahaans', 'barang.perusahaan_id', '=', 'perusahaans.id')
+            ->leftJoin('jenis_barangs', 'barang.jenis_barang_id', '=', 'jenis_barangs.id')
+            ->with(['perusahaan', 'jenisBarang']);
 
         // Filter berdasarkan perusahaan
         if ($request->filled('filter_perusahaan')) {
@@ -124,29 +128,57 @@ class DashboardController extends Controller
     /**
      * Menangani pencarian real-time via AJAX.
      */
+    // File: app/Http/Controllers/DashboardController.php
+
     public function searchRealtime(Request $request)
     {
-        // Dapatkan query builder dasar dengan semua filter dari request AJAX
         $queryBuilder = $this->getBarangQuery($request);
         $perPage = $request->input('per_page', 10);
 
-        $tableQuery = clone $queryBuilder;
-        $barangs = $tableQuery->with(['perusahaan', 'jenisBarang'])->orderBy('id', 'asc')->paginate($perPage);
-        $barangs->appends($request->except('page'));
+        $sortableColumns = [
+            'perusahaan'     => 'perusahaans.nama_perusahaan',
+            'jenis_barang'   => 'jenis_barangs.nama_jenis',
+            'no_asset'       => 'barang.no_asset',
+            'merek'          => 'barang.merek',
+            'tgl_pengadaan'  => 'barang.tgl_pengadaan',
+            'serial_number'  => 'barang.serial_number',
+        ];
 
-        // Jika Anda ingin summary juga diupdate via AJAX, hitung di sini:
-        $filterJenisBarangAjax = $request->input('filter_jenis_barang');
-        $inventorySummaryAjax = $this->calculateInventorySummary($queryBuilder, $filterJenisBarangAjax);
-        // Kemudian kirim 'inventorySummaryAjax' ke view parsial atau sebagai bagian dari JSON.
+        $sortBy = $request->input('sort_by');
+        $sortDirection = $request->input('sort_direction', 'asc');
+        $direction = strtolower($sortDirection) === 'desc' ? 'desc' : 'asc';
+
+        $subQuery = clone $queryBuilder;
+        $subQuery->addSelect(DB::raw('ROW_NUMBER() OVER (ORDER BY barang.id ASC) as original_row_number'));
+
+        $mainQuery = DB::query()->fromSub($subQuery, 'ranked_barang')
+            ->leftJoin('barang', 'ranked_barang.id', '=', 'barang.id')
+            ->leftJoin('perusahaans', 'barang.perusahaan_id', '=', 'perusahaans.id')
+            ->leftJoin('jenis_barangs', 'barang.jenis_barang_id', 'jenis_barangs.id');
+
+        if ($sortBy && $sortBy === 'no') {
+            $mainQuery->orderBy('original_row_number', $direction);
+        } elseif ($sortBy && array_key_exists($sortBy, $sortableColumns)) {
+            $columnName = $sortableColumns[$sortBy];
+            $mainQuery->orderBy($columnName, $direction);
+            $mainQuery->orderBy('original_row_number', 'asc'); // Secondary sort
+        } else {
+            $mainQuery->orderBy('original_row_number', 'asc');
+        }
+
+        $barangsPaginator = $mainQuery->select('ranked_barang.*', 'barang.*')->paginate($perPage);
+        $barangsPaginator->appends($request->except('page'));
+
+        $inventorySummaryAjax = $this->calculateInventorySummary(clone $queryBuilder, $request->input('filter_jenis_barang'));
 
         if ($request->ajax()) {
-            // Transformasi data untuk menyertakan nama dari relasi
-            $transformedData = $barangs->getCollection()->map(function ($barang) {
+            $transformedData = $barangsPaginator->getCollection()->map(function ($barang) {
+                $barangModel = Barang::with(['perusahaan', 'jenisBarang'])->find($barang->id);
                 return [
                     'id' => $barang->id,
-                    'perusahaan_nama' => $barang->perusahaan->nama_perusahaan ?? 'N/A',
-                    'perusahaan_singkatan' => $barang->perusahaan->singkatan ?? 'N/A',
-                    'jenis_barang' => $barang->jenisBarang->nama_jenis ?? 'N/A',
+                    'row_number' => $barang->original_row_number, // Kirim nomor baris asli
+                    'perusahaan_nama' => $barangModel->perusahaan->nama_perusahaan ?? 'N/A',
+                    'jenis_barang' => $barangModel->jenisBarang->nama_jenis ?? 'N/A',
                     'no_asset' => $barang->no_asset,
                     'merek' => $barang->merek,
                     'tgl_pengadaan' => $barang->tgl_pengadaan,
@@ -157,20 +189,16 @@ class DashboardController extends Controller
             return response()->json([
                 'data' => $transformedData,
                 'pagination' => [
-                    'current_page' => $barangs->currentPage(),
-                    'first_item' => $barangs->firstItem(),
-                    'last_item' => $barangs->lastItem(),
-                    'total' => $barangs->total(),
-                    'per_page' => $barangs->perPage(),
-                    'last_page' => $barangs->lastPage(),
+                    'current_page' => $barangsPaginator->currentPage(),
+                    'first_item' => $barangsPaginator->firstItem(),
+                    'last_item' => $barangsPaginator->lastItem(),
+                    'total' => $barangsPaginator->total(),
+                    'per_page' => $barangsPaginator->perPage(),
+                    'last_page' => $barangsPaginator->lastPage(),
                 ],
                 'inventorySummary' => $inventorySummaryAjax,
-                'searchKeyword' => $request->input('search_no_asset'),
-                'filterPerusahaan' => $request->input('filter_perusahaan'),
-                'filterJenisBarang' => $request->input('filter_jenis_barang'),
             ]);
         }
-
         return response('This endpoint is intended for AJAX requests only.', 400);
     }
 

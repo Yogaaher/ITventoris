@@ -40,7 +40,6 @@ class PerusahaanPageController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $rules = [

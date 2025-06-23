@@ -314,7 +314,6 @@
                     --table-border: #e9ecef;
                 }
 
-                /* CSS Global Dashboard (pertahankan ini) */
                 html {
                     box-sizing: border-box;
                     font-size: 62.5%;
@@ -1002,7 +1001,6 @@
                 .products-header .sortable-header.sorted-asc::after {
                     opacity: 1;
                     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E");
-                    /* Panah ke atas (A-Z) */
                 }
 
                 .products-header .sortable-header.sorted-desc {
@@ -1012,7 +1010,6 @@
                 .products-header .sortable-header.sorted-desc::after {
                     opacity: 1;
                     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232869ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M19 12l-7 7-7-7'/%3E%3C/svg%3E");
-                    /* Panah ke bawah (Z-A) */
                 }
 
                 .tableView .products-row {
@@ -1485,24 +1482,17 @@
                 #userHistoryModal .user-history-table th,
                 #userHistoryModal .user-history-table td {
                     padding: 8px 12px;
-                    /* Padding sel yang lebih nyaman */
                     border-bottom: 1px solid var(--table-border);
                     text-align: left;
-                    /* Default untuk th dan td */
                     vertical-align: top;
-                    /* Selaras atas, berguna untuk konten multi-baris */
                     line-height: 1.5;
-                    /* Keterbacaan yang lebih baik */
                 }
 
                 #userHistoryModal .user-history-table th {
                     font-weight: 600;
                     background-color: var(--color-modal-background);
-                    /* Untuk sticky header */
-                    /* white-space: nowrap; /* Opsional: agar teks header tidak wrap */
                 }
 
-                /* Styling kolom spesifik (gunakan width atau min-width) */
                 #userHistoryModal .user-history-table .cell-history-user {
                     min-width: 170px;
                 }
@@ -1511,7 +1501,6 @@
                 #userHistoryModal .user-history-table .cell-history-tgl-akhir {
                     min-width: 170px;
                     white-space: nowrap;
-                    /* Tanggal biasanya tidak di-wrap */
                 }
 
                 #userHistoryModal .user-history-table .cell-history-status {
@@ -1522,62 +1511,43 @@
                 #userHistoryModal .user-history-table .cell-history-keterangan {
                     min-width: 200px;
                     white-space: normal;
-                    /* Izinkan teks keterangan untuk wrap */
                     word-break: break-word;
-                    /* Pecah kata jika terlalu panjang */
                 }
 
-                /* Pastikan header tabel (thead > th) tetap terlihat saat scroll */
                 #userHistoryModal .user-history-table thead th {
-                    /* Lebih spesifik untuk sel header */
                     position: sticky;
                     top: 0;
                     z-index: 1;
-                    /* Di atas konten tbody saat scroll */
-                    /* background-color sudah diatur di atas untuk th secara umum */
                 }
 
                 html.light #userHistoryModal .user-history-table thead th {
                     background-color: var(--color-modal-background);
-                    /* Pastikan variabel ini benar untuk light mode */
                 }
 
                 html.light #userHistoryModal #userHistoryTableHeader {
                     background-color: var(--color-modal-background);
-                    /* Pastikan ini juga diatur untuk light mode */
                 }
 
                 #userHistoryModal .history-info-list {
                     margin-bottom: 1.5rem;
-                    /* Jarak sebelum tabel */
                     font-size: 1.3rem;
-                    /* Sesuaikan ukuran font jika perlu */
                 }
 
                 #userHistoryModal .history-info-item {
                     display: flex;
-                    /* Membuat dt dan dd sejajar */
                     margin-bottom: 0.6rem;
-                    /* Jarak antar item info */
                     line-height: 1.5;
                 }
 
                 #userHistoryModal .history-info-item dt {
                     min-width: 120px;
-                    /* Lebar minimum untuk label, sesuaikan */
                     flex-shrink: 0;
-                    /* Mencegah label menyusut */
                     padding-right: 5px;
-                    /* Jarak antara label dan titik dua (opsional) */
                     color: var(--color-neutral-light);
-                    /* Warna label */
                     font-weight: 500;
-                    /* Sedikit bold untuk label */
                     position: relative;
-                    /* Untuk posisi titik dua */
                 }
 
-                /* Menambahkan titik dua setelah label dt secara otomatis */
                 #userHistoryModal .history-info-item dt::after {
                     content: ":";
                     position: absolute;
@@ -1587,17 +1557,13 @@
 
                 #userHistoryModal .history-info-item dd {
                     flex-grow: 1;
-                    /* Membuat nilai mengambil sisa ruang */
                     margin-left: 0;
-                    /* Reset margin default dd */
                     word-break: break-word;
-                    /* Agar nilai yang panjang bisa wrap */
                     padding-left: 8px;
                 }
 
                 #userHistoryModal .history-info-item dd strong {
                     color: var(--color-text-light);
-                    /* Warna teks utama modal untuk nilai */
                     font-weight: 600;
                 }
 
@@ -1616,7 +1582,6 @@
                     width: 30px;
                     height: 28px;
                     z-index: 10;
-                    /* Pastikan di atas elemen lain jika perlu */
                     flex-shrink: 0;
                 }
 
@@ -1625,12 +1590,10 @@
                     width: 100%;
                     height: 3px;
                     background-color: var(--app-content-main-color);
-                    /* Warna garis burger */
                     border-radius: 3px;
                     transition: all 0.3s ease-in-out;
                 }
 
-                /* Animasi X untuk burger button */
                 .burger-button.active span:nth-child(1) {
                     transform: translateY(8px) rotate(45deg);
                 }
@@ -1647,32 +1610,26 @@
 
                 /* === CSS TAMBAHAN UNTUK MODAL SERAH TERIMA ASET === */
                 #serahTerimaAsetModal.modal-overlay {
-                    /* Targetkan ID dan class bersama-sama */
                     display: none;
-                    /* Awalnya display: none, dikontrol oleh JS */
                     position: fixed;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
                     background-color: rgba(0, 0, 0, 0.7);
-                    /* Sama seperti userHistoryModal */
                     z-index: 1055;
-                    /* Pastikan cukup tinggi, sama atau > userHistoryModal */
                     justify-content: center;
                     align-items: center;
                     padding: 1.5rem;
                     overflow: auto;
                 }
 
-                /* Konten wrapper modal serah terima, sama seperti userHistoryModal */
                 #serahTerimaAsetModal .modal-content-wrapper.device-entry-info-modal {
                     background-color: var(--color-modal-background);
                     border-radius: 0.8rem;
                     width: 90%;
                     max-width: 60rem;
                     max-height: calc(100vh - 6rem);
-                    /* (1.5rem padding atas + 1.5rem padding bawah) * 2 = 6rem */
                     overflow: hidden;
                     display: flex;
                     flex-direction: column;
@@ -1682,7 +1639,6 @@
                     z-index: 1056;
                 }
 
-                /* Kontainer morph modal di dalam serah terima, sama seperti userHistoryModal */
                 #serahTerimaAsetModal .morph-modal-container {
                     display: flex;
                     flex-flow: column nowrap;
@@ -1690,10 +1646,8 @@
                     padding: 2rem;
                     flex-grow: 1;
                     overflow: hidden;
-                    /* Kontainer utama tidak scroll, body-nya yang scroll */
                 }
 
-                /* Judul modal serah terima, sama seperti userHistoryModal */
                 #serahTerimaAsetModal .morph-modal-title {
                     flex: 0 0 auto;
                     padding-bottom: 1rem;
@@ -1711,7 +1665,6 @@
                     font-size: 1.7rem;
                 }
 
-                /* Tombol close modal serah terima, sama seperti userHistoryModal */
                 #serahTerimaAsetModal .btn-close {
                     background: none;
                     border: none;
@@ -1726,18 +1679,13 @@
                     color: var(--color-text-light);
                 }
 
-                /* Body modal serah terima, sama seperti userHistoryModal */
                 #serahTerimaAsetModal .morph-modal-body {
                     flex: 1 1 auto;
-                    /* Memungkinkan body untuk tumbuh dan menyusut */
                     overflow-y: auto;
-                    /* Hanya body modal yang scroll jika kontennya panjang */
                     font-size: 1.4rem;
                     padding-right: 1rem;
-                    /* Tambahkan sedikit padding jika scrollbar muncul agar tidak terlalu mepet */
                 }
 
-                /* Styling untuk form elements di dalam #serahTerimaAsetModal */
                 #serahTerimaAsetModal .morph-modal-body .form-group {
                     margin-bottom: 1.2rem;
                 }
@@ -1749,20 +1697,16 @@
                     color: var(--color-text-light);
                 }
 
-                /* Menggunakan gaya dari modal tambah aset untuk input fields */
                 #serahTerimaAsetModal .morph-modal-body input[type="date"],
                 #serahTerimaAsetModal .morph-modal-body input[type="text"],
                 #serahTerimaAsetModal .morph-modal-body select,
                 #serahTerimaAsetModal .morph-modal-body textarea {
                     width: 100%;
                     padding: 10px;
-                    /* margin-bottom: 15px; Dihapus karena .form-group sudah punya margin-bottom */
                     border: 1px solid var(--table-border);
                     border-radius: 4px;
                     background-color: var(--app-bg);
-                    /* Dark mode background untuk input */
                     color: var(--app-content-main-color);
-                    /* Dark mode text color untuk input */
                     box-sizing: border-box;
                 }
 
@@ -1771,14 +1715,10 @@
                 html.light #serahTerimaAsetModal .morph-modal-body select,
                 html.light #serahTerimaAsetModal .morph-modal-body textarea {
                     background-color: #fff;
-                    /* Light mode background */
                     border-color: #ccc;
-                    /* Light mode border */
                     color: #212529;
-                    /* Light mode text color */
                 }
 
-                /* Style untuk input tanggal yang readonly */
                 #serahTerimaAsetModal .morph-modal-body input[type="date"]:read-only {
                     background-color: var(--color-neutral-medium);
                     color: var(--color-neutral-light);
@@ -1803,10 +1743,8 @@
                     font-size: 0.875em;
                     margin-top: .25rem;
                     display: block;
-                    /* Agar tetap mengambil ruang meski kosong */
                 }
 
-                /* Info section styling (untuk Aset: dan Serial Number:) */
                 #serahTerimaAsetModal .info-section {
                     margin-bottom: 1.5rem;
                 }
@@ -1819,18 +1757,14 @@
 
                 #serahTerimaAsetModal .info-item dt {
                     font-weight: 500;
-                    /* Sedikit lebih ringan dari 600 agar tidak terlalu dominan */
                     min-width: 130px;
-                    /* Lebar untuk label */
                     padding-right: 0.5rem;
-                    /* Jarak dari titik dua */
                     flex-shrink: 0;
                     color: var(--color-neutral-light);
                     position: relative;
                 }
 
                 #serahTerimaAsetModal .info-item dt::after {
-                    /* Tambahkan titik dua otomatis */
                     content: ":";
                     position: absolute;
                     right: 0;
@@ -1841,7 +1775,6 @@
                     word-break: break-word;
                     flex-grow: 1;
                     padding-left: 8px;
-                    /* Jarak setelah titik dua */
                 }
 
                 .auto-asset-preview {
@@ -1918,13 +1851,10 @@
                     align-items: center;
                 }
 
-                /* Kolom Kiri */
                 .table-footer-controls .footer-left {
                     justify-content: flex-start;
                     flex: 1;
-                    /* Ambil sisa ruang, tapi bisa menyusut */
                     min-width: 220px;
-                    /* Lebar minimum agar tidak terlalu sempit */
                 }
 
                 .table-footer-controls .rows-per-page-wrapper {
@@ -2383,15 +2313,14 @@
 
         <body>
 
-            {{-- =================================== --}}
+            {{-- ====================================================================== --}}
             {{-- MODAL DETAIL ASET (DARI FILE MODAL ANDA, DENGAN ID UNTUK DATA DINAMIS) --}}
-            {{-- =================================== --}}
+            {{-- ====================================================================== --}}
             <div id="deviceInfoModal" class="modal-overlay">
                 <div class="modal-content-wrapper device-entry-info-modal">
                     <div class="morph-modal-container">
                         <div class="morph-modal-title">
                             <span><i class="fas fa-info-circle"></i> Detail Perangkat</span>
-                            {{-- Tombol close untuk modal detail, berikan ID unik --}}
                             <button id="closeDetailModalButton" class="btn-close" aria-label="Tutup modal">×</button>
                         </div>
                         <div class="morph-modal-body">
@@ -2471,7 +2400,6 @@
                     <div class="morph-modal-container">
                         <div class="morph-modal-title">
                             <span><i class="fas fa-history"></i> Riwayat Pengguna Aset</span>
-                            {{-- Tombol close untuk modal history, berikan ID unik --}}
                             <button id="closeUserHistoryModalButton" class="btn-close" aria-label="Tutup modal">×</button>
                         </div>
                         <div class="morph-modal-body">
@@ -2491,14 +2419,11 @@
                                 </div>
                             </dl>
 
-                            {{-- Kontainer PEMBUNGKUS untuk tabel history (untuk scrolling) --}}
                             <div class="user-history-table-wrapper">
                                 <table class="user-history-table" id="userHistoryTableContainer"> <!-- ID ini bisa berguna untuk styling tabelnya sendiri -->
                                     <thead id="userHistoryTableHeader">
-                                        {{-- Header akan diisi oleh JavaScript --}}
                                     </thead>
                                     <tbody id="userHistoryTableBody">
-                                        {{-- Baris Data History akan diisi oleh JavaScript --}}
                                         <tr>
                                             <td colspan="5" style="padding: 15px; text-align: center; color: var(--color-neutral-light);">Memuat riwayat...</td>
                                         </tr>
@@ -2562,7 +2487,6 @@
                                     <label for="serahTerimaPerusahaanTujuan">Pindahkan ke Perusahaan</label>
                                     <select id="serahTerimaPerusahaanTujuan" name="perusahaan_tujuan" class="form-control">
                                         <option value="">Pilih Perusahaan Tujuan</option>
-                                        {{-- Loop untuk mengisi option perusahaan --}}
                                         @foreach($perusahaanOptions as $perusahaan)
                                         <option value="{{ $perusahaan->id }}" data-singkatan="{{ $perusahaan->singkatan }}">{{ $perusahaan->nama_perusahaan }}</option>
                                         @endforeach
@@ -2596,7 +2520,6 @@
                                 </div>
 
                                 <div class="modal-footer" style="padding-top: 1rem; border-top: 1px solid var(--color-neutral-medium); text-align: right;">
-                                    {{-- Tombol modal-footer dari modal tambah aset, disesuaikan class & ID nya --}}
                                     <button type="button" class="btn btn-secondary" id="cancelSerahTerimaAsetModalBtn">Batal</button>
                                     <button type="submit" class="btn btn-primary" id="submitSerahTerimaAsetBtn">Simpan Perubahan</button>
                                 </div>
@@ -2618,9 +2541,8 @@
                     </div>
                     <div class="modal-body">
                         <form id="addAssetForm">
-                            @csrf <!-- Penting untuk keamanan form Laravel -->
+                            @csrf
 
-                            <!-- PERUBAHAN: Dropdown Perusahaan Dinamis -->
                             <div class="form-group">
                                 <label for="perusahaan_id">Perusahaan</label>
                                 <select name="perusahaan_id" id="perusahaan_id" class="form-control" required>
@@ -2633,7 +2555,6 @@
                                 <div class="invalid-feedback" id="perusahaan_id_error"></div>
                             </div>
 
-                            <!-- PERUBAHAN: Dropdown Jenis Barang Dinamis -->
                             <div class="form-group">
                                 <label for="jenis_barang_id">Jenis Barang</label>
                                 <select name="jenis_barang_id" id="jenis_barang_id" class="form-control" required>
@@ -2666,14 +2587,10 @@
                                 <div class="invalid-feedback" id="serial_number_error"></div>
                             </div>
 
-                            <!-- PERUBAHAN: No. Asset readonly, akan diisi JS (opsional tapi bagus) -->
                             <div class="form-group">
                                 <label for="no_asset_preview">No. Asset (Otomatis)</label>
-
-                                <!-- Elemen untuk menampilkan preview -->
                                 <input type="text" name="no_asset_preview" id="no_asset_preview" class="form-control auto-asset-preview" readonly
                                     value="-- Pilih Perusahaan, Jenis, dan Tanggal --">
-                                <!-- Pesan Peringatan (awalnya disembunyikan) -->
                                 <div id="noAssetWarning" class="asset-preview-warning" style="display: none;">
                                     Nomor Aset ini akan dibuat secara otomatis saat disimpan.
                                 </div>
@@ -2690,9 +2607,9 @@
             <!-- =================================== -->
             <!--       HALAMAN DASHBOARD SECTION       -->
             <!-- =================================== -->
-            <div id="dashboard-page"> <!-- Biarkan ini sebagai pembungkus utama halaman dashboard -->
+            <div id="dashboard-page">
                 <div class="app-container">
-                    <div class="sidebar"> <!-- Akan diberi class .collapsed oleh JS -->
+                    <div class="sidebar">
                         <div class="sidebar-header">
                             <div class="app-icon">
                                 <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
@@ -2788,7 +2705,10 @@
                                     <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i>
                                 </div>
                                 <div class="summary-box-type">{{ $type }}</div>
-                                <div class="summary-box-count" id="summary-count-{{ strtolower(str_replace('/', '-', $type)) }}">{{ $count }}</div>
+                                @php
+                                $slug = Str::slug($type);
+                                @endphp
+                                <div class="summary-box-count" id="summary-count-{{ $slug }}">{{ $count }}</div>
                             </div>
                             @endforeach
                         </div>
@@ -2967,13 +2887,11 @@
                             const modalKeterangan = document.getElementById('modalKeterangan');
                             const deviceImage = document.getElementById('modalDeviceImage');
 
-                            // Cek elemen-elemen wajib
                             if (!modalDeviceName || !deviceImage) {
                                 console.error('Elemen wajib pada modal detail (seperti nama atau gambar) tidak ditemukan.');
                                 return;
                             }
 
-                            // Reset UI modal detail ke status loading
                             modalDeviceName.textContent = 'Memuat...';
                             modalDeviceType.textContent = '_';
                             modalPerusahaan.textContent = '_';
@@ -2994,7 +2912,6 @@
                                         const barang = data.barang;
                                         const track = data.track;
 
-                                        // Isi semua data ke modal
                                         modalDeviceName.textContent = barang.merek || 'N/A';
                                         modalDeviceType.textContent = barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A';
                                         modalPerusahaan.textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
@@ -3044,7 +2961,6 @@
                                             newTriggerHistoryButton.addEventListener('click', () => openUserHistoryModal(barang.serial_number, deviceFullName, currentCompany));
                                         }
 
-                                        // Update Ikon
                                         let iconClass = 'fas fa-desktop';
                                         const jenisNama = barang.jenis_barang ? barang.jenis_barang.nama_jenis.trim() : '';
                                         if (jenisNama === 'Laptop') iconClass = 'fas fa-laptop';
@@ -3054,8 +2970,6 @@
                                         else if (jenisNama === 'Others') iconClass = 'fas fa-box-open';
                                         else if (jenisNama === 'PC / AIO') iconClass = 'fas fa-desktop';
                                         deviceImage.className = `device-image ${iconClass}`;
-
-                                        // Tampilkan modal setelah semuanya siap
                                         detailModalOverlay.style.display = 'flex';
 
                                     } else {
@@ -3077,11 +2991,10 @@
                             try {
                                 const date = new Date(dateString);
                                 if (isNaN(date.getTime())) {
-                                    // Jika formatnya sudah YYYY-MM-DD dari input date, coba parse langsung
                                     const parts = dateString.split('-');
                                     if (parts.length === 3) {
                                         const year = parseInt(parts[0], 10);
-                                        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+                                        const month = parseInt(parts[1], 10) - 1;
                                         const day = parseInt(parts[2], 10);
                                         const parsedDate = new Date(year, month, day);
                                         if (!isNaN(parsedDate.getTime())) {
@@ -3094,7 +3007,6 @@
                                     console.warn("Invalid date string for formatting:", dateString);
                                     return dateString;
                                 }
-                                // Format 'dd-mm-yyyy'
                                 const day = String(date.getDate()).padStart(2, '0');
                                 const month = String(date.getMonth() + 1).padStart(2, '0');
                                 const year = date.getFullYear();
@@ -3110,8 +3022,6 @@
                             const serahTerimaUserInput = document.getElementById('serahTerimaUser');
                             const perusahaanTujuanGroup = document.getElementById('perusahaanTujuanGroup');
                             const serahTerimaPerusahaanTujuanSelect = document.getElementById('serahTerimaPerusahaanTujuan');
-
-                            // Pastikan elemen ada sebelum dimanipulasi (penting jika fungsi dipanggil sebelum modal siap)
                             if (!serahTerimaStatusSelect || !serahTerimaUserInput || !perusahaanTujuanGroup || !serahTerimaPerusahaanTujuanSelect) {
                                 return;
                             }
@@ -3125,7 +3035,6 @@
                             serahTerimaPerusahaanTujuanSelect.value = '';
                             serahTerimaPerusahaanTujuanSelect.removeAttribute('required');
 
-                            // Bersihkan error messages terkait
                             const usernameErrorEl = document.getElementById('username_serah_error');
                             const perusahaanTujuanErrorEl = document.getElementById('perusahaan_tujuan_serah_error');
                             if (usernameErrorEl) usernameErrorEl.textContent = '';
@@ -3148,8 +3057,6 @@
                                 serahTerimaPerusahaanTujuanSelect.setAttribute('required', 'required');
                             }
                         }
-
-                        // File: DasboardPage.blade.php (di luar DOMContentLoaded)
 
                         async function handleOpenSerahTerimaModal(event) {
                             const assetId = event.currentTarget.dataset.assetId;
@@ -3177,24 +3084,18 @@
                                 document.getElementById('serahTerimaInfoSN').textContent = barang.serial_number;
                                 document.getElementById('serahTerimaInfoPerusahaan').textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
                                 document.getElementById('serahTerimaTanggalAwal').value = new Date().toISOString().slice(0, 10);
-
-                                // --- PERUBAHAN UTAMA DI SINI ---
                                 const perusahaanTujuanSelect = document.getElementById('serahTerimaPerusahaanTujuan');
-                                const currentPerusahaanId = barang.perusahaan_id.toString(); // Ambil ID perusahaan saat ini
+                                const currentPerusahaanId = barang.perusahaan_id.toString();
 
-                                // Loop melalui semua option di dropdown
                                 Array.from(perusahaanTujuanSelect.options).forEach(option => {
-                                    // Jika value option sama dengan ID perusahaan saat ini
                                     if (option.value === currentPerusahaanId) {
-                                        option.disabled = true; // Nonaktifkan pilihan ini
-                                        option.style.display = 'none'; // Sembunyikan dari tampilan
+                                        option.disabled = true;
+                                        option.style.display = 'none';
                                     } else {
-                                        option.disabled = false; // Aktifkan lagi pilihan lain (penting jika modal dibuka ulang)
-                                        option.style.display = 'block'; // Tampilkan lagi
+                                        option.disabled = false;
+                                        option.style.display = 'block';
                                     }
                                 });
-                                // --- AKHIR PERUBAHAN ---
-
                                 document.getElementById('perusahaanTujuanGroup').style.display = 'none';
                                 document.getElementById('noAssetBaruPreviewGroup').style.display = 'none';
 
@@ -3229,21 +3130,18 @@
                             if (!historyModal || !historyModalSerialNumberEl || !historyModalDeviceNameEl || !historyModalCompanyEl || !historyTableBodyEl || !historyTableHeaderEl) {
                                 console.error("Satu atau lebih elemen modal history tidak ditemukan. Periksa ID.");
                                 alert("Kesalahan: Komponen modal history tidak lengkap.");
-                                return; // Keluar dari fungsi jika elemen tidak ditemukan
+                                return;
                             }
-                            // Tidak ada kurung kurawal pembuka baru di sini
 
                             historyModalDeviceNameEl.textContent = deviceName || 'Tidak Diketahui';
                             historyModalSerialNumberEl.textContent = serialNumber || 'N/A';
-                            historyModalCompanyEl.textContent = company || 'N/A'; // Pastikan ini ada
-
+                            historyModalCompanyEl.textContent = company || 'N/A';
                             historyTableBodyEl.innerHTML = '<tr><td colspan="5" style="padding:15px; text-align:center;">Memuat riwayat... <i class="fas fa-spinner fa-spin"></i></td></tr>';
                             historyTableHeaderEl.innerHTML = '';
-
                             historyModal.style.display = 'flex';
 
                             fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
-                                .then(response => { // Tambahkan penanganan error fetch yang lebih baik
+                                .then(response => {
                                     if (!response.ok) {
                                         return response.text().then(text => {
                                             console.error('Server returned an error (history):', response.status, text);
@@ -3252,9 +3150,7 @@
                                             };
                                             try {
                                                 errorData = JSON.parse(text);
-                                            } catch (e) {
-                                                /* abaikan jika bukan JSON */
-                                            }
+                                            } catch (e) {}
                                             throw errorData;
                                         });
                                     }
@@ -3272,19 +3168,12 @@
                             `;
                                     if (data && data.success && Array.isArray(data.history) && data.history.length > 0) {
                                         let tableRowsHTML = '';
-
-                                        // --- MULAI PERUBAHAN DI SINI ---
                                         data.history.forEach(item => {
-                                            // Panggil escapeHtml() pada data yang berasal dari input user
                                             const usernameAman = escapeHtml(item.username || '-');
                                             const statusAman = escapeHtml(item.status || '-');
                                             const keteranganAman = escapeHtml(item.keterangan || '-');
-
-                                            // Data tanggal aman karena sudah diformat
                                             const tglAwal = (item && item.tanggal_awal) ? formatDate(item.tanggal_awal) : '-';
                                             const tglAkhir = (item && item.tanggal_ahir) ? formatDate(item.tanggal_ahir) : '-';
-
-                                            // Gunakan variabel yang sudah aman
                                             tableRowsHTML += `
                                             <tr>
                                                 <td class="cell-history-user" title="${usernameAman}">${usernameAman}</td>
@@ -3374,6 +3263,9 @@
                             let activeSortKey = null;
                             let activeSortDirection = 'none';
 
+                            let currentSortBy = 'no';
+                            let currentSortDirection = 'asc';
+
                             if (productTableRowsContainer) {
                                 productTableRowsContainer.addEventListener('click', function(event) {
                                     const detailButton = event.target.closest('.detail-btn-table-js');
@@ -3414,10 +3306,7 @@
                                             const data = await response.json();
 
                                             if (data.success) {
-                                                const nomorSeri = data.nomor_seri; // Hasil dari API (misal: "0045")
-
-                                                // === INI BAGIAN YANG DIPERBAIKI ===
-                                                // Ambil singkatan dari 'data-singkatan' yang sudah kita siapkan di HTML
+                                                const nomorSeri = data.nomor_seri;
                                                 const singkatanPT = perusahaanOption.dataset.singkatan;
                                                 const singkatanJenis = jenisBarangOption.dataset.singkatan;
 
@@ -3440,21 +3329,18 @@
                                             noAssetPreviewInput.value = 'Gagal memuat nomor.';
                                         }
                                     } else {
-                                        // Jika salah satu input belum terisi, reset ke state awal
                                         noAssetPreviewInput.value = '-- Pilih Perusahaan, Jenis, dan Tanggal --';
                                         if (noAssetWarning) noAssetWarning.style.display = 'none';
                                     }
                                 };
 
-                                // Pasang event listener ke elemen yang sudah kita definisikan
                                 perusahaanSelect.addEventListener('change', updateNoAssetPreview);
                                 jenisBarangSelect.addEventListener('change', updateNoAssetPreview);
                                 tglPengadaanInput.addEventListener('change', updateNoAssetPreview);
-                                // Event listener untuk tombol buka modal, untuk mereset form
                                 if (openAddAssetModalButton) {
                                     openAddAssetModalButton.addEventListener('click', () => {
                                         if (addAssetForm) addAssetForm.reset();
-                                        updateNoAssetPreview(); // Pastikan preview juga ikut reset ke state awal
+                                        updateNoAssetPreview();
                                     });
                                 }
                             }
@@ -3559,11 +3445,8 @@
                                 const noAssetBaruPreviewGroup = document.getElementById('noAssetBaruPreviewGroup');
                                 const noAssetBaruPreviewInput = document.getElementById('no_asset_baru_preview');
                                 const noAssetBaruWarning = document.getElementById('noAssetBaruWarning');
-
-                                // Variabel untuk menyimpan data aset saat ini
                                 let currentBarangData = null;
 
-                                // Fungsi untuk membuat preview nomor aset baru
                                 const updateNoAssetBaruPreview = async () => {
                                     const perusahaanTujuanOption = perusahaanTujuanSelect.options[perusahaanTujuanSelect.selectedIndex];
 
@@ -3597,7 +3480,6 @@
                                     }
                                 };
 
-                                // Tampilkan/sembunyikan field berdasarkan status
                                 serahTerimaStatusSelect.addEventListener('change', () => {
                                     if (serahTerimaStatusSelect.value === 'dipindah') {
                                         perusahaanTujuanGroup.style.display = 'block';
@@ -3605,109 +3487,18 @@
                                     } else {
                                         perusahaanTujuanGroup.style.display = 'none';
                                         noAssetBaruPreviewGroup.style.display = 'none';
-                                        perusahaanTujuanSelect.value = ''; // Reset pilihan
+                                        perusahaanTujuanSelect.value = '';
                                     }
                                 });
 
-                                // Panggil API saat perusahaan tujuan dipilih
                                 perusahaanTujuanSelect.addEventListener('change', updateNoAssetBaruPreview);
-
-                                // Kita perlu cara untuk mendapatkan data barang saat modal serah terima dibuka
-                                // Kita akan modifikasi `handleOpenSerahTerimaModal`
                                 window.setCurrentBarangForSerahTerima = (barang) => {
                                     currentBarangData = barang;
                                 };
                             }
 
-                            // Fungsi untuk menangkap kondisi asli tabel sebagai string HTML
-                            function captureOriginalState() {
-                                if (tableBody) {
-                                    originalRowsHTML = tableBody.innerHTML;
-                                }
-                                // Reset visual dan state saat data baru dimuat
-                                activeSortKey = null;
-                                activeSortDirection = 'none';
-                                tableHeader.querySelectorAll('.sortable-header').forEach(header => {
-                                    header.classList.remove('sorted-asc', 'sorted-desc');
-                                });
-                            }
-
-                            // Pasang satu event listener utama pada seluruh header tabel
-                            tableHeader.addEventListener('click', (e) => {
-                                const headerCell = e.target.closest('.sortable-header');
-                                if (!headerCell) return;
-
-                                const sortKey = headerCell.dataset.sortBy;
-                                const sortType = headerCell.dataset.sortType || 'text';
-
-                                // --- MULAI LOGIKA BARU ---
-                                if (activeSortKey !== sortKey) {
-                                    // Klik pada kolom BARU
-                                    activeSortKey = sortKey;
-                                    // SPECIAL CASE: Jika kolom 'No' yang diklik, langsung ke 'desc'
-                                    if (sortKey === 'no') {
-                                        activeSortDirection = 'desc';
-                                    } else {
-                                        // Kolom lain mulai dari 'asc' seperti biasa
-                                        activeSortDirection = 'asc';
-                                    }
-                                } else {
-                                    // Klik pada kolom yang SAMA
-                                    // SPECIAL CASE: Jika kolom 'No' yang sedang aktif
-                                    if (sortKey === 'no') {
-                                        // Siklusnya hanya 'desc' -> 'none'
-                                        activeSortDirection = 'none';
-                                    } else {
-                                        // Siklus normal untuk kolom lain
-                                        if (activeSortDirection === 'asc') {
-                                            activeSortDirection = 'desc';
-                                        } else {
-                                            activeSortDirection = 'none';
-                                        }
-                                    }
-                                }
-
-                                // 2. Terapkan sorting atau reset
-                                if (activeSortDirection === 'none') {
-                                    activeSortKey = null;
-                                    if (tableBody) {
-                                        tableBody.innerHTML = originalRowsHTML; // Kembalikan ke HTML asli
-                                    }
-                                } else {
-                                    const rows = Array.from(tableBody.querySelectorAll('.products-row'));
-
-                                    // Cari index kolom yang benar berdasarkan 'data-sort-by'
-                                    const allHeaders = Array.from(tableHeader.querySelectorAll('.product-cell'));
-                                    const columnIndex = allHeaders.findIndex(th => th.dataset.sortBy === sortKey);
-
-                                    if (columnIndex === -1) return; // Jika kolom tidak ditemukan, keluar
-
-                                    rows.sort((rowA, rowB) => {
-                                        const cellsA = rowA.querySelectorAll('.product-cell');
-                                        const cellsB = rowB.querySelectorAll('.product-cell');
-
-                                        const valueA = cellsA[columnIndex] ? cellsA[columnIndex].textContent.trim() : '';
-                                        const valueB = cellsB[columnIndex] ? cellsB[columnIndex].textContent.trim() : '';
-
-                                        let comparison = 0;
-                                        if (sortType === 'date') {
-                                            comparison = parseDate(valueA) - parseDate(valueB);
-                                        } else {
-                                            comparison = valueA.localeCompare(valueB, undefined, {
-                                                numeric: true,
-                                                sensitivity: 'base'
-                                            });
-                                        }
-
-                                        return activeSortDirection === 'asc' ? comparison : -comparison;
-                                    });
-
-                                    // Kosongkan tabel dan isi kembali dengan baris yang sudah diurutkan
-                                    tableBody.innerHTML = '';
-                                    rows.forEach(row => tableBody.appendChild(row));
-                                }
-
-                                // 3. Perbarui tampilan panah di semua header
+                            function updateHeaderArrows() {
+                                if (!tableHeader) return;
                                 tableHeader.querySelectorAll('.sortable-header').forEach(header => {
                                     header.classList.remove('sorted-asc', 'sorted-desc');
                                     if (header.dataset.sortBy === activeSortKey) {
@@ -3718,9 +3509,41 @@
                                         }
                                     }
                                 });
-                            });
+                            }
 
-                            // Fungsi helper modal, bisa tetap di sini jika hanya dipakai di dalam DOMContentLoaded
+                            if (tableHeader) {
+                                tableHeader.addEventListener('click', (e) => {
+                                    const headerCell = e.target.closest('.sortable-header');
+                                    if (!headerCell) return;
+
+                                    const sortKey = headerCell.dataset.sortBy;
+
+                                    if (sortKey === 'no') {
+                                        if (activeSortKey === 'no' && activeSortDirection === 'desc') {
+                                            activeSortKey = null;
+                                            activeSortDirection = 'none';
+                                        } else {
+                                            activeSortKey = 'no';
+                                            activeSortDirection = 'desc';
+                                        }
+                                    } else {
+                                        if (activeSortKey !== sortKey) {
+                                            activeSortKey = sortKey;
+                                            activeSortDirection = 'asc';
+                                        } else {
+                                            if (activeSortDirection === 'asc') {
+                                                activeSortDirection = 'desc';
+                                            } else {
+                                                activeSortKey = null;
+                                                activeSortDirection = 'none';
+                                            }
+                                        }
+                                    }
+                                    performRealtimeSearch(1);
+                                    updateHeaderArrows();
+                                });
+                            }
+
                             function openModalElement(modalElement, formToReset = null) {
                                 if (modalElement) {
                                     modalElement.classList.add('show');
@@ -3755,23 +3578,19 @@
 
                             function parseDate(dateStr) {
                                 const parts = dateStr.split('-');
-                                // parts[2] = YYYY, parts[1] = MM, parts[0] = DD
                                 return new Date(parts[2], parts[1] - 1, parts[0]);
                             }
 
                             function displayValidationErrorsOnForm(errors, formElement) {
                                 if (!formElement) return;
-                                // Clear previous errors on this form
                                 formElement.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
                                 formElement.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
                                 for (const field in errors) {
-                                    // PERUBAHAN KECIL DI SINI:
-                                    // Cek ID error dulu, baru cari berdasarkan name
                                     let errorElement = formElement.querySelector(`#${field}_error`);
-                                    let inputElement = formElement.querySelector(`#${field}`); // Cari berdasarkan ID dulu
+                                    let inputElement = formElement.querySelector(`#${field}`);
 
-                                    if (!inputElement) { // Jika tidak ketemu by ID, cari by name
+                                    if (!inputElement) {
                                         inputElement = formElement.querySelector(`[name="${field}"]`);
                                     }
 
@@ -3779,7 +3598,6 @@
                                         errorElement.textContent = errors[field][0];
                                         inputElement.classList.add('is-invalid');
                                     } else {
-                                        // Fallback jika tidak ada elemen error spesifik
                                         console.warn(`Elemen error untuk field '${field}' tidak ditemukan.`);
                                     }
                                 }
@@ -3794,7 +3612,6 @@
                                 const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
 
                                 productTableRowsContainer.innerHTML = '<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat data... <i class="fas fa-spinner fa-spin"></i></div></div>';
-
                                 if (paginationInfoText) paginationInfoText.innerHTML = '';
                                 if (paginationButtonsContainer) paginationButtonsContainer.innerHTML = '';
 
@@ -3803,8 +3620,13 @@
                                     filter_perusahaan: perusahaan,
                                     filter_jenis_barang: jenisBarang,
                                     page: page,
-                                    per_page: perPage
+                                    per_page: perPage,
                                 });
+
+                                if (activeSortKey && activeSortDirection !== 'none') {
+                                    params.append('sort_by', activeSortKey);
+                                    params.append('sort_direction', activeSortDirection);
+                                }
 
                                 fetch(`{{ route('dashboard.search.realtime') }}?${params.toString()}`, {
                                         method: 'GET',
@@ -3816,48 +3638,35 @@
                                     .then(response => response.json())
                                     .then(responseData => {
                                         let tableRowsHtml = '';
-
                                         if (responseData.data && responseData.data.length > 0) {
-                                            let currentItemNumber = responseData.pagination.first_item || 1;
-                                            responseData.data.forEach(barang => {
-                                                let tglPengadaanFormatted = formatDate(barang.tgl_pengadaan);
+                                            responseData.data.forEach((barang) => {
+                                                const rowNumber = barang.row_number;
 
-                                                // PANGGIL FUNGSI escapeHtml() UNTUK SETIAP DATA DARI USER
-                                                const merekAman = escapeHtml(barang.merek || '');
-                                                const serialNumberAman = escapeHtml(barang.serial_number || '');
-                                                const noAssetAman = escapeHtml(barang.no_asset || '');
-                                                const perusahaanNamaAman = escapeHtml(barang.perusahaan_nama || 'N/A');
-                                                const jenisBarangAman = escapeHtml(barang.jenis_barang || 'N/A');
-
-                                                // Gunakan variabel yang sudah aman di dalam template literal
                                                 tableRowsHtml += `
-                                                <div class="products-row">
-                                                    <div class="product-cell cell-no">${currentItemNumber++}</div>
-                                                    <div class="product-cell cell-perusahaan" title="${perusahaanNamaAman}">${perusahaanNamaAman}</div>
-                                                    <div class="product-cell cell-jenis-barang" title="${jenisBarangAman}">${jenisBarangAman}</div>
-                                                    <div class="product-cell cell-no-asset" title="${noAssetAman}">${noAssetAman}</div>
-                                                    <div class="product-cell cell-merek" title="${merekAman}">${merekAman}</div>
-                                                    <div class="product-cell cell-tgl-pengadaan">${tglPengadaanFormatted}</div>
-                                                    <div class="product-cell cell-serial-number" title="${serialNumberAman}">${serialNumberAman}</div>
-                                                    <div class="product-cell cell-aksi">
-                                                        <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
-                                                            <i class="fas fa-info-circle"></i>
-                                                            <span>Detail</span>
-                                                        </button>
-                                                    </div>
-                                                </div>`;
+                                            <div class="products-row">
+                                                <div class="product-cell cell-no">${rowNumber}</div>
+                                                <div class="product-cell cell-perusahaan" title="${escapeHtml(barang.perusahaan_nama || 'N/A')}">${escapeHtml(barang.perusahaan_nama || 'N/A')}</div>
+                                                <div class="product-cell cell-jenis-barang" title="${escapeHtml(barang.jenis_barang || 'N/A')}">${escapeHtml(barang.jenis_barang || 'N/A')}</div>
+                                                <div class="product-cell cell-no-asset" title="${escapeHtml(barang.no_asset || '')}">${escapeHtml(barang.no_asset || '')}</div>
+                                                <div class="product-cell cell-merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
+                                                <div class="product-cell cell-tgl-pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
+                                                <div class="product-cell cell-serial-number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
+                                                <div class="product-cell cell-aksi">
+                                                    <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
+                                                        <i class="fas fa-info-circle"></i>
+                                                        <span>Detail</span>
+                                                    </button>
+                                                </div>
+                                            </div>`;
                                             });
                                         } else {
                                             tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
                                         }
                                         productTableRowsContainer.innerHTML = tableRowsHtml;
+                                        if (responseData.pagination) renderPaginationControls(responseData.pagination);
                                         if (responseData.inventorySummary) {
                                             updateInventorySummary(responseData.inventorySummary);
                                         }
-                                        if (responseData.pagination) {
-                                            renderPaginationControls(responseData.pagination);
-                                        }
-                                        captureOriginalState();
                                     })
                                     .catch(error => {
                                         console.error('Error performing real-time search:', error);
@@ -3882,15 +3691,20 @@
                             function updateInventorySummary(summaryData) {
                                 if (!summaryData) return;
 
+                                document.querySelectorAll('.summary-box-count').forEach(el => {
+                                    el.textContent = '0';
+                                });
+
                                 for (const type in summaryData) {
-                                    const safeIdPart = type.toLowerCase().replace('/', '-');
-                                    const elementId = `summary-count-${safeIdPart}`;
+                                    const slug = type.toLowerCase()
+                                        .replace(/ \/ /g, '-')
+                                        .replace(/ /g, '-');
+                                    const elementId = `summary-count-${slug}`;
                                     const countElement = document.getElementById(elementId);
 
                                     if (countElement) {
                                         countElement.textContent = summaryData[type];
                                     } else {
-                                        // Ini untuk debugging jika ada ID yang tidak cocok
                                         console.warn(`Elemen summary dengan ID '${elementId}' tidak ditemukan.`);
                                     }
                                 }
@@ -3906,11 +3720,9 @@
 
                             performRealtimeSearch(1);
                             checkAndUpdateFilterStates();
-                            captureOriginalState();
                             setupAssetPreview();
                             setupSerahTerimaPreview();
 
-                            // Event Listeners untuk Search dan Filter
                             if (mainSearchInput) {
                                 mainSearchInput.addEventListener('input', () => {
                                     clearTimeout(debounceTimer);
@@ -3933,20 +3745,20 @@
                             if (filterPerusahaanSelect) {
                                 filterPerusahaanSelect.addEventListener('change', () => {
                                     performRealtimeSearch(1);
-                                    checkAndUpdateFilterStates(); // Panggil ini
+                                    checkAndUpdateFilterStates();
                                 });
                             }
                             if (filterJenisBarangSelect) {
                                 filterJenisBarangSelect.addEventListener('change', () => {
                                     performRealtimeSearch(1);
-                                    checkAndUpdateFilterStates(); // Panggil ini
+                                    checkAndUpdateFilterStates();
                                 });
                             }
                             if (resetFilterInMenuBtn) {
                                 resetFilterInMenuBtn.addEventListener('click', () => {
                                     if (filterPerusahaanSelect) filterPerusahaanSelect.value = '';
                                     if (filterJenisBarangSelect) filterJenisBarangSelect.value = '';
-                                    if (mainSearchInput) mainSearchInput.value = ''; // Tambahkan ini jika diinginkan
+                                    if (mainSearchInput) mainSearchInput.value = '';
 
                                     performRealtimeSearch(1);
                                     checkAndUpdateFilterStates();
@@ -3957,7 +3769,6 @@
                                 });
                             }
 
-                            // Modal Tambah Aset
                             if (openAddAssetModalButton && addAssetModal) {
                                 openAddAssetModalButton.addEventListener('click', () => openModalElement(addAssetModal, addAssetForm));
                             }
@@ -3966,7 +3777,6 @@
                                 addAssetForm.addEventListener('submit', function(event) {
                                     event.preventDefault();
                                     const formData = new FormData(addAssetForm);
-                                    // ... (AJAX submit untuk tambah aset) ...
                                     submitAddAssetBtn.textContent = 'Menyimpan...';
                                     submitAddAssetBtn.disabled = true;
 
@@ -3980,10 +3790,10 @@
                                         })
                                         .then(response => response.json())
                                         .then(data => {
-                                            if (data.success || (data.status && data.status === 201)) { // Cek kedua kondisi
+                                            if (data.success || (data.status && data.status === 201)) {
                                                 alert(data.message || data.success || 'Aset berhasil ditambahkan.');
                                                 closeModalElement(addAssetModal);
-                                                performRealtimeSearch(); // Refresh tabel
+                                                performRealtimeSearch();
                                             } else if (data.errors) {
                                                 displayValidationErrorsOnForm(data.errors, addAssetForm);
                                             } else {
@@ -3993,7 +3803,7 @@
                                         .catch(err => {
                                             console.error("Error add asset:", err);
                                             alert('Terjadi kesalahan. Cek konsol.');
-                                            if (err.body && err.body.errors) { // Jika error dari response.json().then(errData => { throw { body: errData } })
+                                            if (err.body && err.body.errors) {
                                                 displayValidationErrorsOnForm(err.body.errors, addAssetForm);
                                             }
                                         })
@@ -4010,29 +3820,24 @@
                             if (cancelAddAssetModalBtn) cancelAddAssetModalBtn.addEventListener('click', () => closeModalElement(addAssetModal));
                             setupSmartModalClosure(addAssetModal, () => closeModalElement(addAssetModal));
 
-                            // Modal Detail Aset
                             const closeDetailModal = () => {
                                 if (detailModalOverlayElement) detailModalOverlayElement.style.display = 'none';
                             };
                             if (closeDetailModalButtonElement) closeDetailModalButtonElement.addEventListener('click', closeDetailModal);
                             setupSmartModalClosure(detailModalOverlayElement, closeDetailModal);
 
-                            // Modal Serah Terima Aset
                             const closeSerahTerimaModal = () => {
                                 if (serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
                             };
-                            if (closeSerahTerimaBtn) closeSerahTerimaBtn.addEventListener('click', closeSerahTerimaModal);
                             if (cancelSerahTerimaBtn) cancelSerahTerimaBtn.addEventListener('click', closeSerahTerimaModal);
                             setupSmartModalClosure(serahTerimaAsetModalElement, closeSerahTerimaModal);
 
-                            // Modal User History
                             const closeUserHistoryModal = () => {
                                 if (userHistoryModalElement) userHistoryModalElement.style.display = 'none';
                             };
                             if (closeUserHistoryBtn) closeUserHistoryBtn.addEventListener('click', closeUserHistoryModal);
                             setupSmartModalClosure(userHistoryModalElement, closeUserHistoryModal);
 
-                            // Penanganan Tombol Escape untuk semua modal
                             document.addEventListener('keydown', (e) => {
                                 if (e.key === 'Escape') {
                                     if (addAssetModal.classList.contains('show')) closeModalElement(addAssetModal);
@@ -4043,9 +3848,8 @@
                             });
 
                             if (serahTerimaStatusSelect) {
-                                serahTerimaStatusSelect.addEventListener('change', handleSerahTerimaStatusChange); // Panggil fungsi global
+                                serahTerimaStatusSelect.addEventListener('change', handleSerahTerimaStatusChange);
                             }
-                            // ... (listener tombol close/cancel/overlay click untuk serahTerimaAsetModal) ...
                             if (closeSerahTerimaBtn) closeSerahTerimaBtn.addEventListener('click', () => {
                                 if (serahTerimaAsetModalElement) serahTerimaAsetModalElement.style.display = 'none';
                             });
@@ -4077,7 +3881,6 @@
                                 serahTerimaForm.addEventListener('submit', function(event) {
                                     event.preventDefault();
                                     const formData = new FormData(serahTerimaForm);
-                                    // ... (AJAX submit untuk serah terima aset) ...
                                     submitSerahTerimaBtn.textContent = 'Menyimpan...';
                                     submitSerahTerimaBtn.disabled = true;
 
@@ -4118,15 +3921,13 @@
                                 });
                             }
 
-                            // Modal User History (hanya menutup)
                             if (closeUserHistoryBtn) closeUserHistoryBtn.addEventListener('click', () => {
                                 if (userHistoryModalElement) userHistoryModalElement.style.display = 'none';
                             });
 
-                            // Fitur UI Dashboard Lainnya (Theme, Sidebar, Filter Toggle)
                             if (filterToggleButton && filterMenu) {
                                 filterToggleButton.addEventListener("click", function(event) {
-                                    event.stopPropagation(); // Mencegah event menyebar ke document
+                                    event.stopPropagation();
                                     filterMenu.classList.toggle("active");
                                 });
                             }
@@ -4145,7 +3946,7 @@
                                 });
                             }
 
-                            if (filterMenu && filterToggleButton) { // Pastikan kedua elemen ada
+                            if (filterMenu && filterToggleButton) {
                                 document.addEventListener('click', function(event) {
                                     const isClickInsideFilterMenu = filterMenu.contains(event.target);
                                     const isClickOnFilterToggleButton = filterToggleButton.contains(event.target);
@@ -4218,15 +4019,13 @@
                             }
 
                             function setActiveSidebarLink() {
-                                const currentPathname = window.location.pathname; // e.g., "/dashboard" or "/"
+                                const currentPathname = window.location.pathname;
                                 const sidebarNavItems = document.querySelectorAll('.sidebar .sidebar-list-item');
                                 let exactMatchFound = false;
 
-                                // Hapus class 'active' dari semua item terlebih dahulu
                                 sidebarNavItems.forEach(item => {
                                     item.classList.remove('active');
                                 });
-                                // Jika tidak ada yang aktif, coba aktifkan link dashboard jika URL adalah root
                                 if (!document.querySelector('.sidebar .sidebar-list-item.active')) {
                                     const dashboardLinkEl = document.querySelector(`.sidebar-list-item a[href="{{ route('dashboard.index')}}"]`);
                                     if (dashboardLinkEl && (window.location.pathname === '/' || window.location.pathname === new URL(dashboardLinkEl.href).pathname)) {

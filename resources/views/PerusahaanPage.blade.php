@@ -1425,7 +1425,8 @@
                                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
                                 </svg>
                             </button>
-                            <form method="POST" action="#" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');" style="display: inline;">
+                            <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');" style="display: inline;">
+                                @csrf
                                 <button type="submit" class="app-content-headerButton" style="background-color: #e74c3c; margin-left: 8px;">
                                     Logout
                                 </button>
