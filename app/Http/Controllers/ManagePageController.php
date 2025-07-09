@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -15,6 +16,12 @@ class ManagePageController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
+        $currentUser = Auth::user();
+
+        if ($currentUser->isAdmin()) {
+            $query->where('role', '!=', 'super_admin');
+        }
+
         if ($request->filled('search')) {
             $searchKeyword = $request->input('search');
             $query->where(function ($subQuery) use ($searchKeyword) {
@@ -24,22 +31,12 @@ class ManagePageController extends Controller
         }
 
         $perPage = $request->input('per_page', 20);
-
-        $query = User::query();
-        if ($request->filled('search')) {
-            $searchKeyword = $request->input('search');
-            $query->where(function ($subQuery) use ($searchKeyword) {
-                $subQuery->where('name', 'like', '%' . $searchKeyword . '%')
-                    ->orWhere('email', 'like', '%' . $searchKeyword . '%');
-            });
-        }
-
-        // Gunakan variabel $perPage untuk paginasi
         $users = $query->latest()->paginate($perPage)->appends($request->except('page'));
 
         if ($request->ajax()) {
+            $tableHtml = view('partials.user_table_rows', compact('users', 'currentUser'))->render();
             return response()->json([
-                'table_html' => view('partials.user_table_rows', compact('users'))->render(),
+                'table_html' => $tableHtml,
                 'pagination' => $users->toArray()
             ]);
         }
@@ -62,26 +59,38 @@ class ManagePageController extends Controller
             'password.min' => 'Password minimal harus 6 karakter.',
             'password.letters' => 'Password harus mengandung setidaknya satu huruf.',
             'password.numbers' => 'Password harus mengandung setidaknya satu angka.',
-                    'role.required' => 'Role wajib dipilih.',
-        'role.in' => 'Role yang dipilih tidak valid.', 
+            'role.required' => 'Role wajib dipilih.',
+            'role.in' => 'Role yang dipilih tidak valid.',
         ];
     }
 
-    private function getValidationRules(): array
+    private function getValidationRules(bool $isUpdate = false, ?int $userId = null): array
     {
-        return [
+        $allowedRoles = Auth::user()->isSuperAdmin()
+            ? ['super_admin', 'admin', 'user']
+            : ['user'];
+
+        $rules = [
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]+$/'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
-            'role' => ['required', Rule::in(['admin', 'user'])],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->when($isUpdate, fn($rule) => $rule->ignore($userId))],
+            'password' => ['sometimes', 'required', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
+            'role' => ['required', Rule::in($allowedRoles)],
         ];
+
+        if ($isUpdate) {
+            $rules['password'] = ['nullable', 'string', 'confirmed', Password::min(6)->letters()->numbers()];
+        }
+
+        return $rules;
     }
 
     public function store(Request $request)
     {
-        $rules = $this->getValidationRules();
-        $messages = $this->getValidationMessages();
-        $validator = Validator::make($request->all(), $rules, $messages);
+        if (Auth::user()->isAdmin() && $request->role !== 'user') {
+            return response()->json(['error' => 'Admin hanya bisa membuat akun dengan role User.'], 403);
+        }
+
+        $validator = Validator::make($request->all(), $this->getValidationRules(), $this->getValidationMessages());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -91,8 +100,9 @@ class ManagePageController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-             'role' => $request->role,
+            'role' => $request->role,
         ]);
+
         return response()->json(['success' => 'User berhasil ditambahkan.']);
     }
 
@@ -102,6 +112,7 @@ class ManagePageController extends Controller
         $allRules = $this->getValidationRules();
         $messages = $this->getValidationMessages();
         $rulesToValidate = [];
+
         if (array_key_exists($triggerField, $allRules)) {
             $rulesToValidate[$triggerField] = $allRules[$triggerField];
         }
@@ -121,39 +132,74 @@ class ManagePageController extends Controller
 
     public function destroy(User $user)
     {
-        if (strtolower($user->name) === 'admin' || strtolower($user->role) === 'admin') {
-            return response()->json(['error' => 'User Admin tidak dapat dihapus.'], 403); // 403 = Forbidden
+        $currentUser = Auth::user();
+
+        if ($currentUser->id === $user->id) {
+            return response()->json(['error' => 'Anda tidak bisa menghapus akun Anda sendiri.'], 403);
         }
+
+        if ($currentUser->isAdmin() && !$user->isUser()) {
+            return response()->json(['error' => 'Anda tidak memiliki izin untuk menghapus user ini.'], 403);
+        }
+
         $user->delete();
         return response()->json(['success' => 'User berhasil dihapus.']);
     }
 
     public function edit(User $user)
     {
+        $currentUser = Auth::user();
+
+        if ($currentUser->isAdmin() && !$user->isUser()) {
+            return response()->json(['error' => 'Akses ditolak.'], 403);
+        }
+
         return response()->json($user);
     }
 
     public function update(Request $request, User $user)
     {
-        if (strtolower($user->role) === 'admin' && $request->has('role') && $request->role !== $user->role) {
-            return response()->json(['error' => 'Role Admin tidak dapat diubah.'], 403);
+        $currentUser = Auth::user();
+
+        if ($currentUser->isAdmin() && $user->role !== 'user') {
+            return response()->json(['error' => 'Admin hanya dapat mengedit user dengan role User.'], 403);
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+        if ($currentUser->isSuperAdmin() && $user->id === $currentUser->id && $request->role !== 'super_admin') {
+            return response()->json(['error' => 'Anda tidak dapat mengubah role akun Anda sendiri.'], 403);
+        }
+
+        $allowedRoles = [];
+        if ($currentUser->isSuperAdmin()) {
+            $allowedRoles = ['super_admin', 'admin', 'user'];
+        } elseif ($currentUser->isAdmin()) {
+            $allowedRoles = ['user'];
+        }
+
+        $rules = [
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]+$/'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'confirmed', Password::min(6)->letters()->numbers()],
-            'role' => ['required', Rule::in(['admin', 'user'])],
-        ], $this->getValidationMessages());
+            'role' => ['required', Rule::in($allowedRoles)],
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $this->getValidationMessages());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $user->name = $request->name;
-        $user->role = $request->role;
+
+        if ($currentUser->isSuperAdmin()) {
+            $user->email = $request->email;
+            $user->role = $request->role;
+        }
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
+
         $user->save();
         return response()->json(['success' => 'User berhasil diperbarui.']);
     }

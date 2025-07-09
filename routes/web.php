@@ -1,64 +1,57 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BarangController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ManagePageController;
 use App\Http\Controllers\PerusahaanPageController;
+use App\Http\Controllers\SuratController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// === GRUP 1: RUTE UNTUK TAMU (Guest) ===
-// Hanya bisa diakses jika user BELUM login.
+// === GRUP UNTUK TAMU (Guest) ===
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 });
 
-
-// === GRUP 2: RUTE UNTUK SEMUA USER YANG SUDAH LOGIN ===
-// Memerlukan autentikasi (harus sudah login).
+// === GRUP UNTUK SEMUA USER YANG SUDAH LOGIN ===
 Route::middleware('auth')->group(function () {
 
-    // Rute Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // --- Rute yang bisa diakses oleh 'admin' dan 'user' ---
-    // Dashboard adalah halaman utama yang bisa dilihat semua orang.
+    // --- Rute Dashboard & Detail (Bisa diakses semua user terotentikasi) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard/search-realtime', [DashboardController::class, 'searchRealtime'])->name('dashboard.search.realtime');
-
-    // Semua user boleh melihat detail barang dan riwayatnya.
+    Route::get('/dashboard/export', [DashboardController::class, 'exportExcel'])->name('dashboard.export');
     Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
     Route::get('/history/user/{serial_number}', [DashboardController::class, 'getUserHistoryBySerialNumber'])->name('history.user.serial_number');
 
-
-    // === GRUP 3: RUTE KHUSUS UNTUK ADMIN ===
-    // Memerlukan middleware 'is_admin' yang sudah kita buat.
+    // === GRUP KHUSUS UNTUK ADMIN & SUPER ADMIN ===
     Route::middleware('is_admin')->group(function () {
 
-        // --- Manajemen User (Hanya Admin) ---
-        Route::get('/users', [ManagePageController::class, 'index'])->name('users.index');
-        // Rute untuk search real-time user juga harus dilindungi
-        // Route::get('/users/search', [ManagePageController::class, 'search'])->name('users.search'); // Dihapus jika pakai metode index()
-        Route::post('/users/validate-field', [ManagePageController::class, 'validateField'])->name('users.validate.field');
-        Route::post('/users', [ManagePageController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}/edit', [ManagePageController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [ManagePageController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [ManagePageController::class, 'destroy'])->name('users.destroy');
-
-        // --- Manajemen Aset (Hanya Admin) ---
-        // Aksi seperti membuat, menyerahkan, dan mendapatkan nomor seri adalah tugas admin.
+        // --- Manajemen Aset ---
         Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
         Route::post('/aset/serah-terima/store', [DashboardController::class, 'storeSerahTerimaAset'])->name('aset.serahterima.store');
         Route::get('/aset/nomor-seri-berikutnya/{perusahaan_id}', [BarangController::class, 'getNomorSeriBerikutnya'])->name('aset.get_nomor_seri');
 
-        // --- Manajemen Perusahaan (Hanya Admin) ---
-        // Aksi seperti menambahkan perusahaan baru adalah tugas admin.
-        Route::get('/companies', [App\Http\Controllers\PerusahaanPageController::class, 'index'])->name('companies.index');
-        Route::post('/companies', [App\Http\Controllers\PerusahaanPageController::class, 'store'])->name('companies.store');
+        // --- Manajemen Perusahaan ---
+        Route::resource('companies', PerusahaanPageController::class)->except(['create', 'show'])->middleware('is_admin');
+
+        // --- Manajemen Surat ---
+        Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');
+        Route::get('/surat/get-next-nomor', [SuratController::class, 'getProspectiveNomor'])->name('surat.getProspectiveNomor');
+        Route::get('/surat/search', [SuratController::class, 'searchRealtime'])->name('surat.search');
+        Route::get('/surat/find-barang', [SuratController::class, 'findBarang'])->name('surat.find-barang');
+        Route::get('/surat/download/{id}', [SuratController::class, 'downloadPdf'])->name('surat.download.pdf');
+        Route::resource('surat', SuratController::class)->except(['index'])->middleware('is_admin'); // Menggunakan resource controller
+
+        // --- Manajemen User ---
+        Route::get('/users/{user}/edit', [ManagePageController::class, 'edit'])->name('users.edit');
+        Route::post('/users/validate-field', [ManagePageController::class, 'validateField'])->name('users.validate.field');
+        Route::resource('users', ManagePageController::class)->except(['edit'])->middleware('is_admin'); // Menggunakan resource controller
     });
 });

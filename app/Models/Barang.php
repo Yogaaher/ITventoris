@@ -23,7 +23,7 @@ class Barang extends Model
     ];
     protected static function booted()
     {
-         static::created(function (Barang $barang) {
+        static::created(function (Barang $barang) {
             $barang->tracks()->create([
                 'username' => '-',
                 'status' => 'tersedia',
@@ -46,7 +46,7 @@ class Barang extends Model
 
     public function tracks(): HasMany
     {
-        return $this->hasMany(Track::class, 'serial_number', 'serial_number');
+        return $this->hasMany(\App\Models\Track::class, 'serial_number', 'serial_number')->orderBy('tanggal_awal', 'asc');
     }
 
     public function latestTrack(): HasOne
@@ -64,5 +64,3 @@ class Barang extends Model
     // Jika ingin tetap disertakan saat toArray/toJson
     // protected $appends = ['status_terkini']; // Tidak perlu jika sudah ada kolom 'status'
 }
-
-

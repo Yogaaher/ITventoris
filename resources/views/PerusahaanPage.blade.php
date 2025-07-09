@@ -1095,6 +1095,57 @@
                 display: none;
             }
 
+            .tableView .product-cell.cell-aksi {
+                flex: 0 0 120px;
+                justify-content: center;
+                padding-right: 3rem;
+                gap: 8px;   
+            }
+
+            .action-btn-table {
+                padding: 6px 12px;
+                border: 1px solid;
+                background-color: transparent;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 1.3rem;
+                font-weight: 500;
+                transition: all 0.2s ease-in-out;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .action-btn-table:hover {
+                transform: translateY(-2px);
+            }
+
+            .action-btn-table.edit-btn {
+                border-color: #ffc107;
+                color: #ffc107;
+            }
+
+            .action-btn-table.edit-btn:hover {
+                background-color: #ffc107;
+                color: var(--app-bg);
+                box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+            }
+
+            html.light .action-btn-table.edit-btn:hover {
+                color: #fff;
+            }
+
+            .action-btn-table.delete-btn {
+                border-color: #e74c3c;
+                color: #e74c3c;
+            }
+
+            .action-btn-table.delete-btn:hover {
+                background-color: #e74c3c;
+                color: #fff;
+                box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+            }
+
             @media screen and (max-width: 1024px) {
                 .sidebar {
                     position: fixed;
@@ -1350,6 +1401,32 @@
                     flex-grow: 1;
                     text-align: center;
                 }
+
+                .tableView .product-cell.cell-aksi {
+                    padding-top: 1.5rem;
+                    margin-top: 1rem;
+                    border-top: 1px solid var(--table-border);
+                    justify-content: stretch;
+                }
+
+                .tableView .product-cell.cell-aksi .action-buttons-wrapper {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;
+                    width: 100%;
+                }
+
+                .tableView .product-cell.cell-aksi .action-btn-table {
+                    width: 100%;
+                    padding: 12px 10px;
+                    justify-content: center;
+                }
+            }
+
+            @media screen and (min-width: 769px) {
+                .action-btn-table span {
+                    display: none;
+                }
             }
         </style>
     </head>
@@ -1379,16 +1456,15 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        @if(auth()->user()->role === 'admin')
-                        <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                            <a href="{{ route('users.index') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        <li class="sidebar-list-item {{ request()->routeIs('surat.index') ? 'active' : '' }}">
+                            <a href="{{ route('surat.index') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
                                 </svg>
-                                <span>Manage User</span>
+                                <span>Serah Terima</span>
                             </a>
                         </li>
                         <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
@@ -1400,13 +1476,25 @@
                                 <span>Perusahaan</span>
                             </a>
                         </li>
+                        @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
+                        <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                            <a href="{{ route('users.index') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                <span>Manage User</span>
+                            </a>
+                        </li>
                         @endif
                     </ul>
                     <div class="account-info">
                         <div class="account-info-picture">
                             <img src="/img/Logo-scuto.png" alt="Account">
                         </div>
-                        <div class="account-info-name">Admin</div>
+                        <div class="account-info-name">{{ auth()->user()->name ?? 'Guest' }}</div>
                     </div>
                 </div>
 
@@ -1452,6 +1540,9 @@
                             <div class="product-cell cell-nama-perusahaan">Nama Perusahaan</div>
                             <div class="product-cell cell-singkatan">Singkatan</div>
                             <div class="product-cell cell-dibuat-pada">Dibuat Pada</div>
+                            @if(auth()->user()->isSuperAdmin())
+                            <div class="product-cell cell-aksi" style="justify-content: center;">Aksi</div>
+                            @endif
                         </div>
 
                         <div id="productTableRowsContainer">
@@ -1483,16 +1574,19 @@
             </div>
         </div>
 
-        <div id="addCompanyModal" class="modal-overlay">
+        <div id="companyModal" class="modal-overlay">
             <div class="modal-content-wrapper device-entry-info-modal">
-                <form id="addCompanyForm" novalidate>
+                <form id="companyForm" novalidate>
+                    @csrf
+                    <input type="hidden" id="formMethod" name="_method" value="POST">
+                    <input type="hidden" id="companyId" name="company_id" value="">
+
                     <div class="morph-modal-container">
                         <div class="morph-modal-title">
-                            <span><i class="fas fa-building"></i> Tambah Perusahaan Baru</span>
+                            <span id="modalTitle"><i class="fas fa-building"></i> Tambah Perusahaan Baru</span>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Tutup modal">×</button>
                         </div>
                         <div class="morph-modal-body">
-                            <!-- Hapus tag <form> dari sini -->
                             <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label for="nama_perusahaan">Nama Lengkap Perusahaan</label>
                                 <input type="text" name="nama_perusahaan" id="nama_perusahaan" required autocomplete="off" placeholder="PT NAMA PERUSAHAAN">
@@ -1503,23 +1597,28 @@
                                 <input type="text" name="singkatan" id="singkatan" required autocomplete="off" maxlength="3" placeholder="ABC">
                                 <div class="invalid-feedback" id="singkatan_error"></div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-primary" id="submitAddCompanyBtn">
-                                    <i class="fas fa-save"></i>
-                                    <span>Simpan</span>
-                                </button>
-                            </div>
-                            <!-- Hapus tag </form> dari sini -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="submitCompanyBtn">
+                                <i class="fas fa-save"></i>
+                                <span>Simpan</span>
+                            </button>
                         </div>
                     </div>
-                </form> <!-- Pastikan tag form menutup di sini -->
+                </form>
             </div>
         </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 // ===== SETUP AWAL & UI =====
+                const companyModal = document.getElementById('companyModal');
+                const companyForm = document.getElementById('companyForm');
+                const modalTitle = document.getElementById('modalTitle');
+                const formMethodInput = document.getElementById('formMethod');
+                const companyIdInput = document.getElementById('companyId');
+                const submitBtn = document.getElementById('submitCompanyBtn');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 const sidebarElement = document.querySelector('.sidebar');
                 const burgerMenuButton = document.getElementById('burger-menu');
@@ -1629,13 +1728,12 @@
                  * Menangani error validasi dan menampilkannya di form.
                  */
                 const handleValidationErrors = (errors) => {
-                    const form = document.getElementById('addCompanyForm');
-                    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                    form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                    companyForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    companyForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
 
                     Object.keys(errors).forEach(key => {
-                        const input = form.querySelector(`[name="${key}"]`);
-                        const errorDiv = form.querySelector(`#${key}_error`);
+                        const input = companyForm.querySelector(`[name="${key}"]`);
+                        const errorDiv = companyForm.querySelector(`#${key}_error`);
                         if (input) input.classList.add('is-invalid');
                         if (errorDiv) errorDiv.textContent = errors[key][0];
                     });
@@ -1646,7 +1744,28 @@
                  */
                 const renderPaginationControls = (pagination) => {
                     if (!pagination || pagination.total === 0) {
-                        return `<div class="footer-section footer-center" id="pagination-buttons-container">${linksHtml}</div>`;
+                        const perPageSelect = document.getElementById('rows-per-page-select');
+                        const perPageValue = perPageSelect ? perPageSelect.value : 20;
+                        return `
+                        <div class="footer-section footer-left">
+                            <div class="rows-per-page-wrapper">
+                                <label for="rows-per-page-select">Baris:</label>
+                                <select id="rows-per-page-select">
+                                    <option value="10" ${perPageValue == 10 ? 'selected' : ''}>10</option>
+                                    <option value="20" ${perPageValue == 20 ? 'selected' : ''}>20</option>
+                                    <option value="30" ${perPageValue == 30 ? 'selected' : ''}>30</option>
+                                    <option value="50" ${perPageValue == 50 ? 'selected' : ''}>50</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="footer-section footer-center" id="pagination-buttons-container">
+                            <!-- Tidak ada tombol karena tidak ada data -->
+                        </div>
+                        <div class="footer-section footer-right">
+                            <div class="pagination-info" id="pagination-info-text">
+                                <b>0</b>-<b>0</b> dari <b>0</b>
+                            </div>
+                        </div>`;
                     }
 
                     const {
@@ -1664,38 +1783,107 @@
                         } else if (label.includes('Next')) {
                             label = '>';
                         }
-
                         if (!link.url) {
                             return `<button class="pagination-btn" disabled>${label}</button>`;
                         }
-
                         const pageNumber = new URL(link.url).searchParams.get('page');
                         return `<button class="pagination-btn ${link.active ? 'active' : ''}" data-page="${pageNumber}">${label}</button>`;
                     }).join('');
 
                     return `
-            <div class="footer-section footer-left">
-                <div class="rows-per-page-wrapper">
-                    <label for="rows-per-page-select">Baris:</label>
-                    <select id="rows-per-page-select">
-                        <option value="10" ${per_page == 10 ? 'selected' : ''}>10</option>
-                        <option value="20" ${per_page == 20 ? 'selected' : ''}>20</option>
-                        <option value="30" ${per_page == 30 ? 'selected' : ''}>30</option>
-                        <option value="50" ${per_page == 50 ? 'selected' : ''}>50</option>
-                    </select>
-                </div>
-            </div>
-            <div class="footer-section footer-center" id="pagination-buttons-container">
-                ${linksHtml}
-            </div>
-            <div class="footer-section footer-right">
-                <div class="pagination-info" id="pagination-info-text">
-                    <b>${from}</b>-<b>${to}</b> dari <b>${total}</b>
-                </div>
-            </div>`;
+                    <div class="footer-section footer-left">
+                        <div class="rows-per-page-wrapper">
+                            <label for="rows-per-page-select">Baris:</label>
+                            <select id="rows-per-page-select">
+                                <option value="10" ${per_page == 10 ? 'selected' : ''}>10</option>
+                                <option value="20" ${per_page == 20 ? 'selected' : ''}>20</option>
+                                <option value="30" ${per_page == 30 ? 'selected' : ''}>30</option>
+                                <option value="50" ${per_page == 50 ? 'selected' : ''}>50</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="footer-section footer-center" id="pagination-buttons-container">
+                        ${linksHtml}
+                    </div>
+                    <div class="footer-section footer-right">
+                        <div class="pagination-info" id="pagination-info-text">
+                            <b>${from}</b>-<b>${to}</b> dari <b>${total}</b>
+                        </div>
+                    </div>`;
+                };
+                // ===== EVENT LISTENERS =====
+
+                const resetForm = () => {
+                    companyForm.reset();
+                    companyForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    companyForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
                 };
 
-                // ===== EVENT LISTENERS =====
+                const setupAddModal = () => {
+                    resetForm();
+                    modalTitle.innerHTML = '<i class="fas fa-building"></i> Tambah Perusahaan Baru';
+                    companyForm.setAttribute('action', '{{ route("companies.store") }}');
+                    formMethodInput.value = 'POST';
+                    companyIdInput.value = '';
+                    openModal(companyModal);
+                };
+
+                const setupEditModal = (id) => {
+                    resetForm();
+                    fetch(`/companies/${id}/edit`)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Gagal mengambil data perusahaan.');
+                            return response.json();
+                        })
+                        .then(data => {
+                            modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Perusahaan';
+                            companyForm.setAttribute('action', `/companies/${id}`);
+                            formMethodInput.value = 'PUT';
+                            companyIdInput.value = id;
+                            companyForm.querySelector('#nama_perusahaan').value = data.nama_perusahaan;
+                            companyForm.querySelector('#singkatan').value = data.singkatan;
+                            openModal(companyModal);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        });
+                };
+
+                const handleDelete = (id) => {
+                    if (!confirm('Apakah Anda yakin ingin menghapus perusahaan ini? Tindakan ini tidak dapat dibatalkan.')) return;
+
+                    fetch(`/companies/${id}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: new URLSearchParams({
+                                '_method': 'DELETE'
+                            })
+                        })
+                        .then(response => response.json().then(data => ({
+                            status: response.status,
+                            body: data
+                        })))
+                        .then(({
+                            status,
+                            body
+                        }) => {
+                            if (status === 200) {
+                                alert(body.success);
+                                fetchCompanies(1);
+                            } else {
+                                alert(body.error || 'Terjadi kesalahan saat menghapus.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Terjadi kesalahan fatal.');
+                        });
+                };
 
                 // Sidebar & Theme
                 if (burgerMenuButton) {
@@ -1742,11 +1930,17 @@
                 // EVENT DELEGATION untuk semua aksi di dalam area tabel
                 tableArea.addEventListener('click', (event) => {
                     const target = event.target;
+                    const paginationBtn = target.closest('.pagination-btn');
+                    const editBtn = target.closest('.edit-company-btn');
+                    const deleteBtn = target.closest('.delete-company-btn');
 
-                    // Aksi Paginasi
-                    if (target.closest('.pagination-btn') && !target.closest('.pagination-btn').disabled) {
-                        const page = target.closest('.pagination-btn').dataset.page;
+                    if (paginationBtn && !paginationBtn.disabled) {
+                        const page = paginationBtn.dataset.page;
                         if (page) fetchCompanies(page);
+                    } else if (editBtn) {
+                        setupEditModal(editBtn.dataset.id);
+                    } else if (deleteBtn) {
+                        handleDelete(deleteBtn.dataset.id);
                     }
                 });
 
@@ -1755,11 +1949,6 @@
                     if (event.target.id === 'rows-per-page-select') {
                         fetchCompanies(1);
                     }
-                });
-
-                // Tombol buka modal tambah
-                document.getElementById('openAddCompanyModalButton').addEventListener('click', () => {
-                    openModal(document.getElementById('addCompanyModal'));
                 });
 
                 document.querySelectorAll('.modal-overlay').forEach(modalElement => {
@@ -1793,20 +1982,23 @@
                     btn.addEventListener('click', () => closeModal(btn.closest('.modal-overlay').id));
                 });
 
-                // Submit form Tambah
-                document.getElementById('addCompanyForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const btn = document.getElementById('submitAddCompanyBtn');
-                    btn.disabled = true;
-                    btn.querySelector('span').textContent = 'Menyimpan...';
+                document.getElementById('openAddCompanyModalButton').addEventListener('click', setupAddModal);
 
-                    fetch('{{ route("companies.store") }}', {
+                companyForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitBtn.disabled = true;
+                    submitBtn.querySelector('span').textContent = 'Menyimpan...';
+
+                    const formData = new FormData(this);
+                    const actionUrl = this.getAttribute('action');
+
+                    fetch(actionUrl, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'application/json'
                             },
-                            body: new FormData(this)
+                            body: formData
                         })
                         .then(response => response.json().then(data => ({
                             status: response.status,
@@ -1817,17 +2009,19 @@
                             body
                         }) => {
                             if (status === 422) {
-                                handleValidationErrors(body.errors, 'add');
-                            } else {
+                                handleValidationErrors(body.errors);
+                            } else if (status === 200 || status === 201) {
                                 alert(body.success);
-                                closeModal(document.getElementById('addCompanyModal'));
-                                fetchCompanies();
+                                closeModal(companyModal);
+                                fetchCompanies(1);
+                            } else {
+                                alert(body.error || 'Terjadi kesalahan server.');
                             }
                         })
                         .catch(error => console.error('Error:', error))
                         .finally(() => {
-                            btn.disabled = false;
-                            btn.querySelector('span').textContent = 'Simpan';
+                            submitBtn.disabled = false;
+                            submitBtn.querySelector('span').textContent = 'Simpan';
                         });
                 });
 

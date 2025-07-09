@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class DashboardController extends Controller
 {
@@ -48,6 +49,87 @@ class DashboardController extends Controller
             });
         }
         return $queryBuilder;
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $queryBuilder = $this->getBarangQuery($request);
+
+        $sortableColumns = [
+            'perusahaan'     => 'perusahaans.nama_perusahaan',
+            'jenis_barang'   => 'jenis_barangs.nama_jenis',
+            'no_asset'       => 'barang.no_asset',
+            'merek'          => 'barang.merek',
+            'tgl_pengadaan'  => 'barang.tgl_pengadaan',
+            'serial_number'  => 'barang.serial_number',
+        ];
+
+        $sortBy = $request->input('sort_by', 'no');
+        $sortDirection = $request->input('sort_direction', 'asc');
+        $direction = strtolower($sortDirection) === 'desc' ? 'desc' : 'asc';
+
+        if ($sortBy === 'no') {
+            $queryBuilder->orderBy('barang.id', $direction);
+        } elseif (array_key_exists($sortBy, $sortableColumns)) {
+            $queryBuilder->orderBy($sortableColumns[$sortBy], $direction);
+        }
+
+        $barangs = $queryBuilder->with(['perusahaan', 'jenisBarang', 'tracks'])->get();
+        $fileName = 'Laporan_Aset_Inventaris_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+        $writer = SimpleExcelWriter::streamDownload($fileName);
+
+        $writer->addHeader([
+            'No Asset',
+            'Perusahaan',
+            'Jenis Barang',
+            'Merek',
+            'Tanggal Pengadaan',
+            'Serial Number',
+            'Status Aset Terkini',
+            'Pengguna (Riwayat)',
+            'Status (Riwayat)',
+            'Tanggal Terima',
+            'Tanggal Kembali',
+            'Keterangan (Riwayat)',
+        ]);
+
+        foreach ($barangs as $barang) {
+            if ($barang->tracks->isNotEmpty()) {
+                foreach ($barang->tracks as $track) {
+                    $writer->addRow([
+                        $barang->no_asset,
+                        $barang->perusahaan->nama_perusahaan ?? 'N/A',
+                        $barang->jenisBarang->nama_jenis ?? 'N/A',
+                        $barang->merek,
+                        Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y'),
+                        $barang->serial_number,
+                        $barang->status,
+                        $track->username,
+                        $track->status,
+                        Carbon::parse($track->tanggal_awal)->format('d-m-Y'),
+                        $track->tanggal_ahir ? Carbon::parse($track->tanggal_ahir)->format('d-m-Y') : '-',
+                        $track->keterangan,
+                    ]);
+                }
+            } else {
+                $writer->addRow([
+                    $barang->no_asset,
+                    $barang->perusahaan->nama_perusahaan ?? 'N/A',
+                    $barang->jenisBarang->nama_jenis ?? 'N/A',
+                    $barang->merek,
+                    Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y'),
+                    $barang->serial_number,
+                    $barang->status,
+                    '-',
+                    '-',
+                    '-',
+                    '-',
+                    'Belum ada riwayat serah terima',
+                ]);
+            }
+        }
+
+        return $writer->toBrowser();
     }
 
     /**
@@ -161,7 +243,7 @@ class DashboardController extends Controller
         } elseif ($sortBy && array_key_exists($sortBy, $sortableColumns)) {
             $columnName = $sortableColumns[$sortBy];
             $mainQuery->orderBy($columnName, $direction);
-            $mainQuery->orderBy('original_row_number', 'asc'); // Secondary sort
+            $mainQuery->orderBy('original_row_number', 'asc');
         } else {
             $mainQuery->orderBy('original_row_number', 'asc');
         }

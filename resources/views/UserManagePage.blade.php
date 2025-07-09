@@ -495,6 +495,29 @@
                     margin-top: 5px;
                 }
 
+                .product-cell.cell-aksi .action-btn-table:disabled {
+                    border-color: #6c757d;
+                    color: #6c757d;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                    background-color: transparent;
+                }
+
+                .product-cell.cell-aksi .action-btn-table:disabled:hover {
+                    background-color: transparent;
+                    color: #6c757d;
+                }
+
+                html.light .product-cell.cell-aksi .action-btn-table:disabled {
+                    border-color: #adb5bd;
+                    color: #adb5bd;
+                }
+
+                html.light .product-cell.cell-aksi .action-btn-table:disabled:hover {
+                    background-color: transparent;
+                    color: #adb5bd;
+                }
+
                 .app-icon {
                     color: var(--sidebar-main-color);
                     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -1437,6 +1460,7 @@
                     .tableView .product-cell.cell-aksi .action-btn-table {
                         width: 100%;
                         padding: 12px 10px;
+                        margin: 0 4px 15px 4px;
                         flex-grow: 1;
                         justify-content: center;
                     }
@@ -1518,16 +1542,15 @@
                                     <span>Dashboard</span>
                                 </a>
                             </li>
-                            @if(auth()->user()->role === 'admin')
-                            <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                                <a href="{{ route('users.index') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            <li class="sidebar-list-item {{ request()->routeIs('surat.index') ? 'active' : '' }}">
+                                <a href="{{ route('surat.index') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
                                     </svg>
-                                    <span>Manage User</span>
+                                    <span>Serah Terima</span>
                                 </a>
                             </li>
                             <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
@@ -1537,6 +1560,18 @@
                                         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                                     </svg>
                                     <span>Perusahaan</span>
+                                </a>
+                            </li>
+                            @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
+                            <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                <a href="{{ route('users.index') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span>Manage User</span>
                                 </a>
                             </li>
                             @endif
@@ -1656,8 +1691,14 @@
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
                                     <label for="add_role">Role</label>
                                     <select name="role" id="add_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
-                                        <option value="user" selected>User</option>
+                                        @if(auth()->user()->isSuperAdmin())
+                                        <option value="" disabled selected>Pilih Role</option>
+                                        <option value="user">User</option>
                                         <option value="admin">Admin</option>
+                                        <option vsalue="super_admin">Super Admin</option>
+                                        @else
+                                        <option value="user" selected>User</option>
+                                        @endif
                                     </select>
                                     <div class="invalid-feedback" id="role_error"></div>
                                 </div>
@@ -1709,12 +1750,15 @@
                         <div class="morph-modal-body">
                             <form id="editUserForm" novalidate>
                                 @csrf
-                                @method('PUT') {{-- Beritahu Laravel ini adalah request UPDATE --}}
+                                @method('PUT')
                                 <input type="hidden" id="edit_user_id" name="user_id">
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                                    <label for="edit_email">Alamat Email (Tidak dapat diubah)</label>
-                                    <input type="email" name="email" id="edit_email" readonly>
+                                    <label for="edit_email">
+                                        Alamat Email @if(!auth()->user()->isSuperAdmin())(Tidak dapat diubah)@endif
+                                    </label>
+                                    <input type="email" name="email" id="edit_email" required @if(!auth()->user()->isSuperAdmin()) readonly @endif>
+                                    <div class="invalid-feedback" id="edit_email_error"></div>
                                 </div>
 
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -1726,8 +1770,10 @@
                                 <div class="form-group" style="margin-bottom: 1.5rem;">
                                     <label for="edit_role">Role</label>
                                     <select name="role" id="edit_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
+                                        <option value="" disabled>Pilih Role</option>
                                         <option value="user">User</option>
                                         <option value="admin">Admin</option>
+                                        <option value="super_admin">Super Admin</option>
                                     </select>
                                     <div class="invalid-feedback" id="edit_role_error"></div>
                                 </div>
@@ -1927,30 +1973,48 @@
 
                     tableContainer.addEventListener('click', function(event) {
                         const editButton = event.target.closest('.edit-btn');
-                        if (!editButton || editButton.disabled) return;
+                        if (!editButton) return;
+
                         const userRow = editButton.closest('.products-row');
                         const userId = userRow.dataset.userId;
+                        const currentUserRole = "{{ auth()->user()->role }}";
+                        const currentUserId = "{{ auth()->id() }}";
 
                         fetch(`/users/${userId}/edit`)
-                            .then(response => response.json())
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(err => {
+                                        throw new Error(err.message || 'Gagal mengambil data user.');
+                                    });
+                                }
+                                return response.json();
+                            })
                             .then(user => {
-                                editUserForm.reset();
-                                editUserForm.querySelector('#edit_user_id').value = user.id;
-                                editUserForm.querySelector('#edit_name').value = user.name;
-                                editUserForm.querySelector('#edit_email').value = user.email;
-                                editUserForm.querySelector('#edit_role').value = user.role;
-                                editUserForm.action = `/users/${user.id}`;
+                                const editForm = document.getElementById('editUserForm');
+                                editForm.reset();
+                                document.querySelectorAll('#editUserForm .invalid-feedback').forEach(el => el.textContent = '');
+                                document.querySelectorAll('#editUserForm .is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
-                                const roleSelect = editUserForm.querySelector('#edit_role');
-                                if (user.role.toLowerCase() === 'admin') {
-                                    roleSelect.disabled = true;
+                                editForm.querySelector('#edit_user_id').value = user.id;
+                                editForm.querySelector('#edit_name').value = user.name;
+                                editForm.querySelector('#edit_email').value = user.email;
+
+                                const roleSelect = editForm.querySelector('#edit_role');
+                                roleSelect.value = user.role;
+                                editForm.action = `/users/${user.id}`;
+
+                                if (currentUserRole === 'super_admin') {
+                                    roleSelect.disabled = (user.id == currentUserId);
                                 } else {
-                                    roleSelect.disabled = false;
+                                    roleSelect.disabled = true;
                                 }
 
                                 openModal(editUserModal);
                             })
-                            .catch(error => console.error('Gagal mengambil data user:', error));
+                            .catch(error => {
+                                console.error('Gagal mengambil data user:', error);
+                                alert(error.message);
+                            });
                     });
 
                     editUserForm.addEventListener('submit', function(event) {
@@ -1961,6 +2025,11 @@
 
                         const formData = new FormData(this);
                         const actionUrl = this.action;
+                        const roleSelect = this.querySelector('#edit_role');
+
+                        if (roleSelect.disabled) {
+                            formData.set('role', roleSelect.value);
+                        }
 
                         fetch(actionUrl, {
                                 method: 'POST',
@@ -1981,12 +2050,14 @@
                                 if (status === 200 && body.success) {
                                     alert(body.success);
                                     closeEditModal();
-                                    fetchUsers(`{{ route('users.index') }}`);
+                                    fetchUsers(1);
                                 } else {
                                     if (body.errors) {
                                         Object.keys(body.errors).forEach(key => {
                                             const errorEl = document.getElementById(`edit_${key}_error`);
                                             if (errorEl) errorEl.textContent = body.errors[key][0];
+                                            const inputEl = document.getElementById(`edit_${key}`);
+                                            if (inputEl) inputEl.classList.add('is-invalid');
                                         });
                                     } else if (body.error) {
                                         alert(body.error);

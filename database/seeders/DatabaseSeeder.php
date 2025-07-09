@@ -3,12 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Barang; 
+use App\Models\Barang;
 use App\Models\AssetCounter;
 use App\Models\Track;
 use App\Models\Perusahaan;
 use App\Models\JenisBarang;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -31,9 +30,10 @@ class DatabaseSeeder extends Seeder
             BarangSeeder::class,
             TrackSeeder::class,
             UserSeeder::class,
+            SuratSeeder::class,
         ]);
 
-    echo "\nSyncing asset counters...\n";
+        echo "\nSyncing asset counters...\n";
         $perusahaanIds = Barang::select('perusahaan_id')->distinct()->pluck('perusahaan_id');
 
         foreach ($perusahaanIds as $perusahaanId) {

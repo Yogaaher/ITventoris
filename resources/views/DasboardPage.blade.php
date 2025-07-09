@@ -682,9 +682,34 @@
                     border: none;
                 }
 
+                .app-content-actions-buttons .action-button {
+                    min-width: 120px;
+                    justify-content: center;
+                }
+
+                .app-content-actions-buttons .action-button i,
+                .app-content-actions-buttons .action-button svg {
+                    margin-right: 6px;
+                }
+
                 .action-button.add-asset-btn svg,
                 .action-button.add-asset-btn i.fas {
                     margin-right: 6px !important;
+                }
+
+                .action-button.excel-btn {
+                    background-color: #1D6F42 !important;
+                    color: white;
+                    border: none;
+                }
+
+                .action-button.excel-btn i.fas {
+                    margin-right: 6px !important;
+                }
+
+                .action-button.excel-btn:hover {
+                    background-color: #165934 !important;
+                    border-color: #165934 !important;
                 }
 
                 .search-bar {
@@ -2082,9 +2107,23 @@
                         padding-right: 1rem;
                     }
 
-                    .app-content-actions-buttons .action-button {
+                    .app-content-actions-buttons .action-button,
+                    .app-content-actions-buttons .filter-button-wrapper {
                         flex-grow: 1;
+                        flex-basis: 0;
                         justify-content: center;
+                        margin-left: 0;
+                    }
+
+                    .app-content-actions-buttons .action-button-text {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 100%;
+                    }
+
+                    .app-content-actions-buttons .filter-button-wrapper .action-button.filter {
+                        width: 100%;
                     }
 
                     .app-content-actions .search-bar {
@@ -2183,12 +2222,6 @@
                     .tableView .product-cell.cell-aksi .action-btn-table {
                         width: 100%;
                         padding: 12px 10px;
-                    }
-
-                    .app-content-actions {
-                        flex-direction: column;
-                        align-items: stretch;
-                        gap: 12px;
                     }
 
                     .app-content-actions .search-bar-container {
@@ -2368,7 +2401,7 @@
                                         <button class="btn-action btn-detail" id="triggerUserHistoryModalButton">
                                             <i class="fas fa-user-circle"></i> Detail User
                                         </button>
-                                        @if(auth()->user()->role === 'admin')
+                                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
                                         <button class="btn-action btn-update">
                                             <i class="fas fa-edit"></i> Update Aset
                                         </button>
@@ -2631,16 +2664,15 @@
                                     <span>Dashboard</span>
                                 </a>
                             </li>
-                            @if(auth()->user()->role === 'admin')
-                            <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                                <a href="{{ route('users.index') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            <li class="sidebar-list-item {{ request()->routeIs('surat.index') ? 'active' : '' }}">
+                                <a href="{{ route('surat.index') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
                                     </svg>
-                                    <span>Manage User</span>
+                                    <span>Serah Terima</span>
                                 </a>
                             </li>
                             <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
@@ -2652,11 +2684,23 @@
                                     <span>Perusahaan</span>
                                 </a>
                             </li>
+                            @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
+                            <li class="sidebar-list-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                <a href="{{ route('users.index') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span>Manage User</span>
+                                </a>
+                            </li>
                             @endif
                         </ul>
                         <div class="account-info">
                             <div class="account-info-picture">
-                                <img src="/img/Logo-scuto.png" alt="Account"> <!-- Ganti dengan path yang benar -->
+                                <img src="/img/Logo-scuto.png" alt="Account">
                             </div>
                             <div class="account-info-name">{{ auth()->user()->name ?? 'Guest' }}</div>
                         </div>
@@ -2727,50 +2771,47 @@
                                         id="mainSearchInput"
                                         autocomplete="off">
                                     <button type="button" class="clear-search-btn" id="clearMainSearchBtn" style="display: none;" title="Hapus pencarian">
-                                        × {{-- Karakter 'X' (kali) --}}
+                                        ×
                                     </button>
                                 </div>
 
-                                {{-- Tombol aksi (Tambah & Filter) dipindahkan ke sini --}}
                                 <div class="app-content-actions-buttons">
-                                    @if(auth()->user()->role === 'admin')
+                                    <button type="button" id="exportExcelBtn" class="action-button excel-btn">
+                                        <i class="fas fa-file-excel"></i>
+                                        <span class="action-button-text">Export</span>
+                                    </button>
+                                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin')
                                     <button type="button" id="openAddAssetModalButton" class="action-button add-asset-btn">
                                         <i class="fas fa-plus-circle"></i>
-                                        <span>Tambah Asset</span>
+                                        <span class="action-button-text">Tambah Asset</span>
                                     </button>
                                     @endif
                                     <div class="filter-button-wrapper">
                                         <button type="button" class="action-button filter jsFilter" title="Filter">
-                                            <span>Filter</span>
+                                            <span class="action-button-text">Filter</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter">
                                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                                             </svg>
                                         </button>
                                         <div class="filter-menu">
+                                            {{-- Isi filter menu Anda tetap di sini --}}
                                             <label for="filter_perusahaan">Perusahaan</label>
                                             <select name="filter_perusahaan" id="filter_perusahaan">
                                                 <option value="">Semua Perusahaan</option>
-                                                @if(isset($perusahaanOptions))
                                                 @foreach($perusahaanOptions as $perusahaan)
-                                                {{-- VALUE SEKARANG ADALAH ID, BUKAN SINGKATAN --}}
                                                 <option value="{{ $perusahaan->id }}" {{ (isset($filterPerusahaan) && $filterPerusahaan == $perusahaan->id) ? 'selected' : '' }}>
                                                     {{ $perusahaan->nama_perusahaan }}
                                                 </option>
                                                 @endforeach
-                                                @endif
                                             </select>
-
                                             <label for="filter_jenis_barang">Jenis Barang</label>
                                             <select name="filter_jenis_barang" id="filter_jenis_barang">
                                                 <option value="">Semua Jenis Barang</option>
-                                                @if(isset($jenisBarangOptions))
                                                 @foreach($jenisBarangOptions as $jenis)
-                                                {{-- VALUE SEKARANG ADALAH ID, BUKAN NAMA JENIS --}}
                                                 <option value="{{ $jenis->id }}" {{ (isset($filterJenisBarang) && $filterJenisBarang == $jenis->id) ? 'selected' : '' }}>
                                                     {{ $jenis->nama_jenis }}
                                                 </option>
                                                 @endforeach
-                                                @endif
                                             </select>
                                             <div class="filter-menu-buttons" style="margin-top: 15px; text-align: center;">
                                                 <button type="button" class="filter-button reset-filter-in-menu" id="resetFilterInMenuBtn" disabled>
@@ -2782,7 +2823,6 @@
                                 </div>
                             </div>
                         </form>
-
                         {{-- FORM FILTER SELESAI DI SINI --}}
 
                         {{-- Area tabel produk --}}
@@ -3258,6 +3298,9 @@
                             const sidebarElement = document.querySelector('.sidebar');
                             const mobileBurgerButton = document.getElementById('mobile-burger-menu');
 
+                            const exportExcelButton = document.getElementById('exportExcelBtn');
+
+
                             // Variabel State
                             let originalRowsHTML = '';
                             let activeSortKey = null;
@@ -3541,6 +3584,25 @@
                                     }
                                     performRealtimeSearch(1);
                                     updateHeaderArrows();
+                                });
+                            }
+
+                            if (exportExcelButton) {
+                                exportExcelButton.addEventListener('click', function() {
+                                    const keyword = mainSearchInput ? mainSearchInput.value : '';
+                                    const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
+                                    const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
+
+                                    const params = new URLSearchParams();
+                                    if (keyword) params.append('search_no_asset', keyword);
+                                    if (perusahaan) params.append('filter_perusahaan', perusahaan);
+                                    if (jenisBarang) params.append('filter_jenis_barang', jenisBarang);
+
+                                    params.append('sort_by', activeSortKey);
+                                    params.append('sort_direction', activeSortDirection);
+
+                                    const exportUrl = `{{ route('dashboard.export') }}?${params.toString()}`;
+                                    window.location.href = exportUrl;
                                 });
                             }
 
