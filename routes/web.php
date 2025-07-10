@@ -7,6 +7,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ManagePageController;
 use App\Http\Controllers\PerusahaanPageController;
 use App\Http\Controllers\SuratController;
+use App\Http\Controllers\JenisBarangController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -39,7 +40,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/aset/nomor-seri-berikutnya/{perusahaan_id}', [BarangController::class, 'getNomorSeriBerikutnya'])->name('aset.get_nomor_seri');
 
         // --- Manajemen Perusahaan ---
-        Route::resource('companies', PerusahaanPageController::class)->except(['create', 'show'])->middleware('is_admin');
+        Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');
+
+        // --- Aksi untuk Perusahaan (semua via AJAX) ---
+        // --- Aksi untuk Perusahaan (semua via AJAX) ---
+        Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
+        Route::post('/companies', [PerusahaanPageController::class, 'store'])->name('companies.store');
+        Route::get('/companies/{company}/edit', [PerusahaanPageController::class, 'edit'])->name('companies.edit');
+        Route::put('/companies/{company}', [PerusahaanPageController::class, 'update'])->name('companies.update');
+        Route::delete('/companies/{company}', [PerusahaanPageController::class, 'destroy'])->name('companies.destroy');
+
+        // --- Aksi untuk Jenis Barang (semua via AJAX) ---
+        Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
+        Route::post('/item-types', [JenisBarangController::class, 'store'])->name('item-types.store');
+        Route::get('/item-types/{item_type}/edit', [JenisBarangController::class, 'edit'])->name('item-types.edit');
+        Route::put('/item-types/{item_type}', [JenisBarangController::class, 'update'])->name('item-types.update');
+        Route::delete('/item-types/{item_type}', [JenisBarangController::class, 'destroy'])->name('item-types.destroy');
 
         // --- Manajemen Surat ---
         Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');

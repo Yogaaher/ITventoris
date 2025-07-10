@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>ITventory - Serah Terima</title>
+        <title>Scuto Asset - Serah Terima</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -1805,7 +1805,7 @@
                     <div class="sidebar-header">
                         <div class="app-icon">
                             <img src="{{ asset('img/Scuto-logo.svg') }}" alt="Scuto Logo" class="app-logo-svg">
-                            <span class="app-name-text">ITventory</span>
+                            <span class="app-name-text">Scuto Asset</span>
                         </div>
                         <button id="burger-menu" class="burger-button" title="Toggle Sidebar">
                             <span></span><span></span><span></span>
@@ -1834,11 +1834,10 @@
                         </li>
                         <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
                             <a href="{{ route('companies.index') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
-                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
                                 </svg>
-                                <span>Perusahaan</span>
+                                <span>Data Master</span>
                             </a>
                         </li>
                         @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
@@ -2145,16 +2144,6 @@
                     },
                     searchBarangDebounce: null,
                     initialEditData: null,
-                };
-
-                const getIconClass = (jenisBarang) => {
-                    const namaJenis = jenisBarang?.nama_jenis?.toLowerCase() || '';
-                    if (namaJenis.includes('laptop')) return 'fa-laptop';
-                    if (namaJenis.includes('pc') || namaJenis.includes('aio')) return 'fa-desktop';
-                    if (namaJenis.includes('handphone')) return 'fa-mobile-alt';
-                    if (namaJenis.includes('printer')) return 'fa-print';
-                    if (namaJenis.includes('proyektor')) return 'fa-video';
-                    return 'fa-box-open';
                 };
 
                 window.latestPaginationData = null;
@@ -2490,64 +2479,55 @@
                         return new Date(dateString).toLocaleDateString('id-ID', options);
                     };
 
-                    const getIconClass = (jenisBarang) => {
-                        const namaJenis = jenisBarang?.nama_jenis?.toLowerCase() || '';
-                        if (namaJenis.includes('laptop')) return 'fa-laptop';
-                        if (namaJenis.includes('pc') || namaJenis.includes('aio')) return 'fa-desktop';
-                        if (namaJenis.includes('handphone')) return 'fa-mobile-alt';
-                        if (namaJenis.includes('printer')) return 'fa-print';
-                        if (namaJenis.includes('proyektor')) return 'fa-video';
-                        return 'fa-box-open';
-                    };
-
-                    const iconClass = getIconClass(surat.barang?.jenis_barang);
+                    const iconClassFromDb = surat.barang?.jenis_barang?.icon || 'fas fa-question-circle';
 
                     modalBody.innerHTML = `
-                            <div class="detail-section">
-                                <h3>Pihak Pertama (Penerima)</h3>
-                                <div class="pihak-info">
-                                    <p class="pihak-nama">${surat.nama_penerima || 'N/A'}</p>
-                                    <p class="pihak-subinfo">${surat.nik_penerima || 'N/A'}</p>
-                                    <p class="pihak-subinfo">${surat.jabatan_penerima || 'N/A'}</p>
-                                </div>
-                            </div>
-                            <div class="detail-section">
-                                <h3>Pihak Kedua (Pemberi)</h3>
-                                <div class="pihak-info">
-                                    <p class="pihak-nama">${surat.nama_pemberi || 'N/A'}</p>
-                                    <p class="pihak-subinfo">${surat.nik_pemberi || 'N/A'}</p>
-                                    <p class="pihak-subinfo">${surat.jabatan_pemberi || 'N/A'}</p>
-                                </div>
-                            </div>
-
-                        <div class="detail-section">
-                            <h3>Informasi Surat</h3>
-                            <dl class="detail-item"><dt>No. Surat:</dt><dd>${surat.no_surat || 'N/A'}</dd></dl>
-                            <dl class="detail-item"><dt>Tgl. Dibuat:</dt><dd>${formatDate(surat.created_at)}</dd></dl>
-                            <dl class="detail-item"><dt>Penanggung Jawab:</dt><dd>${surat.penanggung_jawab || 'N/A'}</dd></dl>
-                            <dl class="detail-item" style="align-items: flex-start;"><dt>Keterangan:</dt><dd style="white-space: pre-wrap;">${surat.keterangan || '-'}</dd></dl>
+                    <div class="detail-section">
+                        <h3>Pihak Pertama (Penerima)</h3>
+                        <div class="pihak-info">
+                            <p class="pihak-nama">${surat.nama_penerima || 'N/A'}</p>
+                            <p class="pihak-subinfo">${surat.nik_penerima || 'N/A'}</p>
+                            <p class="pihak-subinfo">${surat.jabatan_penerima || 'N/A'}</p>
                         </div>
-
-                        <div class="detail-section">
-                            <h3>Detail Barang</h3>
-                            <div class="detail-barang-box">
-                                    <div class="detail-barang-icon">
-                                    <i class="fas ${iconClass}"></i>
-                                </div>
-                                <div class="detail-barang-info">
-                                    <div class="header">${surat.barang?.merek || 'N/A'}</div>
-                                    <div class="subheader">${surat.barang?.jenis_barang?.nama_jenis || 'N/A'}</div>
-                                </div>
-                            </div>
-                            <hr style="border: none; border-top: 1px solid var(--table-border); margin: 1.5rem 0;">
-                            <dl class="detail-item"><dt>Perusahaan:</dt><dd>${surat.barang?.perusahaan?.nama_perusahaan || 'N/A'}</dd></dl>
-                            <dl class="detail-item"><dt>No Asset:</dt><dd>${surat.barang?.no_asset || 'N/A'}</dd></dl>
-                            <dl class="detail-item"><dt>Tgl. Pengadaan:</dt><dd>${formatDate(surat.barang?.tgl_pengadaan)}</dd></dl>
-                            <dl class="detail-item"><dt>Serial Number:</dt><dd>${surat.barang?.serial_number || 'N/A'}</dd></dl>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Pihak Kedua (Pemberi)</h3>
+                        <div class="pihak-info">
+                            <p class="pihak-nama">${surat.nama_pemberi || 'N/A'}</p>
+                            <p class="pihak-subinfo">${surat.nik_pemberi || 'N/A'}</p>
+                            <p class="pihak-subinfo">${surat.jabatan_pemberi || 'N/A'}</p>
                         </div>
-                    `;
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Informasi Surat</h3>
+                        <dl class="detail-item"><dt>No. Surat:</dt><dd>${surat.no_surat || 'N/A'}</dd></dl>
+                        <dl class="detail-item"><dt>Tgl. Dibuat:</dt><dd>${formatDate(surat.created_at)}</dd></dl>
+                        <dl class="detail-item"><dt>Penanggung Jawab:</dt><dd>${surat.penanggung_jawab || 'N/A'}</dd></dl>
+                        <dl class="detail-item" style="align-items: flex-start;"><dt>Keterangan:</dt><dd style="white-space: pre-wrap;">${surat.keterangan || '-'}</dd></dl>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Detail Barang</h3>
+                        <div class="detail-barang-box">
+                            <div class="detail-barang-icon">
+                                <i class="${iconClassFromDb}"></i>
+                            </div>
+                            <div class="detail-barang-info">
+                                <div class="header">${surat.barang?.merek || 'N/A'}</div>
+                                <div class="subheader">${surat.barang?.jenis_barang?.nama_jenis || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <hr style="border: none; border-top: 1px solid var(--table-border); margin: 1.5rem 0;">
+                        <dl class="detail-item"><dt>Perusahaan:</dt><dd>${surat.barang?.perusahaan?.nama_perusahaan || 'N/A'}</dd></dl>
+                        <dl class="detail-item"><dt>No Asset:</dt><dd>${surat.barang?.no_asset || 'N/A'}</dd></dl>
+                        <dl class="detail-item"><dt>Tgl. Pengadaan:</dt><dd>${formatDate(surat.barang?.tgl_pengadaan)}</dd></dl>
+                        <dl class="detail-item"><dt>Serial Number:</dt><dd>${surat.barang?.serial_number || 'N/A'}</dd></dl>
+                    </div>
+                `;
                     openModal(ui.detailSuratModal);
                 };
+
 
                 const setupSmartModalClosure = (modalElement, closeFunction) => {
                     if (!modalElement) return;

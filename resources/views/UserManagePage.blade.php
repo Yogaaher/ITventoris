@@ -5,7 +5,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta name="csrf-token" content="{{ csrf_token() }}">
-            <title>ITventory - User Manage</title>
+            <title>Scuto Asset - User Manage</title>
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -1524,7 +1524,7 @@
                         <div class="sidebar-header">
                             <div class="app-icon">
                                 <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
-                                <span class="app-name-text">ITventory</span>
+                                <span class="app-name-text">Scuto Asset</span>
                             </div>
                             <button id="burger-menu" class="burger-button" title="Toggle Sidebar">
                                 <span></span>
@@ -1555,11 +1555,10 @@
                             </li>
                             <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
                                 <a href="{{ route('companies.index') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
-                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
                                     </svg>
-                                    <span>Perusahaan</span>
+                                    <span>Data Master</span>
                                 </a>
                             </li>
                             @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())

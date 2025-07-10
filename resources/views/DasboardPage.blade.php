@@ -4,7 +4,7 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>ITventory - Dashboard</title>
+            <title>Scuto Asset - Dashboard</title>
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -58,6 +58,7 @@
                     padding-bottom: 1rem;
                     border-bottom: 0.1rem solid var(--color-neutral-medium);
                     margin-bottom: 1.5rem;
+                    flex-shrink: 0;
                 }
 
                 html.light .modal-header {
@@ -113,6 +114,7 @@
 
                 .modal-body form input[type="text"],
                 .modal-body form input[type="date"],
+                .modal-body form input[type="number"],
                 .modal-body form select {
                     width: 100%;
                     padding: 10px;
@@ -126,6 +128,7 @@
 
                 html.light .modal-body form input[type="text"],
                 html.light .modal-body form input[type="date"],
+                html.light .modal-body form input[type="number"],
                 html.light .modal-body form select {
                     background-color: #fff;
                     border-color: #ccc;
@@ -1041,7 +1044,7 @@
                     display: flex;
                     align-items: center;
                     border-radius: 4px;
-                    min-width: 1210px;
+                    min-width: 1100px;
                 }
 
                 .tableView .products-row .cell-more-button {
@@ -1060,34 +1063,40 @@
                 }
 
                 .tableView .product-cell.cell-no {
+                    flex: 0 0 60px;
+                    min-width: 60px;
+                    justify-content: center;
+                }
+
+                .tableView .product-cell.cell-perusahaan {
+                    flex: 1 1 180px;
+                    min-width: 160px;
+                }
+
+                .tableView .product-cell.cell-jenis-barang {
+                    flex: 1 1 100px;
+                    min-width: 100px;
+                }
+
+                .tableView .product-cell.cell-no-asset {
+                    flex: 1 1 160px;
+                    min-width: 160px;
+                }
+
+                .tableView .product-cell.cell-merek {
+                    flex: 1 1 160px;
+                    min-width: 160px;
+                }
+
+                .tableView .product-cell.cell-kuantitas {
                     flex: 0 0 80px;
                     min-width: 80px;
                     justify-content: center;
                 }
 
-                .tableView .product-cell.cell-perusahaan {
-                    flex: 1 1 210px;
-                    min-width: 160px;
-                }
-
-                .tableView .product-cell.cell-jenis-barang {
+                .tableView .product-cell.cell-tgl-pengadaan {
                     flex: 1 1 120px;
                     min-width: 120px;
-                }
-
-                .tableView .product-cell.cell-no-asset {
-                    flex: 1 1 180px;
-                    min-width: 180px;
-                }
-
-                .tableView .product-cell.cell-merek {
-                    flex: 1 1 200px;
-                    min-width: 200px;
-                }
-
-                .tableView .product-cell.cell-tgl-pengadaan {
-                    flex: 1 1 140px;
-                    min-width: 140px;
                 }
 
                 .tableView .product-cell.cell-serial-number {
@@ -1095,9 +1104,14 @@
                     min-width: 150px;
                 }
 
+                .tableView .product-cell.cell-lokasi {
+                    flex: 1 1 100px;
+                    min-width: 100px;
+                }
+
                 .tableView .product-cell.cell-aksi {
-                    flex: 0 0 180px;
-                    min-width: 180px;
+                    flex: 0 0 120px;
+                    min-width: 120px;
                     justify-content: center;
                     overflow: visible;
                 }
@@ -1981,6 +1995,16 @@
                     color: var(--color-neutral-light);
                 }
 
+                .modal-body form input[type="number"]::-webkit-outer-spin-button,
+                .modal-body form input[type="number"]::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                .modal-body form input[type="number"] {
+                    -moz-appearance: textfield;
+                }
+
                 /* ======================================================= */
                 /* ===  KODE CSS RESPONSIVE UNTUK DASHBOARD ITVENTORY  === */
                 /* ======================================================= */
@@ -2061,6 +2085,28 @@
 
                 @media screen and (max-width: 768px),
                 screen and (orientation: landscape) and (max-height: 500px) {
+
+                    .modal {
+                        padding-top: 2rem;
+                        padding-bottom: 2rem;
+                        align-items: flex-start;
+                        overflow-y: auto;
+                        box-sizing: border-box;
+                    }
+
+                    .modal-content,
+                    .modal-overlay .modal-content-wrapper {
+                        width: 100%;
+                        max-width: 450px;
+                        margin: 0 auto;
+                        padding: 1.5rem;
+                        flex-shrink: 0;
+                    }
+
+                    #addAssetModal.modal .modal-content {
+                        max-height: unset;
+                    }
+
                     .app-content {
                         padding: 0 16px 16px 16px;
                     }
@@ -2077,6 +2123,10 @@
                         min-width: 0;
                         padding-top: 20px;
                         padding-bottom: none;
+                    }
+
+                    .tableView .product-cell.cell-kuantitas {
+                        display: none;
                     }
 
                     .inventory-summary-container,
@@ -2224,6 +2274,26 @@
                         padding: 12px 10px;
                     }
 
+                    .tableView .product-cell.cell-kuantitas {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1rem 0;
+                        text-align: right;
+                        white-space: normal;
+                        border-bottom: 1px dashed var(--table-border);
+                    }
+
+                    .tableView .product-cell.cell-lokasi {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1rem 0;
+                        text-align: right;
+                        white-space: normal;
+                        border-bottom: 1px dashed var(--table-border);
+                    }
+
                     .app-content-actions .search-bar-container {
                         order: 1;
                         max-width: none;
@@ -2259,12 +2329,18 @@
                     }
 
                     .modal-content,
+                    .modal-content,
                     .modal-overlay .modal-content-wrapper {
                         width: calc(100% - 2.5rem);
                         max-width: 450px;
                         margin: 1.25rem;
                         padding: 1.5rem;
-                        max-height: calc(100% - 2.5rem);
+                    }
+
+                    #addAssetModal .modal-content {
+                        max-height: unset;
+                        margin: 1.25rem;
+                        padding: 1.5rem;
                     }
 
                     #deviceInfoModal .asset-detail-content .info-item,
@@ -2375,12 +2451,24 @@
                                         <dd id="modalNoAsset">_</dd>
                                     </dl>
                                     <dl class="info-item">
+                                        <dt>Merek:</dt>
+                                        <dd id="modalMerek">_</dd>
+                                    </dl>
+                                    <dl class="info-item">
+                                        <dt>Kuantitas:</dt>
+                                        <dd id="modalKuantitas">_</dd>
+                                    </dl>
+                                    <dl class="info-item">
                                         <dt>Tgl. Pengadaan:</dt>
                                         <dd id="modalTglPengadaan">_</dd>
                                     </dl>
                                     <dl class="info-item">
                                         <dt>Serial Number:</dt>
                                         <dd id="modalSerialNumber">_</dd>
+                                    </dl>
+                                    <dl class="info-item">
+                                        <dt>Lokasi:</dt>
+                                        <dd id="modalLokasi">_</dd>
                                     </dl>
                                 </div>
                                 <hr class="separator">
@@ -2580,7 +2668,6 @@
                                 <label for="perusahaan_id">Perusahaan</label>
                                 <select name="perusahaan_id" id="perusahaan_id" class="form-control" required>
                                     <option value="">Pilih Perusahaan</option>
-                                    {{-- Loop dari data yang dikirim DashboardController --}}
                                     @foreach($perusahaanOptions as $perusahaan)
                                     <option value="{{ $perusahaan->id }}" data-singkatan="{{ $perusahaan->singkatan }}">{{ $perusahaan->nama_perusahaan }}</option>
                                     @endforeach
@@ -2592,7 +2679,6 @@
                                 <label for="jenis_barang_id">Jenis Barang</label>
                                 <select name="jenis_barang_id" id="jenis_barang_id" class="form-control" required>
                                     <option value="">Pilih Jenis Barang</option>
-                                    {{-- Loop dari data yang dikirim DashboardController --}}
                                     @foreach($jenisBarangOptions as $jenis)
                                     <option value="{{ $jenis->id }}" data-singkatan="{{ $jenis->singkatan }}">{{ $jenis->nama_jenis }}</option>
                                     @endforeach
@@ -2607,6 +2693,12 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="kuantitas">Kuantitas</label>
+                                <input type="number" name="kuantitas" id="kuantitas" class="form-control" required min="1" value="1">
+                                <div class="invalid-feedback" id="kuantitas_error"></div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="tgl_pengadaan">Tanggal Pengadaan</label>
                                 <div class="date-input-container">
                                     <input type="date" name="tgl_pengadaan" id="tgl_pengadaan" class="form-control" required>
@@ -2618,6 +2710,12 @@
                                 <label for="serial_number">Serial Number</label>
                                 <input type="text" name="serial_number" id="serial_number" class="form-control" required>
                                 <div class="invalid-feedback" id="serial_number_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lokasi">Lokasi</label>
+                                <input type="text" name="lokasi" id="lokasi" class="form-control">
+                                <div class="invalid-feedback" id="lokasi_error"></div>
                             </div>
 
                             <div class="form-group">
@@ -2646,7 +2744,7 @@
                         <div class="sidebar-header">
                             <div class="app-icon">
                                 <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
-                                <span class="app-name-text">ITventory</span>
+                                <span class="app-name-text">Scuto Asset</span>
                             </div>
                             <button id="burger-menu" class="burger-button" title="Toggle Sidebar">
                                 <span></span>
@@ -2677,11 +2775,10 @@
                             </li>
                             <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
                                 <a href="{{ route('companies.index') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
-                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
                                     </svg>
-                                    <span>Perusahaan</span>
+                                    <span>Data Master</span>
                                 </a>
                             </li>
                             @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
@@ -2733,26 +2830,16 @@
 
                         {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
                         <div class="inventory-summary-container">
-                            @php
-                            $typeIcons = [
-                            'Laptop' => 'fas fa-laptop',
-                            'Handphone' => 'fas fa-mobile-alt',
-                            'PC / AIO' => 'fas fa-desktop',
-                            'Printer' => 'fas fa-print',
-                            'Proyektor' => 'fas fa-video',
-                            'Others' => 'fas fa-boxes'
-                            ];
-                            @endphp
-                            @foreach($inventorySummary as $type => $count)
+                            @foreach($inventorySummary as $namaJenis => $data)
                             <div class="summary-box">
                                 <div class="summary-box-icon">
-                                    <i class="{{ $typeIcons[$type] ?? 'fas fa-question-circle' }}"></i>
+                                    <i class="{{ $data->icon }}"></i>
                                 </div>
-                                <div class="summary-box-type">{{ $type }}</div>
+                                <div class="summary-box-type">{{ $namaJenis }}</div>
                                 @php
-                                $slug = Str::slug($type);
+                                $slug = Str::slug($namaJenis);
                                 @endphp
-                                <div class="summary-box-count" id="summary-count-{{ $slug }}">{{ $count }}</div>
+                                <div class="summary-box-count" id="summary-count-{{ $slug }}">{{ $data->count }}</div>
                             </div>
                             @endforeach
                         </div>
@@ -2836,12 +2923,12 @@
                                 <div class="product-cell cell-merek sortable-header" data-sort-by="merek">Merek</div>
                                 <div class="product-cell cell-tgl-pengadaan sortable-header" data-sort-by="tgl_pengadaan" data-sort-type="date">Tgl. Pengadaan</div>
                                 <div class="product-cell cell-serial-number sortable-header" data-sort-by="serial_number">Serial Number</div>
+                                <div class="product-cell cell-lokasi sortable-header" data-sort-by="lokasi">Lokasi</div>
                                 <div class="product-cell cell-aksi">Aksi</div>
                             </div>
 
                             {{-- Container untuk baris-baris produk yang akan diisi oleh JS --}}
                             <div id="productTableRowsContainer">
-                                {{-- Load Awal dari Controller index() --}}
                                 @if(isset($barangs) && $barangs->count() > 0)
                                 @foreach($barangs as $index => $barang)
                                 <div class="products-row">
@@ -2852,6 +2939,7 @@
                                     <div class="product-cell cell-merek" data-label="Merek">{{ $barang->merek }}</div>
                                     <div class="product-cell cell-tgl-pengadaan" data-label="Tgl. Pengadaan">{{ \Carbon\Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y') }}</div>
                                     <div class="product-cell cell-serial-number" data-label="Serial Number">{{ $barang->serial_number }}</div>
+                                    <div class="product-cell cell-lokasi" data-label="Lokasi">{{ $barang->lokasi ?? '-' }}</div>
                                     <div class="product-cell cell-aksi">
                                         <button class="action-btn-table detail-btn-table-js" data-id="{{ $barang->id }}" title="Detail Aset">
                                             <i class="fas fa-info-circle"></i>
@@ -2927,6 +3015,10 @@
                             const modalKeterangan = document.getElementById('modalKeterangan');
                             const deviceImage = document.getElementById('modalDeviceImage');
 
+                            const modalMerek = document.getElementById('modalMerek');
+                            const modalKuantitas = document.getElementById('modalKuantitas');
+                            const modalLokasi = document.getElementById('modalLokasi');
+
                             if (!modalDeviceName || !deviceImage) {
                                 console.error('Elemen wajib pada modal detail (seperti nama atau gambar) tidak ditemukan.');
                                 return;
@@ -2936,8 +3028,11 @@
                             modalDeviceType.textContent = '_';
                             modalPerusahaan.textContent = '_';
                             modalNoAsset.textContent = '_';
+                            modalMerek.textContent = '_';
+                            modalKuantitas.textContent = '_';
                             modalTglPengadaan.textContent = '_';
                             modalSerialNumber.textContent = '_';
+                            modalLokasi.textContent = '_';
                             modalUser.textContent = '_';
                             modalTglPenyerahan.textContent = '_';
                             modalTglPengembalian.textContent = '_';
@@ -2956,8 +3051,11 @@
                                         modalDeviceType.textContent = barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A';
                                         modalPerusahaan.textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
                                         modalNoAsset.textContent = barang.no_asset || 'N/A';
+                                        modalMerek.textContent = barang.merek || 'N/A';
+                                        modalKuantitas.textContent = barang.kuantitas || 'N/A';
                                         modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
                                         modalSerialNumber.textContent = barang.serial_number || 'N/A';
+                                        modalLokasi.textContent = barang.lokasi || 'N/A';
 
                                         if (track) {
                                             modalUser.textContent = track.username || 'N/A';
@@ -3001,15 +3099,11 @@
                                             newTriggerHistoryButton.addEventListener('click', () => openUserHistoryModal(barang.serial_number, deviceFullName, currentCompany));
                                         }
 
-                                        let iconClass = 'fas fa-desktop';
-                                        const jenisNama = barang.jenis_barang ? barang.jenis_barang.nama_jenis.trim() : '';
-                                        if (jenisNama === 'Laptop') iconClass = 'fas fa-laptop';
-                                        else if (jenisNama === 'Handphone') iconClass = 'fas fa-mobile-alt';
-                                        else if (jenisNama === 'Printer') iconClass = 'fas fa-print';
-                                        else if (jenisNama === 'Proyektor') iconClass = 'fas fa-video';
-                                        else if (jenisNama === 'Others') iconClass = 'fas fa-box-open';
-                                        else if (jenisNama === 'PC / AIO') iconClass = 'fas fa-desktop';
-                                        deviceImage.className = `device-image ${iconClass}`;
+                                        let iconFromDb = 'fas fa-question-circle';
+                                        if (barang.jenis_barang && barang.jenis_barang.icon) {
+                                            iconFromDb = barang.jenis_barang.icon;
+                                        }
+                                        deviceImage.className = `device-image ${iconFromDb}`;
                                         detailModalOverlay.style.display = 'flex';
 
                                     } else {
@@ -3713,6 +3807,7 @@
                                                 <div class="product-cell cell-merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
                                                 <div class="product-cell cell-tgl-pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
                                                 <div class="product-cell cell-serial-number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
+                                                <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
                                                 <div class="product-cell cell-aksi">
                                                     <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
                                                         <i class="fas fa-info-circle"></i>
@@ -3752,20 +3847,20 @@
 
                             function updateInventorySummary(summaryData) {
                                 if (!summaryData) return;
-
                                 document.querySelectorAll('.summary-box-count').forEach(el => {
                                     el.textContent = '0';
                                 });
 
-                                for (const type in summaryData) {
-                                    const slug = type.toLowerCase()
+                                for (const namaJenis in summaryData) {
+                                    const data = summaryData[namaJenis];
+                                    const slug = namaJenis.toLowerCase()
                                         .replace(/ \/ /g, '-')
                                         .replace(/ /g, '-');
                                     const elementId = `summary-count-${slug}`;
                                     const countElement = document.getElementById(elementId);
 
                                     if (countElement) {
-                                        countElement.textContent = summaryData[type];
+                                        countElement.textContent = data.count;
                                     } else {
                                         console.warn(`Elemen summary dengan ID '${elementId}' tidak ditemukan.`);
                                     }

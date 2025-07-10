@@ -17,8 +17,10 @@ class Barang extends Model
         'jenis_barang_id',
         'no_asset',
         'merek',
+        'kuantitas',
         'tgl_pengadaan',
         'serial_number',
+        'lokasi',
         'status',
     ];
     protected static function booted()
@@ -54,13 +56,8 @@ class Barang extends Model
         return $this->hasOne(Track::class, 'serial_number', 'serial_number')->latestOfMany();
     }
 
-    // Accessor ini sekarang bisa langsung membaca dari kolom 'status' di tabel 'barang'
-    // Namun, kita akan memastikan kolom ini selalu sinkron
     public function getStatusTerkiniAttribute(): ?string
     {
-        return $this->status; // Langsung ambil dari kolom 'status'
+        return $this->status;
     }
-
-    // Jika ingin tetap disertakan saat toArray/toJson
-    // protected $appends = ['status_terkini']; // Tidak perlu jika sudah ada kolom 'status'
 }

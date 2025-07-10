@@ -14,5 +14,6 @@ class JenisBarang extends Model
     protected $fillable = [
         'nama_jenis',
         'singkatan',
+        'icon',
     ];
 }

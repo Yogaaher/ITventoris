@@ -5,10 +5,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>ITventory - Manajemen Perusahaan</title>
+        <title>Scuto Asset - Data Master</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-iconpicker/1.10.0/css/bootstrap-iconpicker.min.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
         <link rel="icon" href="{{ asset('img/Scuto-logo.svg') }}" type="image/x-icon">
         <style>
@@ -126,14 +129,25 @@
             }
 
             .morph-modal-body {
-                flex: 1 1 auto;
-                overflow-y: auto;
-                -ms-overflow-style: none;
-                scrollbar-width: none;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem 2rem;
+                align-items: start;
             }
 
             .morph-modal-body::-webkit-scrollbar {
                 display: none;
+            }
+
+            .morph-modal-body .form-group {
+                margin-bottom: 0;
+            }
+
+            #icon-form-group {
+                grid-column: 1 / -1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .morph-modal-body .form-group label {
@@ -205,6 +219,67 @@
             .modal-footer .btn-primary:hover {
                 background-color: var(--action-color-hover);
                 transform: translateY(-2px);
+            }
+
+            .btn-secondary {
+                color: var(--app-content-main-color);
+                background-color: var(--app-content-secondary-color);
+                border-color: var(--table-border);
+            }
+
+            .nav-tabs .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 20px !important;
+                cursor: pointer;
+                border: none !important;
+                background-color: transparent !important;
+                color: var(--app-content-main-color) !important;
+                opacity: 0.7;
+                font-weight: 500;
+                font-size: 1.6rem;
+                border-bottom: 3px solid transparent !important;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .nav-tabs .nav-link.active {
+                opacity: 1;
+                color: var(--action-color) !important;
+                border-bottom-color: var(--action-color) !important;
+            }
+
+            #icon-picker-button {
+                background-color: var(--app-bg);
+                border: 1px solid var(--table-border);
+                color: var(--app-content-main-color);
+                transition: all 0.2s ease;
+                width: 8rem;
+                height: 8rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 !important;
+                border-radius: 6px;
+            }
+
+            #icon-picker-button .iconpicker-component {
+                display: none;
+            }
+
+            #icon-picker-button>i.fas {
+                font-size: 3.5rem;
+                line-height: 1;
+                margin: 0;
+            }
+
+            #icon-picker-button:hover {
+                border-color: var(--action-color);
+                transform: scale(1.05);
+            }
+
+            .iconpicker-popover {
+                z-index: 9999 !important;
             }
 
             .modal-footer .btn-secondary {
@@ -862,7 +937,7 @@
                 border-radius: 4px;
                 position: sticky;
                 top: 0;
-                min-width: 900px;
+                min-width: 1200px;
                 z-index: 10;
                 border-bottom: 2px solid var(--action-color);
             }
@@ -872,20 +947,20 @@
                 border-bottom-color: #dee2e6;
             }
 
-            .tableView #productTableRowsContainer .products-row:nth-child(even) {
+            .tableView [id$="TableRowsContainer"] .products-row:nth-child(even) {
                 background-color: var(--table-border);
             }
 
-            html.light .tableView #productTableRowsContainer .products-row:nth-child(even) {
+            html.light .tableView [id$="TableRowsContainer"] .products-row:nth-child(even) {
                 background-color: #f9f9f9;
             }
 
-            .tableView #productTableRowsContainer .products-row:hover {
+            .tableView [id$="TableRowsContainer"] .products-row:hover {
                 background-color: var(--sidebar-active-link);
                 transition: background-color 0.2s ease-in-out;
             }
 
-            html.light .tableView #productTableRowsContainer .products-row:hover {
+            html.light .tableView [id$="TableRowsContainer"] .products-row:hover {
                 background-color: #e9ecef;
             }
 
@@ -893,7 +968,7 @@
                 display: flex;
                 align-items: center;
                 border-radius: 4px;
-                min-width: 900px;
+                min-width: 1200px;
             }
 
             .tableView .product-cell {
@@ -926,6 +1001,12 @@
             .tableView .product-cell.cell-dibuat-pada {
                 flex: 1 1 200px;
                 min-width: 200px;
+            }
+
+            .tableView .product-cell.cell-icon {
+                flex: 1 1 150px;
+                min-width: 150px;
+                justify-content: center;
             }
 
             .tableView .cell-label {
@@ -1099,7 +1180,7 @@
                 flex: 0 0 120px;
                 justify-content: center;
                 padding-right: 3rem;
-                gap: 8px;   
+                gap: 8px;
             }
 
             .action-btn-table {
@@ -1144,6 +1225,46 @@
                 background-color: #e74c3c;
                 color: #fff;
                 box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+            }
+
+            .nav-tabs {
+                display: flex;
+                gap: 4px;
+                border-bottom: 2px solid var(--table-border);
+                margin-bottom: 20px;
+                padding-left: 0;
+                list-style: none;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                padding: 10px 20px;
+                cursor: pointer;
+                border: none;
+                background-color: transparent;
+                color: var(--app-content-main-color);
+                opacity: 0.7;
+                font-weight: 500;
+                font-size: 1.6rem;
+                border-bottom: 3px solid transparent;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .nav-link.active {
+                opacity: 1;
+                color: var(--action-color);
+                border-bottom-color: var(--action-color);
+            }
+
+            .tab-content .tab-pane {
+                display: none;
+            }
+
+            .tab-content .tab-pane.active {
+                display: block;
             }
 
             @media screen and (max-width: 1024px) {
@@ -1438,7 +1559,7 @@
                     <div class="sidebar-header">
                         <div class="app-icon">
                             <img src="/img/Scuto-logo.svg" alt="Scuto Logo" class="app-logo-svg">
-                            <span class="app-name-text">ITventory</span>
+                            <span class="app-name-text">Scuto Asset</span>
                         </div>
                         <button id="burger-menu" class="burger-button" title="Toggle Sidebar">
                             <span></span>
@@ -1469,11 +1590,11 @@
                         </li>
                         <li class="sidebar-list-item {{ request()->routeIs('companies.index') ? 'active' : '' }}">
                             <a href="{{ route('companies.index') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
-                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                {{-- Logo Kunci Pas (Wrench) dari Feather Icons --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
                                 </svg>
-                                <span>Perusahaan</span>
+                                <span>Data Master</span>
                             </a>
                         </li>
                         @if(auth()->user()->role === 'admin' || auth()->user()->isSuperAdmin())
@@ -1505,7 +1626,7 @@
                             <span></span>
                             <span></span>
                         </button>
-                        <h1 class="app-content-headerText">Manajemen Perusahaan</h1>
+                        <h1 class="app-content-headerText">Data Master</h1>
                         <div class="app-content-header-actions-right">
                             <button class="mode-switch action-button" title="Switch Theme">
                                 <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" height="20" viewBox="0 0 24 24">
@@ -1524,48 +1645,75 @@
 
                     <div class="app-content-actions">
                         <div class="search-bar-container">
-                            <input class="search-bar" id="companySearchInput" placeholder="Cari nama atau singkatan perusahaan..." type="text" autocomplete="off">
+                            <input class="search-bar" id="searchInput" placeholder="Cari nama atau singkatan perusahaan..." type="text" autocomplete="off">
                         </div>
                         <div class="app-content-actions-buttons">
-                            <button type="button" id="openAddCompanyModalButton" class="action-button add-company-btn" title="Tambah Perusahaan Baru">
+                            <button type="button" id="openAddModalButton" class="action-button add-company-btn" title="Tambah Data Baru">
                                 <i class="fas fa-plus"></i>
-                                <span>Tambah Perusahaan</span>
+                                <span id="addButtonText">Tambah Perusahaan</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="products-area-wrapper tableView" id="productTableArea">
-                        <div class="products-header">
-                            <div class="product-cell cell-no">No</div>
-                            <div class="product-cell cell-nama-perusahaan">Nama Perusahaan</div>
-                            <div class="product-cell cell-singkatan">Singkatan</div>
-                            <div class="product-cell cell-dibuat-pada">Dibuat Pada</div>
-                            @if(auth()->user()->isSuperAdmin())
-                            <div class="product-cell cell-aksi" style="justify-content: center;">Aksi</div>
-                            @endif
-                        </div>
+                    <ul class="nav-tabs">
+                        <li>
+                            <button class="nav-link active" data-tab="company">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
+                                <span>Perusahaan</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-link" data-tab="itemType">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                </svg>
+                                <span>Jenis Barang</span>
+                            </button>
+                        </li>
+                    </ul>
 
-                        <div id="productTableRowsContainer">
-                            @include('partials.company_table_rows', ['companies' => $companies])
-                        </div>
-                        <div class="table-footer-controls" id="pagination-controls-container">
-                            <div class="footer-section footer-left">
-                                <div class="rows-per-page-wrapper">
-                                    <label for="rows-per-page-select">Baris Halaman:</label>
-                                    <select id="rows-per-page-select">
-                                        <option value="10">10</option>
-                                        <option value="20" selected>20</option>
-                                        <option value="30">30</option>
-                                        <option value="50">50</option>
-                                    </select>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="company-tab-pane">
+                            <div class="products-area-wrapper tableView" id="companyTableArea">
+                                <div class="products-header">
+                                    <div class="product-cell cell-no">No</div>
+                                    <div class="product-cell cell-nama-perusahaan">Nama Perusahaan</div>
+                                    <div class="product-cell cell-singkatan">Singkatan</div>
+                                    <div class="product-cell cell-dibuat-pada">Dibuat Pada</div>
+                                    @if(auth()->user()->isSuperAdmin())
+                                    <div class="product-cell cell-aksi" style="justify-content: center;">Aksi</div>
+                                    @endif
+                                </div>
+                                <div id="companyTableRowsContainer">
+                                    @include('partials.company_table_rows', ['companies' => $companies])
+                                </div>
+                                <div class="table-footer-controls" id="company-pagination-container">
+                                    {{-- Pagination untuk perusahaan akan dirender oleh JS --}}
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="footer-section footer-center" id="pagination-buttons-container">
-                            </div>
-
-                            <div class="footer-section footer-right">
-                                <div class="pagination-info" id="pagination-info-text">
+                        <div class="tab-pane" id="itemType-tab-pane">
+                            <div class="products-area-wrapper tableView" id="itemTypeTableArea">
+                                <div class="products-header">
+                                    <div class="product-cell cell-no">No</div>
+                                    <div class="product-cell cell-nama-perusahaan">Nama Jenis</div>
+                                    <div class="product-cell cell-singkatan">Singkatan</div>
+                                    <div class="product-cell cell-icon">Icon</div>
+                                    <div class="product-cell cell-dibuat-pada">Dibuat Pada</div>
+                                    @if(auth()->user()->isSuperAdmin())
+                                    <div class="product-cell cell-aksi" style="justify-content: center;">Aksi</div>
+                                    @endif
+                                </div>
+                                <div id="itemTypeTableRowsContainer">
+                                    {{-- Konten tabel jenis barang akan dimuat via AJAX --}}
+                                </div>
+                                <div class="table-footer-controls" id="itemType-pagination-container">
+                                    {{-- Pagination untuk jenis barang akan dirender oleh JS --}}
                                 </div>
                             </div>
                         </div>
@@ -1574,33 +1722,41 @@
             </div>
         </div>
 
-        <div id="companyModal" class="modal-overlay">
+        <div id="dataModal" class="modal-overlay">
             <div class="modal-content-wrapper device-entry-info-modal">
-                <form id="companyForm" novalidate>
+                <form id="dataForm" novalidate>
                     @csrf
                     <input type="hidden" id="formMethod" name="_method" value="POST">
-                    <input type="hidden" id="companyId" name="company_id" value="">
+                    <input type="hidden" id="dataId" name="data_id" value="">
 
                     <div class="morph-modal-container">
                         <div class="morph-modal-title">
-                            <span id="modalTitle"><i class="fas fa-building"></i> Tambah Perusahaan Baru</span>
+                            <span id="modalTitle"><i class="fas fa-plus-circle"></i> Tambah Data Baru</span>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Tutup modal">×</button>
                         </div>
                         <div class="morph-modal-body">
                             <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label for="nama_perusahaan">Nama Lengkap Perusahaan</label>
-                                <input type="text" name="nama_perusahaan" id="nama_perusahaan" required autocomplete="off" placeholder="PT NAMA PERUSAHAAN">
-                                <div class="invalid-feedback" id="nama_perusahaan_error"></div>
+                                <label for="nama" id="namaLabel">Nama Lengkap</label>
+                                <input type="text" name="nama" id="nama" required autocomplete="off" placeholder="Masukkan nama...">
+                                <div class="invalid-feedback" data-error-for="nama"></div>
                             </div>
                             <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label for="singkatan">Singkatan</label>
-                                <input type="text" name="singkatan" id="singkatan" required autocomplete="off" maxlength="3" placeholder="ABC">
-                                <div class="invalid-feedback" id="singkatan_error"></div>
+                                <input type="text" name="singkatan" id="singkatan" required autocomplete="off" placeholder="MAX">
+                                <div class="invalid-feedback" data-error-for="singkatan"></div>
+                            </div>
+                            <div class="form-group" id="icon-form-group" style="margin-bottom: 1.5rem; display: none;">
+                                <label for="icon">Pilih Icon</label>
+                                <button type="button" class="btn btn-secondary iconpicker-component" id="icon-picker-button">
+                                    <i class="fas fa-fw fa-heart"></i>
+                                </button>
+                                <input type="hidden" id="icon" name="icon" value="fas fa-heart">
+                                <div class="invalid-feedback" data-error-for="icon"></div>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary" id="submitCompanyBtn">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
                                 <i class="fas fa-save"></i>
                                 <span>Simpan</span>
                             </button>
@@ -1612,52 +1768,101 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // ===== SETUP AWAL & UI =====
-                const companyModal = document.getElementById('companyModal');
-                const companyForm = document.getElementById('companyForm');
-                const modalTitle = document.getElementById('modalTitle');
-                const formMethodInput = document.getElementById('formMethod');
-                const companyIdInput = document.getElementById('companyId');
-                const submitBtn = document.getElementById('submitCompanyBtn');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const sidebarElement = document.querySelector('.sidebar');
-                const burgerMenuButton = document.getElementById('burger-menu');
-                const mobileBurgerButton = document.getElementById('mobile-burger-menu');
-                const modeSwitch = document.querySelector('.mode-switch');
-                const tableArea = document.getElementById('productTableArea');
-                const searchInput = document.getElementById('companySearchInput');
+                const isSuperAdmin = {
+                    {
+                        json_encode(auth() - > user() - > isSuperAdmin())
+                    }
+                };
+                const isAdmin = {
+                    {
+                        json_encode(auth() - > user() - > isAdmin())
+                    }
+                };
+
+                $(document).ready(function() {
+                    $('#icon-picker-button').iconpicker({
+                        iconset: 'fontawesome5',
+                        input: '#icon',
+                        component: '#icon-picker-button'
+                    }).on('change', function(e) {
+                        if (e.icon) {
+                            $('#icon').val(e.icon).trigger('change');
+                        }
+                    });
+                });
+
+                const config = {
+                    company: {
+                        fetchUrl: '{{ route("companies.data") }}',
+                        storeUrl: '{{ route("companies.store") }}',
+                        updateUrl: '/companies/',
+                        deleteUrl: '/companies/',
+                        editUrl: '/companies/{id}/edit',
+                        searchPlaceholder: 'Cari nama atau singkatan perusahaan...',
+                        addButtonText: 'Tambah Perusahaan',
+                        modalTitleAdd: '<i class="fas fa-building"></i> Tambah Perusahaan Baru',
+                        modalTitleEdit: '<i class="fas fa-edit"></i> Edit Perusahaan',
+                        modalNamaLabel: 'Nama Lengkap Perusahaan',
+                        modalNamaPlaceholder: 'PT NAMA PERUSAHAAN',
+                        modalSingkatanMaxlength: 3,
+                        formNamaField: 'nama_perusahaan',
+                        rowsContainerId: 'companyTableRowsContainer',
+                        paginationContainerId: 'company-pagination-container',
+                        tableAreaId: 'companyTableArea',
+                    },
+                    itemType: {
+                        fetchUrl: '{{ route("item-types.data") }}',
+                        storeUrl: '{{ route("item-types.store") }}',
+                        updateUrl: '/item-types/',
+                        deleteUrl: '/item-types/',
+                        editUrl: '/item-types/{id}/edit',
+                        searchPlaceholder: 'Cari nama atau singkatan jenis barang...',
+                        addButtonText: 'Tambah Jenis Barang',
+                        modalTitleAdd: '<i class="fas fa-tags"></i> Tambah Jenis Barang Baru',
+                        modalTitleEdit: '<i class="fas fa-edit"></i> Edit Jenis Barang',
+                        modalNamaLabel: 'Nama Jenis Barang',
+                        modalNamaPlaceholder: 'Masukan Nama Jenis Barang',
+                        modalSingkatanMaxlength: 3,
+                        formNamaField: 'nama_jenis',
+                        rowsContainerId: 'itemTypeTableRowsContainer',
+                        paginationContainerId: 'itemType-pagination-container',
+                        tableAreaId: 'itemTypeTableArea'
+                    }
+                };
+
+                let currentTab = 'company';
                 let debounceTimer;
 
-                /**
-                 * Inisialisasi status sidebar (collapsed/expanded) dari localStorage.
-                 */
-                const initializeSidebarState = () => {
-                    if (!sidebarElement || window.innerWidth <= 1024) return;
-                    const isCollapsed = localStorage.getItem('sidebarCollapsedITventory') === 'true';
-                    sidebarElement.classList.toggle('collapsed', isCollapsed);
-                    if (burgerMenuButton) burgerMenuButton.classList.toggle('active', !isCollapsed);
+                const modal = document.getElementById('dataModal');
+                const dataForm = document.getElementById('dataForm');
+                const searchInput = document.getElementById('searchInput');
+
+                const updateUIForTab = () => {
+                    const conf = config[currentTab];
+                    searchInput.placeholder = conf.searchPlaceholder;
+                    document.getElementById('addButtonText').textContent = conf.addButtonText;
+
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.toggle('active', link.dataset.tab === currentTab);
+                    });
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.toggle('active', pane.id === `${currentTab}-tab-pane`);
+                    });
+
+                    const openAddModalButton = document.getElementById('openAddModalButton');
+                    if (openAddModalButton) {
+                        // Hanya Super Admin yang bisa melihat tombol Tambah di kedua tab
+                        openAddModalButton.style.display = isSuperAdmin ? '' : 'none';
+                    }
                 };
 
-                /**
-                 * Menerapkan tema (light/dark) dari localStorage.
-                 */
-                const applyTheme = () => {
-                    const currentTheme = localStorage.getItem('theme');
-                    document.documentElement.classList.toggle('light', currentTheme === 'light');
-                    if (modeSwitch) modeSwitch.classList.toggle('active', currentTheme === 'light');
-                };
-
-                // ===== FUNGSI-FUNGSI AJAX & DOM =====
-
-                /**
-                 * Mengambil data perusahaan dari server via AJAX.
-                 * @param {number} page - Nomor halaman yang akan diambil.
-                 */
-                const fetchCompanies = (page = 1) => {
+                const fetchData = (page = 1) => {
+                    const conf = config[currentTab];
                     const search = searchInput.value;
-                    const perPageSelect = tableArea.querySelector('#rows-per-page-select');
-                    const perPage = perPageSelect ? perPageSelect.value : 10;
-                    const url = `{{ route('companies.index') }}?page=${page}&per_page=${perPage}&search=${search}`;
+                    const perPageSelect = document.querySelector(`#${conf.tableAreaId} #rows-per-page-select`);
+                    const perPage = perPageSelect ? perPageSelect.value : 20;
+                    const url = `${conf.fetchUrl}?page=${page}&per_page=${perPage}&search=${search}&_=${new Date().getTime()}`;
 
                     fetch(url, {
                             headers: {
@@ -1665,109 +1870,38 @@
                                 'Accept': 'application/json'
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('productTableRowsContainer').innerHTML = data.table_html;
-                            document.getElementById('pagination-controls-container').innerHTML = renderPaginationControls(data.pagination);
+                        .then(response => {
+                            if (!response.ok) {
+                                // Tambahkan detail error dari server jika ada
+                                return response.json().then(err => {
+                                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${err.message || 'Unknown error'}`);
+                                });
+                            }
+                            return response.json();
                         })
-                        .catch(error => console.error('Error fetching companies:', error));
+                        .then(data => {
+                            if (data.table_html && data.pagination) {
+                                document.getElementById(conf.rowsContainerId).innerHTML = data.table_html;
+                                document.getElementById(conf.paginationContainerId).innerHTML = renderPaginationControls(data.pagination);
+                                console.log('DOM updated successfully for rows and pagination.'); // DEBUG
+                            } else {
+                                console.error('Server response is missing table_html or pagination data.'); // DEBUG
+                            }
+                        })
+                        .catch(error => {
+                            alert(`Gagal memuat data. Pesan Error: ${error.message || 'Lihat console untuk detail.'}`); // User-friendly alert
+                        });
                 };
 
-                /**
-                 * Membuka modal dan mereset form di dalamnya.
-                 */
-                const openModal = (modalElement) => {
-                    if (modalElement) {
-                        modalElement.style.display = 'flex';
-                        document.body.classList.add('modal-open');
-                        const form = modalElement.querySelector('form');
-                        if (form) {
-                            form.reset();
-                            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                            form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-                        }
-                    }
-                };
-
-                const closeModal = (modalElement) => {
-                    if (modalElement) {
-                        modalElement.style.display = 'none';
-                        if (!document.querySelector('.modal-overlay[style*="display: flex"]')) {
-                            document.body.classList.remove('modal-open');
-                        }
-                    }
-                };
-
-                const setupSmartModalClosure = (modalElement) => {
-                    if (!modalElement) return;
-
-                    const closeButton = modalElement.querySelector('.btn-close');
-                    if (closeButton) {
-                        closeButton.addEventListener('click', () => closeModal(modalElement));
-                    }
-
-                    const cancelButton = modalElement.querySelector('.btn-secondary[data-dismiss="modal"]');
-                    if (cancelButton) {
-                        cancelButton.addEventListener('click', () => closeModal(modalElement));
-                    }
-
-                    let isMouseDownOnOverlay = false;
-                    modalElement.addEventListener('mousedown', (event) => {
-                        if (event.target === modalElement) isMouseDownOnOverlay = true;
-                    });
-                    modalElement.addEventListener('mouseup', (event) => {
-                        if (event.target === modalElement && isMouseDownOnOverlay) closeModal(modalElement);
-                        isMouseDownOnOverlay = false;
-                    });
-                    modalElement.addEventListener('mouseleave', () => {
-                        isMouseDownOnOverlay = false;
-                    });
-                };
-
-                /**
-                 * Menangani error validasi dan menampilkannya di form.
-                 */
-                const handleValidationErrors = (errors) => {
-                    companyForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                    companyForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-
-                    Object.keys(errors).forEach(key => {
-                        const input = companyForm.querySelector(`[name="${key}"]`);
-                        const errorDiv = companyForm.querySelector(`#${key}_error`);
-                        if (input) input.classList.add('is-invalid');
-                        if (errorDiv) errorDiv.textContent = errors[key][0];
-                    });
-                };
-
-                /**
-                 * Merender HTML untuk kontrol paginasi.
-                 */
                 const renderPaginationControls = (pagination) => {
                     if (!pagination || pagination.total === 0) {
-                        const perPageSelect = document.getElementById('rows-per-page-select');
-                        const perPageValue = perPageSelect ? perPageSelect.value : 20;
                         return `
-                        <div class="footer-section footer-left">
-                            <div class="rows-per-page-wrapper">
-                                <label for="rows-per-page-select">Baris:</label>
-                                <select id="rows-per-page-select">
-                                    <option value="10" ${perPageValue == 10 ? 'selected' : ''}>10</option>
-                                    <option value="20" ${perPageValue == 20 ? 'selected' : ''}>20</option>
-                                    <option value="30" ${perPageValue == 30 ? 'selected' : ''}>30</option>
-                                    <option value="50" ${perPageValue == 50 ? 'selected' : ''}>50</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="footer-section footer-center" id="pagination-buttons-container">
-                            <!-- Tidak ada tombol karena tidak ada data -->
-                        </div>
-                        <div class="footer-section footer-right">
-                            <div class="pagination-info" id="pagination-info-text">
-                                <b>0</b>-<b>0</b> dari <b>0</b>
-                            </div>
-                        </div>`;
+            <div class="footer-section footer-left">
+                <div class="rows-per-page-wrapper"><label for="rows-per-page-select">Baris:</label><select id="rows-per-page-select"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="50">50</option></select></div>
+            </div>
+            <div class="footer-section footer-center"></div>
+            <div class="footer-section footer-right"><div class="pagination-info"><b>0</b>-<b>0</b> dari <b>0</b></div></div>`;
                     }
-
                     const {
                         from,
                         to,
@@ -1775,222 +1909,179 @@
                         per_page,
                         links
                     } = pagination;
-
                     let linksHtml = links.map(link => {
-                        let label = link.label;
-                        if (label.includes('Previous')) {
-                            label = '<';
-                        } else if (label.includes('Next')) {
-                            label = '>';
-                        }
-                        if (!link.url) {
-                            return `<button class="pagination-btn" disabled>${label}</button>`;
-                        }
-                        const pageNumber = new URL(link.url).searchParams.get('page');
-                        return `<button class="pagination-btn ${link.active ? 'active' : ''}" data-page="${pageNumber}">${label}</button>`;
+                        let label = link.label.replace('« Previous', '<').replace('Next »', '>');
+                        return `<button class="pagination-btn ${link.active ? 'active' : ''}" data-page="${link.url ? new URL(link.url).searchParams.get('page') : ''}" ${!link.url ? 'disabled' : ''}>${label}</button>`;
                     }).join('');
-
                     return `
-                    <div class="footer-section footer-left">
-                        <div class="rows-per-page-wrapper">
-                            <label for="rows-per-page-select">Baris:</label>
-                            <select id="rows-per-page-select">
-                                <option value="10" ${per_page == 10 ? 'selected' : ''}>10</option>
-                                <option value="20" ${per_page == 20 ? 'selected' : ''}>20</option>
-                                <option value="30" ${per_page == 30 ? 'selected' : ''}>30</option>
-                                <option value="50" ${per_page == 50 ? 'selected' : ''}>50</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="footer-section footer-center" id="pagination-buttons-container">
-                        ${linksHtml}
-                    </div>
-                    <div class="footer-section footer-right">
-                        <div class="pagination-info" id="pagination-info-text">
-                            <b>${from}</b>-<b>${to}</b> dari <b>${total}</b>
-                        </div>
-                    </div>`;
+            <div class="footer-section footer-left">
+                <div class="rows-per-page-wrapper"><label for="rows-per-page-select">Baris:</label><select id="rows-per-page-select">${[10,20,30,50].map(v => `<option value="${v}" ${per_page == v ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+            </div>
+            <div class="footer-section footer-center">${linksHtml}</div>
+            <div class="footer-section footer-right"><div class="pagination-info"><b>${from}</b>-<b>${to}</b> dari <b>${total}</b></div></div>`;
                 };
-                // ===== EVENT LISTENERS =====
 
-                const resetForm = () => {
-                    companyForm.reset();
-                    companyForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                    companyForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                const openModal = () => {
+                    modal.style.display = 'flex';
+                    document.body.classList.add('modal-open');
+                };
+                const closeModal = () => {
+                    modal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                };
+
+                const resetFormAndErrors = () => {
+                    dataForm.reset();
+                    document.getElementById('icon-form-group').style.display = 'none';
+                    dataForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    dataForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                };
+
+                const handleValidationErrors = (errors) => {
+                    dataForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    dataForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                    Object.keys(errors).forEach(key => {
+                        const input = dataForm.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const errorDiv = input.nextElementSibling;
+                            if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+                                errorDiv.textContent = errors[key][0];
+                            }
+                        }
+                    });
+                };
+
+                const setupSmartModalClosure = (modalElement, closeFunction) => {
+                    if (!modalElement) return;
+                    let isMouseDownOnOverlay = false;
+
+                    modalElement.addEventListener('mousedown', function(event) {
+                        if (event.target === modalElement) {
+                            isMouseDownOnOverlay = true;
+                        }
+                    });
+
+                    modalElement.addEventListener('mouseup', function(event) {
+                        if (event.target === modalElement && isMouseDownOnOverlay) {
+                            closeFunction();
+                        }
+                        isMouseDownOnOverlay = false;
+                    });
+
+                    modalElement.addEventListener('mouseleave', function() {
+                        isMouseDownOnOverlay = false;
+                    });
                 };
 
                 const setupAddModal = () => {
-                    resetForm();
-                    modalTitle.innerHTML = '<i class="fas fa-building"></i> Tambah Perusahaan Baru';
-                    companyForm.setAttribute('action', '{{ route("companies.store") }}');
-                    formMethodInput.value = 'POST';
-                    companyIdInput.value = '';
-                    openModal(companyModal);
+                    const conf = config[currentTab];
+                    resetFormAndErrors();
+
+                    document.getElementById('modalTitle').innerHTML = conf.modalTitleAdd;
+                    dataForm.setAttribute('action', conf.storeUrl);
+                    dataForm.querySelector('#formMethod').value = 'POST';
+                    dataForm.querySelector('#dataId').value = '';
+
+                    const namaInput = dataForm.querySelector('#nama');
+                    const singkatanInput = dataForm.querySelector('#singkatan');
+
+                    namaInput.name = conf.formNamaField;
+                    namaInput.placeholder = conf.modalNamaPlaceholder;
+                    dataForm.querySelector('#namaLabel').textContent = conf.modalNamaLabel;
+
+                    singkatanInput.maxLength = conf.modalSingkatanMaxlength;
+
+                    const iconFormGroup = document.getElementById('icon-form-group');
+                    if (currentTab === 'itemType') {
+                        iconFormGroup.style.display = 'flex';
+                        const defaultIcon = 'fas fa-heart';
+                        $('#icon').val(defaultIcon);
+                        $('#icon-picker-button').find('i').attr('class', 'fas fa-fw ' + defaultIcon.replace('fas ', ''));
+                    } else {
+                        iconFormGroup.style.display = 'none';
+                    }
+
+                    openModal();
                 };
 
                 const setupEditModal = (id) => {
-                    resetForm();
-                    fetch(`/companies/${id}/edit`)
-                        .then(response => {
-                            if (!response.ok) throw new Error('Gagal mengambil data perusahaan.');
-                            return response.json();
-                        })
+                    const conf = config[currentTab];
+                    resetFormAndErrors();
+
+                    const iconFormGroup = document.getElementById('icon-form-group');
+                    if (currentTab === 'itemType') {
+                        iconFormGroup.style.display = 'flex';
+                    } else {
+                        iconFormGroup.style.display = 'none';
+                    }
+
+                    fetch(conf.editUrl.replace('{id}', id))
+                        .then(res => res.json())
                         .then(data => {
-                            modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Perusahaan';
-                            companyForm.setAttribute('action', `/companies/${id}`);
-                            formMethodInput.value = 'PUT';
-                            companyIdInput.value = id;
-                            companyForm.querySelector('#nama_perusahaan').value = data.nama_perusahaan;
-                            companyForm.querySelector('#singkatan').value = data.singkatan;
-                            openModal(companyModal);
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert(error.message);
-                        });
+                            document.getElementById('modalTitle').innerHTML = conf.modalTitleEdit;
+                            dataForm.setAttribute('action', conf.updateUrl + id);
+                            dataForm.querySelector('#formMethod').value = 'PUT';
+                            dataForm.querySelector('#dataId').value = id;
+
+                            const namaInput = dataForm.querySelector('#nama');
+                            const singkatanInput = dataForm.querySelector('#singkatan');
+
+                            namaInput.name = conf.formNamaField;
+                            namaInput.value = data[conf.formNamaField];
+                            namaInput.placeholder = conf.modalNamaPlaceholder;
+                            dataForm.querySelector('#namaLabel').textContent = conf.modalNamaLabel;
+
+                            singkatanInput.value = data.singkatan;
+                            singkatanInput.maxLength = conf.modalSingkatanMaxlength;
+
+                            if (currentTab === 'itemType') {
+                                const selectedIcon = data.icon || 'fas fa-question-circle';
+                                $('#icon').val(selectedIcon);
+                                $('#icon-picker-button').find('i').attr('class', 'fas fa-fw ' + selectedIcon.replace('fas ', ''));
+                            }
+
+                            openModal();
+                        }).catch(err => alert('Gagal memuat data untuk diedit.'));
                 };
 
                 const handleDelete = (id) => {
-                    if (!confirm('Apakah Anda yakin ingin menghapus perusahaan ini? Tindakan ini tidak dapat dibatalkan.')) return;
-
-                    fetch(`/companies/${id}`, {
+                    if (!confirm('Anda yakin ingin menghapus data ini?')) return;
+                    const conf = config[currentTab];
+                    fetch(conf.deleteUrl + id, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
+                                'Accept': 'application/json'
                             },
                             body: new URLSearchParams({
                                 '_method': 'DELETE'
                             })
                         })
-                        .then(response => response.json().then(data => ({
-                            status: response.status,
-                            body: data
-                        })))
-                        .then(({
-                            status,
-                            body
-                        }) => {
-                            if (status === 200) {
-                                alert(body.success);
-                                fetchCompanies(1);
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.success);
+                                fetchData(1);
                             } else {
-                                alert(body.error || 'Terjadi kesalahan saat menghapus.');
+                                alert(data.error || 'Gagal menghapus data.');
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan fatal.');
-                        });
+                        }).catch(err => alert('Terjadi kesalahan fatal.'));
                 };
 
-                // Sidebar & Theme
-                if (burgerMenuButton) {
-                    burgerMenuButton.addEventListener('click', () => {
-                        if (window.innerWidth > 1024) {
-                            sidebarElement.classList.toggle('collapsed');
-                            localStorage.setItem('sidebarCollapsedITventory', sidebarElement.classList.contains('collapsed'));
-                        }
-                        burgerMenuButton.classList.toggle('active');
-                    });
-                }
-
-                if (mobileBurgerButton) {
-                    mobileBurgerButton.addEventListener('click', () => {
-                        sidebarElement.classList.toggle('mobile-open');
-                        document.body.classList.toggle('sidebar-open-overlay');
-                        mobileBurgerButton.classList.toggle('active');
-                    });
-                }
-
-                document.body.addEventListener('click', function(event) {
-                    if (event.target === document.body && document.body.classList.contains('sidebar-open-overlay')) {
-                        sidebarElement.classList.remove('mobile-open');
-                        document.body.classList.remove('sidebar-open-overlay');
-                        if (mobileBurgerButton) mobileBurgerButton.classList.remove('active');
-                    }
-                });
-
-                if (modeSwitch) {
-                    modeSwitch.addEventListener('click', () => {
-                        document.documentElement.classList.toggle('light');
-                        modeSwitch.classList.toggle('active');
-                        const theme = document.documentElement.classList.contains('light') ? 'light' : 'dark';
-                        localStorage.setItem('theme', theme);
-                    });
-                }
-
-                // Pencarian
-                searchInput.addEventListener('keyup', () => {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => fetchCompanies(1), 300);
-                });
-
-                // EVENT DELEGATION untuk semua aksi di dalam area tabel
-                tableArea.addEventListener('click', (event) => {
-                    const target = event.target;
-                    const paginationBtn = target.closest('.pagination-btn');
-                    const editBtn = target.closest('.edit-company-btn');
-                    const deleteBtn = target.closest('.delete-company-btn');
-
-                    if (paginationBtn && !paginationBtn.disabled) {
-                        const page = paginationBtn.dataset.page;
-                        if (page) fetchCompanies(page);
-                    } else if (editBtn) {
-                        setupEditModal(editBtn.dataset.id);
-                    } else if (deleteBtn) {
-                        handleDelete(deleteBtn.dataset.id);
-                    }
-                });
-
-                // Listener untuk select "rows per page"
-                tableArea.addEventListener('change', (event) => {
-                    if (event.target.id === 'rows-per-page-select') {
-                        fetchCompanies(1);
-                    }
-                });
-
-                document.querySelectorAll('.modal-overlay').forEach(modalElement => {
-                    modalElement.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
-                        btn.addEventListener('click', () => closeModal(modalElement));
-                    });
-
-                    let isMouseDownOnOverlay = false;
-                    modalElement.addEventListener('mousedown', (event) => {
-                        if (event.target === modalElement) isMouseDownOnOverlay = true;
-                    });
-                    modalElement.addEventListener('mouseup', (event) => {
-                        if (event.target === modalElement && isMouseDownOnOverlay) closeModal(modalElement);
-                        isMouseDownOnOverlay = false;
-                    });
-                    modalElement.addEventListener('mouseleave', () => {
-                        isMouseDownOnOverlay = false;
-                    });
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === "Escape") {
-                        const openModalElement = document.querySelector('.modal-overlay[style*="display: flex"]');
-                        if (openModalElement) {
-                            closeModal(openModalElement);
-                        }
-                    }
-                });
-
-                document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
-                    btn.addEventListener('click', () => closeModal(btn.closest('.modal-overlay').id));
-                });
-
-                document.getElementById('openAddCompanyModalButton').addEventListener('click', setupAddModal);
-
-                companyForm.addEventListener('submit', function(e) {
+                document.getElementById('dataForm').addEventListener('submit', function(e) {
                     e.preventDefault();
+
+                    const submitBtn = document.getElementById('submitBtn');
                     submitBtn.disabled = true;
                     submitBtn.querySelector('span').textContent = 'Menyimpan...';
 
-                    const formData = new FormData(this);
-                    const actionUrl = this.getAttribute('action');
+                    const actionUrl = dataForm.getAttribute('action');
+                    const formData = new FormData(dataForm);
+                    const method = document.getElementById('formMethod').value;
+                    if (method.toUpperCase() !== 'POST') {
+                        formData.append('_method', method);
+                    }
 
                     fetch(actionUrl, {
                             method: 'POST',
@@ -2000,45 +2091,187 @@
                             },
                             body: formData
                         })
-                        .then(response => response.json().then(data => ({
-                            status: response.status,
-                            body: data
-                        })))
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw {
+                                        status: response.status,
+                                        body: err
+                                    };
+                                });
+                            }
+                            return response.json().then(data => ({
+                                status: response.status,
+                                body: data
+                            }));
+                        })
                         .then(({
                             status,
                             body
                         }) => {
-                            if (status === 422) {
-                                handleValidationErrors(body.errors);
-                            } else if (status === 200 || status === 201) {
-                                alert(body.success);
-                                closeModal(companyModal);
-                                fetchCompanies(1);
+                            alert(body.success || 'Aksi berhasil!');
+                            closeModal();
+                            const conf = config[currentTab];
+                            const paginationContainer = document.getElementById(conf.paginationContainerId);
+                            const activeButton = paginationContainer.querySelector('.pagination-btn.active');
+                            const currentPage = activeButton ? activeButton.dataset.page : 1;
+                            fetchData(currentPage);
+                        })
+                        .catch(err => {
+                            if (err.status === 422) {
+                                handleValidationErrors(err.body.errors);
                             } else {
-                                alert(body.error || 'Terjadi kesalahan server.');
+                                alert(err.body.error || err.body.message || 'Terjadi kesalahan server yang tidak diketahui.');
                             }
                         })
-                        .catch(error => console.error('Error:', error))
                         .finally(() => {
                             submitBtn.disabled = false;
                             submitBtn.querySelector('span').textContent = 'Simpan';
                         });
                 });
 
-                // ===== INITIAL LOAD =====
+                searchInput.addEventListener('keyup', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => fetchData(1), 300);
+                });
+
+                document.querySelector('.nav-tabs').addEventListener('click', (e) => {
+                    const navButton = e.target.closest('.nav-link');
+                    if (navButton) {
+                        currentTab = navButton.dataset.tab;
+                        updateUIForTab();
+                        const rowsContainer = document.getElementById(config[currentTab].rowsContainerId);
+                        if (rowsContainer.childElementCount === 0) {
+                            fetchData(1);
+                        }
+                    }
+                });
+
+                document.querySelector('.tab-content').addEventListener('click', function(e) {
+                    const conf = config[currentTab];
+                    const target = e.target;
+
+                    const editBtn = target.closest('.edit-btn');
+                    if (editBtn) {
+                        e.preventDefault();
+                        setupEditModal(editBtn.dataset.id);
+                        return;
+                    }
+
+                    const deleteBtn = target.closest('.delete-btn');
+                    if (deleteBtn) {
+                        e.preventDefault();
+                        const id = deleteBtn.dataset.id;
+                        if (!confirm('Anda yakin ingin menghapus data ini?')) return;
+
+                        fetch(conf.deleteUrl + id, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: new URLSearchParams({
+                                    '_method': 'DELETE'
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.success);
+                                    // INI PERBAIKANNYA. Panggil fetchData() dengan halaman yang sedang aktif.
+                                    const currentPage = document.querySelector('.pagination-btn.active')?.dataset.page || 1;
+                                    fetchData(currentPage);
+                                } else {
+                                    alert(data.error || 'Gagal menghapus data.');
+                                }
+                            })
+                            .catch(err => alert('Terjadi kesalahan.'));
+                        return;
+                    }
+
+                    const paginationBtn = target.closest('.pagination-btn');
+                    if (paginationBtn && !paginationBtn.disabled) {
+                        fetchData(paginationBtn.dataset.page);
+                        return;
+                    }
+                });
+
+                document.querySelector('.tab-content').addEventListener('change', (e) => {
+                    if (e.target.matches('#rows-per-page-select')) {
+                        fetchData(1);
+                    }
+                });
+
+                document.getElementById('openAddModalButton').addEventListener('click', setupAddModal);
+                modal.querySelectorAll('[data-dismiss="modal"]').forEach(btn => btn.addEventListener('click', closeModal));
+                setupSmartModalClosure(modal, closeModal);
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === "Escape") {
+                        if (modal.style.display === 'flex') {
+                            closeModal();
+                        }
+                    }
+                });
+
+                const initialPaginationData = JSON.parse(`{!! json_encode($companies->toArray()) !!}`);
+                document.getElementById(config.company.paginationContainerId).innerHTML = renderPaginationControls(initialPaginationData);
+                const sidebarElement = document.querySelector('.sidebar');
+                const burgerMenuButton = document.getElementById('burger-menu');
+                const mobileBurgerButton = document.getElementById('mobile-burger-menu');
+                const modeSwitch = document.querySelector('.mode-switch');
+
+                const initializeSidebarState = () => {
+                    if (!sidebarElement || window.innerWidth <= 1024) return;
+                    const isCollapsed = localStorage.getItem('sidebarCollapsedITventory') === 'true';
+                    sidebarElement.classList.toggle('collapsed', isCollapsed);
+                    if (burgerMenuButton) burgerMenuButton.classList.toggle('active', !isCollapsed);
+                };
+                const applyTheme = () => {
+                    const currentTheme = localStorage.getItem('theme');
+                    document.documentElement.classList.toggle('light', currentTheme === 'light');
+                    if (modeSwitch) modeSwitch.classList.toggle('active', currentTheme === 'light');
+                };
+
+                if (burgerMenuButton) {
+                    burgerMenuButton.addEventListener('click', () => {
+                        if (window.innerWidth > 1024) {
+                            sidebarElement.classList.toggle('collapsed');
+                            localStorage.setItem('sidebarCollapsedITventory', sidebarElement.classList.contains('collapsed'));
+                        }
+                        burgerMenuButton.classList.toggle('active');
+                    });
+                }
+                if (mobileBurgerButton) {
+                    mobileBurgerButton.addEventListener('click', () => {
+                        sidebarElement.classList.toggle('mobile-open');
+                        document.body.classList.toggle('sidebar-open-overlay');
+                        mobileBurgerButton.classList.toggle('active');
+                    });
+                }
+                document.body.addEventListener('click', function(event) {
+                    if (event.target === document.body && document.body.classList.contains('sidebar-open-overlay')) {
+                        sidebarElement.classList.remove('mobile-open');
+                        document.body.classList.remove('sidebar-open-overlay');
+                        if (mobileBurgerButton) mobileBurgerButton.classList.remove('active');
+                    }
+                });
+                if (modeSwitch) {
+                    modeSwitch.addEventListener('click', () => {
+                        document.documentElement.classList.toggle('light');
+                        modeSwitch.classList.toggle('active');
+                        const theme = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+                        localStorage.setItem('theme', theme);
+                    });
+                }
+
                 applyTheme();
                 initializeSidebarState();
-
-                const initialPaginationDataJSON = `{!! json_encode($companies->toArray()) !!}`;
-                try {
-                    const initialPaginationData = JSON.parse(initialPaginationDataJSON);
-                    document.getElementById('pagination-controls-container').innerHTML = renderPaginationControls(initialPaginationData);
-                } catch (e) {
-                    console.error("Gagal mem-parsing data paginasi awal:", e);
-                    document.getElementById('pagination-controls-container').innerHTML = '<div class="footer-section" style="width:100%; text-align:center; padding: 1rem 0;">Gagal memuat paginasi.</div>';
-                }
             });
         </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-iconpicker/1.10.0/js/bootstrap-iconpicker.bundle.min.js"></script>
     </body>
 
     </html>

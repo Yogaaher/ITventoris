@@ -11,6 +11,16 @@ class PerusahaanPageController extends Controller
 {
     public function index(Request $request)
     {
+        // Ambil data awal hanya untuk tab perusahaan
+        $companies = Perusahaan::query()->oldest()->paginate(20);
+
+        return view('PerusahaanPage', [
+            'companies' => $companies,
+        ]);
+    }
+
+    public function getCompanyData(Request $request)
+    {
         $query = Perusahaan::query();
 
         if ($request->filled('search')) {
@@ -24,16 +34,9 @@ class PerusahaanPageController extends Controller
         $perPage = $request->input('per_page', 20);
         $companies = $query->oldest()->paginate($perPage)->appends($request->except('page'));
 
-        if ($request->ajax()) {
-            return response()->json([
-                'table_html' => view('partials.company_table_rows', compact('companies'))->render(),
-                'pagination' => $companies->toArray()
-            ]);
-        }
-
-        return view('PerusahaanPage', [
-            'companies' => $companies,
-            'searchKeyword' => $request->input('search', '')
+        return response()->json([
+            'table_html' => view('partials.company_table_rows', compact('companies'))->render(),
+            'pagination' => $companies->toArray()
         ]);
     }
 
@@ -41,11 +44,17 @@ class PerusahaanPageController extends Controller
     {
         return [
             'nama_perusahaan' => [
-                'required', 'string', 'max:255', 'uppercase', 'regex:/^[A-Z0-9 .]+$/',
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Z0-9 .]+$/',
                 Rule::unique('perusahaans')->ignore($companyId)
             ],
             'singkatan' => [
-                'required', 'string', 'max:3', 'uppercase', 'alpha_num',
+                'required',
+                'string',
+                'max:3',
+                'alpha_num',
                 Rule::unique('perusahaans')->ignore($companyId)
             ],
         ];
@@ -68,17 +77,19 @@ class PerusahaanPageController extends Controller
 
     public function store(Request $request)
     {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['error' => 'Akses ditolak.'], 403);
+        }
         $validator = Validator::make($request->all(), $this->getValidationRules(), $this->getValidationMessages());
-
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        Perusahaan::create($validator->validated());
-
+        $validatedData = $validator->validated();
+        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']); // <-- TAMBAH BARIS INI
+        Perusahaan::create($validatedData);
         return response()->json(['success' => 'Perusahaan berhasil ditambahkan.']);
     }
-    
+
     public function edit(Perusahaan $company)
     {
         if (!auth()->user()->isSuperAdmin()) {
@@ -92,15 +103,24 @@ class PerusahaanPageController extends Controller
         if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['error' => 'Akses ditolak.'], 403);
         }
-        
+
         $validator = Validator::make($request->all(), $this->getValidationRules($company->id), $this->getValidationMessages());
-        
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $company->update($validator->validated());
-        
+        try {
+            $validatedData = $validator->validated();
+
+            $company->nama_perusahaan = $validatedData['nama_perusahaan'];
+            $company->singkatan = strtoupper($validatedData['singkatan']); // <-- BARIS INI DIUBAH
+            $company->save();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal update perusahaan: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menyimpan data ke database.'], 500);
+        }
+
         return response()->json(['success' => 'Perusahaan berhasil diperbarui.']);
     }
 
@@ -109,9 +129,9 @@ class PerusahaanPageController extends Controller
         if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['error' => 'Akses ditolak.'], 403);
         }
-        
+
         $company->delete();
-        
+
         return response()->json(['success' => 'Perusahaan berhasil dihapus.']);
     }
 }

@@ -1,6 +1,6 @@
 @forelse ($companies as $index => $company)
 <div class="products-row">
-    <div class="product-cell cell-no">{{ $companies->firstItem() + $index }}</div>
+    <div class="product-cell cell-no" data-label="No">{{ $loop->iteration + ($companies->currentPage() - 1) * $companies->perPage() }}</div>
     <div class="product-cell cell-nama-perusahaan" data-label="Nama Perusahaan">{{ $company->nama_perusahaan }}</div>
     <div class="product-cell cell-singkatan" data-label="Singkatan">{{ $company->singkatan }}</div>
     <div class="product-cell cell-dibuat-pada" data-label="Dibuat Pada">{{ $company->created_at->format('d M Y') }}</div>

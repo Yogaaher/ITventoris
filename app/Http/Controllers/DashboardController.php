@@ -60,8 +60,10 @@ class DashboardController extends Controller
             'jenis_barang'   => 'jenis_barangs.nama_jenis',
             'no_asset'       => 'barang.no_asset',
             'merek'          => 'barang.merek',
+            'kuantitas'      => 'barang.kuantitas',
             'tgl_pengadaan'  => 'barang.tgl_pengadaan',
             'serial_number'  => 'barang.serial_number',
+            'lokasi'         => 'barang.lokasi',
         ];
 
         $sortBy = $request->input('sort_by', 'no');
@@ -83,8 +85,10 @@ class DashboardController extends Controller
             'Perusahaan',
             'Jenis Barang',
             'Merek',
+            'Kuantitas',
             'Tanggal Pengadaan',
             'Serial Number',
+            'Lokasi',
             'Status Aset Terkini',
             'Pengguna (Riwayat)',
             'Status (Riwayat)',
@@ -101,8 +105,10 @@ class DashboardController extends Controller
                         $barang->perusahaan->nama_perusahaan ?? 'N/A',
                         $barang->jenisBarang->nama_jenis ?? 'N/A',
                         $barang->merek,
+                        $barang->kuantitas,
                         Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y'),
                         $barang->serial_number,
+                        $barang->lokasi ?? '-',
                         $barang->status,
                         $track->username,
                         $track->status,
@@ -117,8 +123,10 @@ class DashboardController extends Controller
                     $barang->perusahaan->nama_perusahaan ?? 'N/A',
                     $barang->jenisBarang->nama_jenis ?? 'N/A',
                     $barang->merek,
+                    $barang->kuantitas,
                     Carbon::parse($barang->tgl_pengadaan)->format('d-m-Y'),
                     $barang->serial_number,
+                    $barang->lokasi ?? '-',
                     $barang->status,
                     '-',
                     '-',
@@ -138,8 +146,15 @@ class DashboardController extends Controller
      */
     private function calculateInventorySummary($baseQueryBuilder, $filterJenisBarangInput)
     {
-        $allJenisBarang = JenisBarang::pluck('nama_jenis', 'id');
-        $inventorySummary = array_fill_keys($allJenisBarang->values()->all(), 0);
+        $allJenisBarang = JenisBarang::orderBy('nama_jenis', 'asc')->get();
+
+        $inventorySummary = $allJenisBarang->mapWithKeys(function ($jenis) {
+            return [$jenis->nama_jenis => (object)[
+                'count' => 0,
+                'icon' => $jenis->icon ?? 'fas fa-question-circle'
+            ]];
+        });
+
         $summaryQuery = clone $baseQueryBuilder;
         $itemCounts = $summaryQuery
             ->select('jenis_barang_id', DB::raw('count(*) as total'))
@@ -147,18 +162,18 @@ class DashboardController extends Controller
             ->pluck('total', 'jenis_barang_id');
 
         foreach ($itemCounts as $jenisId => $count) {
-            $namaJenis = $allJenisBarang->get($jenisId);
-            if ($namaJenis) {
-                $inventorySummary[$namaJenis] = $count;
+            $jenisBarang = $allJenisBarang->find($jenisId);
+            if ($jenisBarang && isset($inventorySummary[$jenisBarang->nama_jenis])) {
+                $inventorySummary[$jenisBarang->nama_jenis]->count = $count;
             }
         }
 
         if ($filterJenisBarangInput) {
-            $filteredNamaJenis = $allJenisBarang->get($filterJenisBarangInput);
-            if ($filteredNamaJenis) {
-                foreach ($inventorySummary as $nama => &$nilai) {
-                    if ($nama !== $filteredNamaJenis) {
-                        $nilai = 0;
+            $filteredJenisModel = $allJenisBarang->find($filterJenisBarangInput);
+            if ($filteredJenisModel) {
+                foreach ($inventorySummary as $nama => $data) {
+                    if ($nama !== $filteredJenisModel->nama_jenis) {
+                        $data->count = 0;
                     }
                 }
             }
@@ -166,6 +181,7 @@ class DashboardController extends Controller
 
         return $inventorySummary;
     }
+
 
     /**
      * Menampilkan halaman utama dashboard (load awal).
@@ -224,6 +240,7 @@ class DashboardController extends Controller
             'merek'          => 'barang.merek',
             'tgl_pengadaan'  => 'barang.tgl_pengadaan',
             'serial_number'  => 'barang.serial_number',
+            'lokasi'         => 'barang.lokasi',
         ];
 
         $sortBy = $request->input('sort_by');
@@ -301,12 +318,91 @@ class DashboardController extends Controller
 
             return response()->json([
                 'success' => true,
-                'barang' => $barang,
+                'barang' => [
+                    'id' => $barang->id,
+                    'perusahaan_id' => $barang->perusahaan_id,
+                    'jenis_barang_id' => $barang->jenis_barang_id,
+                    'no_asset' => $barang->no_asset,
+                    'merek' => $barang->merek,
+                    'kuantitas' => $barang->kuantitas, // REVISI: Tambahkan baris ini
+                    'tgl_pengadaan' => $barang->tgl_pengadaan,
+                    'serial_number' => $barang->serial_number,
+                    'lokasi' => $barang->lokasi, // REVISI: Tambahkan baris ini
+                    'status' => $barang->status,
+                    'perusahaan' => $barang->perusahaan,
+                    'jenis_barang' => $barang->jenisBarang,
+                ],
                 'track' => $latestTrack
             ]);
         } catch (\Exception $e) {
             Log::error("Error fetching detail barang: " . $e->getMessage());
             return response()->json(['error' => 'Terjadi kesalahan saat mengambil data.'], 500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'perusahaan_id' => 'required|exists:perusahaans,id',
+            'jenis_barang_id' => 'required|exists:jenis_barangs,id',
+            'merek' => 'required|string|max:255',
+            'kuantitas' => 'required|integer|min:1', // REVISI: Tambahkan validasi ini
+            'tgl_pengadaan' => 'required|date',
+            'serial_number' => 'required|string|unique:barang,serial_number|max:255',
+            'lokasi' => 'nullable|string|max:255', // REVISI: Tambahkan validasi ini
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $perusahaan = Perusahaan::find($request->perusahaan_id);
+            $jenisBarang = JenisBarang::find($request->jenis_barang_id);
+
+            if (!$perusahaan || !$jenisBarang) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Perusahaan atau Jenis Barang tidak ditemukan.'], 404);
+            }
+
+            $counter = AssetCounter::lockForUpdate()
+                ->firstOrCreate(
+                    ['perusahaan_id' => $request->perusahaan_id],
+                    ['nomor_terakhir' => 0]
+                );
+
+            $nomorTerakhir = $counter->nomor_terakhir + 1;
+            $counter->nomor_terakhir = $nomorTerakhir;
+            $counter->save();
+
+            $noAsset = sprintf(
+                "%s/%s/%s/%s/%s",
+                $perusahaan->singkatan,
+                $jenisBarang->singkatan,
+                Carbon::parse($request->tgl_pengadaan)->format('Y'),
+                Carbon::parse($request->tgl_pengadaan)->format('m'),
+                str_pad($nomorTerakhir, 4, '0', STR_PAD_LEFT)
+            );
+
+            $barang = Barang::create([
+                'perusahaan_id' => $request->perusahaan_id,
+                'jenis_barang_id' => $request->jenis_barang_id,
+                'no_asset' => $noAsset,
+                'merek' => $request->merek,
+                'kuantitas' => $request->kuantitas, // REVISI: Tambahkan baris ini
+                'tgl_pengadaan' => $request->tgl_pengadaan,
+                'serial_number' => $request->serial_number,
+                'lokasi' => $request->lokasi, // REVISI: Tambahkan baris ini
+                'status' => 'tersedia',
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Aset berhasil ditambahkan.', 'data' => $barang], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error adding new asset: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString());
+            return response()->json(['success' => false, 'message' => 'Gagal menambahkan aset: ' . $e->getMessage()], 500);
         }
     }
 

@@ -38,7 +38,7 @@ class SuratController extends Controller
     public function index(Request $request)
     {
         // Data ini hanya untuk load awal, selanjutnya akan dihandle AJAX
-        $surats = $this->getSuratQuery($request)->latest()->paginate(10);
+         $surats = \App\Models\Surat::latest()->paginate(10);
 
         // Kita akan passing $surats kosong saja ke view, karena JS akan fetch data
         return view('SerahTerimaPage', [
