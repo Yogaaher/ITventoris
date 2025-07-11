@@ -1769,16 +1769,8 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const isSuperAdmin = {
-                    {
-                        json_encode(auth() - > user() - > isSuperAdmin())
-                    }
-                };
-                const isAdmin = {
-                    {
-                        json_encode(auth() - > user() - > isAdmin())
-                    }
-                };
+                const isSuperAdmin = {{json_encode(auth() -> user() -> isSuperAdmin())}};
+                const isAdmin = {{json_encode(auth() -> user() -> isAdmin())}};
 
                 $(document).ready(function() {
                     $('#icon-picker-button').iconpicker({

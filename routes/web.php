@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
         Route::post('/aset/serah-terima/store', [DashboardController::class, 'storeSerahTerimaAset'])->name('aset.serahterima.store');
         Route::get('/aset/nomor-seri-berikutnya/{perusahaan_id}', [BarangController::class, 'getNomorSeriBerikutnya'])->name('aset.get_nomor_seri');
+        Route::get('/barang/{barang}/edit', [DashboardController::class, 'edit'])->name('barang.edit');
+        Route::put('/barang/{barang}', [DashboardController::class, 'update'])->name('barang.update');
+        Route::delete('/barang/{barang}', [DashboardController::class, 'destroy'])->name('barang.destroy');
 
         // --- Manajemen Perusahaan ---
         Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');

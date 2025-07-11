@@ -275,13 +275,14 @@ class DashboardController extends Controller
                 $barangModel = Barang::with(['perusahaan', 'jenisBarang'])->find($barang->id);
                 return [
                     'id' => $barang->id,
-                    'row_number' => $barang->original_row_number, // Kirim nomor baris asli
+                    'row_number' => $barang->original_row_number,
                     'perusahaan_nama' => $barangModel->perusahaan->nama_perusahaan ?? 'N/A',
                     'jenis_barang' => $barangModel->jenisBarang->nama_jenis ?? 'N/A',
                     'no_asset' => $barang->no_asset,
                     'merek' => $barang->merek,
                     'tgl_pengadaan' => $barang->tgl_pengadaan,
                     'serial_number' => $barang->serial_number,
+                    'lokasi' => $barang->lokasi,
                 ];
             });
 
@@ -427,6 +428,65 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             Log::error("Error fetching user history for SN {$serial_number}: " . $e->getMessage());
             return response()->json(['success' => false, 'error' => 'Terjadi kesalahan server saat mengambil riwayat pengguna.'], 500);
+        }
+    }
+
+    public function edit(Barang $barang)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'barang' => $barang
+        ]);
+    }
+
+    public function update(Request $request, Barang $barang)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'perusahaan_id' => 'required|exists:perusahaans,id',
+            'jenis_barang_id' => 'required|exists:jenis_barangs,id',
+            'merek' => 'required|string|max:255',
+            'tgl_pengadaan' => 'required|date',
+            'serial_number' => 'required|string|max:255|unique:barang,serial_number,' . $barang->id,
+            'lokasi' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $barang->update($request->all());
+            return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui.']);
+        } catch (\Exception $e) {
+            Log::error('Error updating asset: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memperbarui aset.'], 500);
+        }
+    }
+
+    public function destroy(Barang $barang)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        DB::beginTransaction();
+        try {
+            Track::where('serial_number', $barang->serial_number)->delete();
+            $barang->delete();
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Aset berhasil dihapus.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting asset: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus aset.'], 500);
         }
     }
 

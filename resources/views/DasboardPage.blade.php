@@ -4,6 +4,7 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
             <title>Scuto Asset - Dashboard</title>
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,7 +82,11 @@
                     font-size: 2.0rem;
                 }
 
-                #addAssetModal .close-button {
+                #editAssetModal .modal-title::before {
+                    content: '\f303';
+                }
+
+                .close-button {
                     background: none;
                     border: none;
                     color: var(--color-neutral-light);
@@ -92,17 +97,17 @@
                     transition: color 0.2s ease;
                 }
 
-                html.light #addAssetModal .close-button {
+                html.light .close-button {
                     color: #888;
                 }
 
-                #addAssetModal .close-button:hover,
-                #addAssetModal .close-button:focus {
+                .close-button:hover,
+                .close-button:focus {
                     color: var(--color-text-light);
                     text-decoration: none;
                 }
 
-                html.light #addAssetModal .close-button:hover {
+                html.light .close-button:hover {
                     color: #333;
                 }
 
@@ -1105,15 +1110,71 @@
                 }
 
                 .tableView .product-cell.cell-lokasi {
-                    flex: 1 1 100px;
-                    min-width: 100px;
+                    flex: 1 1 130px;
+                    min-width: 130px;
                 }
 
                 .tableView .product-cell.cell-aksi {
-                    flex: 0 0 120px;
-                    min-width: 120px;
+                    flex: 0 0 180px;
+                    min-width: 180px;
                     justify-content: center;
+                    gap: 8px;
                     overflow: visible;
+                }
+
+                .product-cell.cell-aksi .action-btn-table.detail-btn-table-js {
+                    border-color: #5cb85c;
+                    color: #5cb85c;
+                }
+
+                .product-cell.cell-aksi .action-btn-table.detail-btn-table-js:hover {
+                    background-color: #5cb85c;
+                    color: #fff;
+                }
+
+                .product-cell.cell-aksi .action-btn-table.edit-btn-asset {
+                    border-color: var(--action-color);
+                    color: var(--action-color);
+                }
+
+                .product-cell.cell-aksi .action-btn-table.edit-btn-asset:hover {
+                    background-color: var(--action-color);
+                    color: #fff;
+                }
+
+                .product-cell.cell-aksi .action-btn-table.remove-btn-asset {
+                    border-color: #e74c3c;
+                    color: #e74c3c;
+                }
+
+                .product-cell.cell-aksi .action-btn-table.remove-btn-asset:hover {
+                    background-color: #e74c3c;
+                    color: #fff;
+                }
+
+                .action-btn-table span {
+                    display: none;
+                }
+
+                .action-btn-table.detail-btn-table-js span {
+                    display: inline;
+                }
+
+                .action-buttons-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    width: 100%;
+                }
+
+                .action-buttons-split {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .action-buttons-split .action-btn-table {
+                    flex: 1;
+                    justify-content: center;
                 }
 
                 .tableView .product-cell img {
@@ -1182,16 +1243,18 @@
 
                 .product-cell.cell-aksi .action-btn-table {
                     padding: 6px 12px;
-                    margin: 0 4px;
-                    border: 1px solid var(--action-color);
+                    margin: 0;
+                    border: 1px solid transparent;
                     background-color: transparent;
-                    color: var(--action-color);
                     border-radius: 4px;
                     cursor: pointer;
                     font-size: 13px;
                     font-weight: 500;
                     transition: all 0.2s ease-in-out;
                     white-space: nowrap;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
                 }
 
                 .product-cell.cell-aksi .action-btn-table:hover {
@@ -2083,8 +2146,25 @@
                     }
                 }
 
+                .mobile-actions {
+                    display: none;
+                }
+
                 @media screen and (max-width: 768px),
                 screen and (orientation: landscape) and (max-height: 500px) {
+
+                    .tableView .products-header {
+                        display: none;
+                    }
+
+                    .desktop-actions {
+                        display: none;
+                    }
+
+                    .mobile-actions {
+                        display: block;
+                        width: 100%;
+                    }
 
                     .modal {
                         padding-top: 2rem;
@@ -2212,10 +2292,6 @@
                         overflow: visible;
                     }
 
-                    .tableView .products-header {
-                        display: none;
-                    }
-
                     .tableView .products-row {
                         display: block;
                         min-width: 0;
@@ -2248,7 +2324,6 @@
                     }
 
                     .tableView .product-cell[data-label]::before {
-                        content: attr(data-label);
                         font-weight: 500;
                         text-align: left;
                         padding-right: 1rem;
@@ -2264,9 +2339,20 @@
                     }
 
                     .tableView .product-cell.cell-aksi {
-                        justify-content: center;
-                        padding-top: 1.5rem;
+                        padding-top: 1rem;
                         margin-top: 1rem;
+                        gap: 12px;
+                        flex-direction: column;
+                    }
+
+                    .product-cell.cell-aksi .action-btn-table span {
+                        display: inline;
+                    }
+
+                    .product-cell.cell-aksi .action-btn-table {
+                        width: 100%;
+                        justify-content: center;
+                        padding: 12px 10px;
                     }
 
                     .tableView .product-cell.cell-aksi .action-btn-table {
@@ -2736,6 +2822,84 @@
             </div>
 
             <!-- =================================== -->
+            <!--           MODAL EDIT ASET           -->
+            <!-- =================================== -->
+            <div id="editAssetModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Aset</h5>
+                         <button type="button" class="close-button" id="closeEditAssetModalBtn">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAssetForm">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" id="edit_asset_id" name="asset_id">
+
+                            <div class="form-group">
+                                <label for="edit_perusahaan_id">Perusahaan</label>
+                                <select name="perusahaan_id" id="edit_perusahaan_id" class="form-control" required>
+                                    <option value="">Pilih Perusahaan</option>
+                                    @foreach($perusahaanOptions as $perusahaan)
+                                    <option value="{{ $perusahaan->id }}">{{ $perusahaan->nama_perusahaan }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="invalid-feedback" id="edit_perusahaan_id_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_jenis_barang_id">Jenis Barang</label>
+                                <select name="jenis_barang_id" id="edit_jenis_barang_id" class="form-control" required>
+                                    <option value="">Pilih Jenis Barang</option>
+                                    @foreach($jenisBarangOptions as $jenis)
+                                    <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="invalid-feedback" id="edit_jenis_barang_id_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_no_asset">No. Asset (Tidak bisa diubah)</label>
+                                <input type="text" name="no_asset" id="edit_no_asset" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_merek">Merek</label>
+                                <input type="text" name="merek" id="edit_merek" class="form-control" required>
+                                <div class="invalid-feedback" id="edit_merek_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_tgl_pengadaan">Tanggal Pengadaan</label>
+                                <div class="date-input-container">
+                                    <input type="date" name="tgl_pengadaan" id="edit_tgl_pengadaan" class="form-control" required>
+                                </div>
+                                <div class="invalid-feedback" id="edit_tgl_pengadaan_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_serial_number">Serial Number</label>
+                                <input type="text" name="serial_number" id="edit_serial_number" class="form-control" required>
+                                <div class="invalid-feedback" id="edit_serial_number_error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_lokasi">Lokasi</label>
+                                <input type="text" name="lokasi" id="edit_lokasi" class="form-control">
+                                <div class="invalid-feedback" id="edit_lokasi_error"></div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelEditAssetModalBtn">Batal</button>
+                        <button type="submit" class="btn btn-primary" form="editAssetForm" id="submitEditAssetBtn">Simpan Perubahan</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- =================================== -->
             <!--       HALAMAN DASHBOARD SECTION       -->
             <!-- =================================== -->
             <div id="dashboard-page">
@@ -2931,7 +3095,7 @@
                             <div id="productTableRowsContainer">
                                 @if(isset($barangs) && $barangs->count() > 0)
                                 @foreach($barangs as $index => $barang)
-                                <div class="products-row">
+                                <div class="products-row" data-id="{{ $barang->id }}">
                                     <div class="product-cell cell-no">{{ $barangs->firstItem() + $index }}</div>
                                     <div class="product-cell cell-perusahaan" data-label="Perusahaan">{{ $barang->perusahaan->nama_perusahaan ?? 'N/A' }}</div>
                                     <div class="product-cell cell-jenis-barang" data-label="Jenis Barang">{{ $barang->jenisBarang->nama_jenis ?? 'N/A' }}</div>
@@ -2945,12 +3109,22 @@
                                             <i class="fas fa-info-circle"></i>
                                             <span>Detail</span>
                                         </button>
+                                        @if(auth()->user()->isSuperAdmin())
+                                        <button class="action-btn-table edit-btn-asset" data-id="{{ $barang->id }}" title="Edit Aset">
+                                            <i class="fas fa-edit"></i>
+                                            <span>Edit</span>
+                                        </button>
+                                        <button class="action-btn-table remove-btn-asset" data-id="{{ $barang->id }}" title="Hapus Aset">
+                                            <i class="fas fa-trash-alt"></i>
+                                            <span>Hapus</span>
+                                        </button>
+                                        @endif
                                     </div>
                                 </div>
                                 @endforeach
                                 @else
                                 <div class="products-row">
-                                    <div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div>
+                                    <div class="product-cell" style="text-align:center; flex-basis:100%;">Tidak ada data aset ditemukan.</div>
                                 </div>
                                 @endif
                             </div>
@@ -3394,6 +3568,132 @@
 
                             const exportExcelButton = document.getElementById('exportExcelBtn');
 
+                            const editAssetModal = document.getElementById('editAssetModal');
+                            const editAssetForm = document.getElementById('editAssetForm');
+                            const closeEditAssetModalBtn = document.getElementById('closeEditAssetModalBtn');
+                            const cancelEditAssetModalBtn = document.getElementById('cancelEditAssetModalBtn');
+                            const submitEditAssetBtn = document.getElementById('submitEditAssetBtn');
+
+                            const closeEditAssetModal = () => {
+                                if (editAssetModal) editAssetModal.classList.remove('show');
+                            };
+
+                            if (closeEditAssetModalBtn) closeEditAssetModalBtn.addEventListener('click', closeEditAssetModal);
+                            if (cancelEditAssetModalBtn) cancelEditAssetModalBtn.addEventListener('click', closeEditAssetModal);
+                            setupSmartModalClosure(editAssetModal, closeEditAssetModal);
+
+                            if (productTableRowsContainer) {
+                                productTableRowsContainer.addEventListener('click', function(event) {
+                                    const detailButton = event.target.closest('.detail-btn-table-js');
+                                    const editButton = event.target.closest('.edit-btn-asset');
+                                    const removeButton = event.target.closest('.remove-btn-asset');
+
+                                    if (detailButton) {
+                                        const barangId = detailButton.dataset.id;
+                                        if (barangId) {
+                                            openDetailModal(barangId);
+                                        }
+                                        return;
+                                    }
+
+                                    if (editButton) {
+                                        const assetId = editButton.dataset.id;
+                                        fetch(`/barang/${assetId}/edit`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    const barang = data.barang;
+                                                    document.getElementById('edit_asset_id').value = barang.id;
+                                                    document.getElementById('edit_perusahaan_id').value = barang.perusahaan_id;
+                                                    document.getElementById('edit_jenis_barang_id').value = barang.jenis_barang_id;
+                                                    document.getElementById('edit_no_asset').value = barang.no_asset;
+                                                    document.getElementById('edit_merek').value = barang.merek;
+                                                    document.getElementById('edit_tgl_pengadaan').value = barang.tgl_pengadaan;
+                                                    document.getElementById('edit_serial_number').value = barang.serial_number;
+                                                    document.getElementById('edit_lokasi').value = barang.lokasi;
+
+                                                    editAssetForm.action = `/barang/${barang.id}`;
+                                                    if (editAssetModal) editAssetModal.classList.add('show');
+                                                } else {
+                                                    alert(data.message || 'Gagal mengambil data aset.');
+                                                }
+                                            }).catch(error => console.error('Error:', error));
+                                        return;
+                                    }
+
+                                    if (removeButton) {
+                                        const assetId = removeButton.dataset.id;
+                                        if (confirm('Apakah Anda yakin ingin menghapus aset ini? Riwayat serah terima yang terkait juga akan dihapus.')) {
+                                            fetch(`/barang/${assetId}`, {
+                                                    method: 'DELETE',
+                                                    headers: {
+                                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                        'Accept': 'application/json',
+                                                    }
+                                                })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        alert(data.message);
+                                                        performRealtimeSearch();
+                                                    } else {
+                                                        alert(data.message || 'Gagal menghapus aset.');
+                                                    }
+                                                }).catch(error => {
+                                                    console.error('Error:', error);
+                                                    alert('Terjadi kesalahan saat menghapus aset.');
+                                                });
+                                        }
+                                        return;
+                                    }
+                                });
+                            }
+
+                            if (editAssetForm) {
+                                editAssetForm.addEventListener('submit', function(event) {
+                                    event.preventDefault();
+                                    const formData = new FormData(this);
+                                    const actionUrl = this.action;
+
+                                    submitEditAssetBtn.textContent = 'Menyimpan...';
+                                    submitEditAssetBtn.disabled = true;
+
+                                    fetch(actionUrl, {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                'Accept': 'application/json',
+                                            }
+                                        })
+                                        .then(response => response.json().then(data => ({
+                                            status: response.status,
+                                            body: data
+                                        })))
+                                        .then(({
+                                            status,
+                                            body
+                                        }) => {
+                                            if (status === 200 && body.success) {
+                                                alert(body.message);
+                                                closeEditAssetModal();
+                                                performRealtimeSearch();
+                                            } else if (status === 422 && body.errors) {
+                                                displayValidationErrorsOnForm(body.errors, editAssetForm);
+                                            } else {
+                                                alert(body.message || 'Terjadi kesalahan.');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            alert('Terjadi kesalahan yang tidak terduga.');
+                                        })
+                                        .finally(() => {
+                                            submitEditAssetBtn.textContent = 'Simpan Perubahan';
+                                            submitEditAssetBtn.disabled = false;
+                                        });
+                                });
+                            }
 
                             // Variabel State
                             let originalRowsHTML = '';
@@ -3761,7 +4061,7 @@
 
                             function performRealtimeSearch(page = 1) {
                                 if (!productTableRowsContainer) return;
-
+                                const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
                                 const perPage = rowsPerPageSelect ? rowsPerPageSelect.value : 10;
                                 const keyword = mainSearchInput ? mainSearchInput.value : '';
                                 const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
@@ -3798,23 +4098,69 @@
                                             responseData.data.forEach((barang) => {
                                                 const rowNumber = barang.row_number;
 
-                                                tableRowsHtml += `
-                                            <div class="products-row">
-                                                <div class="product-cell cell-no">${rowNumber}</div>
-                                                <div class="product-cell cell-perusahaan" title="${escapeHtml(barang.perusahaan_nama || 'N/A')}">${escapeHtml(barang.perusahaan_nama || 'N/A')}</div>
-                                                <div class="product-cell cell-jenis-barang" title="${escapeHtml(barang.jenis_barang || 'N/A')}">${escapeHtml(barang.jenis_barang || 'N/A')}</div>
-                                                <div class="product-cell cell-no-asset" title="${escapeHtml(barang.no_asset || '')}">${escapeHtml(barang.no_asset || '')}</div>
-                                                <div class="product-cell cell-merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
-                                                <div class="product-cell cell-tgl-pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
-                                                <div class="product-cell cell-serial-number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
-                                                <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
-                                                <div class="product-cell cell-aksi">
+                                                let actionButtons = `
+                                                <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
+                                                    <i class="fas fa-info-circle"></i>
+                                                    <span>Detail</span>
+                                                </button>`;
+
+                                                let superAdminButtons = '';
+                                                if (IS_SUPER_ADMIN) {
+                                                    superAdminButtons = `
+                                                    <button class="action-btn-table edit-btn-asset" data-id="${barang.id}" title="Edit Aset">
+                                                        <i class="fas fa-edit"></i>
+                                                        <span>Edit</span>
+                                                    </button>
+                                                    <button class="action-btn-table remove-btn-asset" data-id="${barang.id}" title="Hapus Aset">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                        <span>Hapus</span>
+                                                    </button>`;
+                                                }
+
+                                                let mobileActionButtons = `
+                                                <div class="action-buttons-wrapper">
                                                     <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
                                                         <i class="fas fa-info-circle"></i>
                                                         <span>Detail</span>
-                                                    </button>
-                                                </div>
-                                            </div>`;
+                                                    </button>`;
+
+                                                if (IS_SUPER_ADMIN) {
+                                                    mobileActionButtons += `
+                                                    <div class="action-buttons-split">
+                                                        <button class="action-btn-table edit-btn-asset" data-id="${barang.id}" title="Edit Aset">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span>Edit</span>
+                                                        </button>
+                                                        <button class="action-btn-table remove-btn-asset" data-id="${barang.id}" title="Hapus Aset">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                            <span>Hapus</span>
+                                                        </button>
+                                                    </div>`;
+                                                }
+                                                mobileActionButtons += `</div>`;
+
+                                                tableRowsHtml += `
+                                                <div class="products-row" data-id="${barang.id}">
+                                                    <div class="product-cell cell-no">${rowNumber}</div>
+                                                    <div class="product-cell cell-perusahaan" data-label="Perusahaan" title="${escapeHtml(barang.perusahaan_nama || 'N/A')}">${escapeHtml(barang.perusahaan_nama || 'N/A')}</div>
+                                                    <div class="product-cell cell-jenis-barang" data-label="Jenis Barang" title="${escapeHtml(barang.jenis_barang || 'N/A')}">${escapeHtml(barang.jenis_barang || 'N/A')}</div>
+                                                    <div class="product-cell cell-no-asset" data-label="No Asset" title="${escapeHtml(barang.no_asset || '')}">${escapeHtml(barang.no_asset || '')}</div>
+                                                    <div class="product-cell cell-merek" data-label="Merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
+                                                    <div class="product-cell cell-tgl-pengadaan" data-label="Tgl. Pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
+                                                    <div class="product-cell cell-serial-number" data-label="Serial Number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
+                                                    <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
+                                                    <div class="product-cell cell-aksi" data-label="Aksi">
+                                                        <!-- Tombol untuk desktop -->
+                                                        <div class="desktop-actions">
+                                                            ${actionButtons}
+                                                            ${superAdminButtons}
+                                                        </div>
+                                                        <!-- Tombol untuk mobile -->
+                                                        <div class="mobile-actions">
+                                                            ${mobileActionButtons}
+                                                        </div>
+                                                    </div>
+                                                </div>`;
                                             });
                                         } else {
                                             tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
