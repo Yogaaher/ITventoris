@@ -15,25 +15,24 @@ $nomor = ($users->currentPage() - 1) * $users->perPage() + 1;
         $canDelete = false;
 
         if ($currentUser->isSuperAdmin()) {
-        $canEdit = true;
-        $canDelete = ($currentUser->id !== $user->id); // Bisa hapus semua kecuali diri sendiri
+            $canEdit = true;
+            $canDelete = ($currentUser->id !== $user->id); // Bisa hapus semua kecuali diri sendiri
         } elseif ($currentUser->isAdmin()) {
-        if ($user->isUser()) {
-        $canEdit = true;
-        $canDelete = true;
-        }
+            if ($user->isUser()) {
+                $canEdit = true;
+                $canDelete = true;
+            }
         }
         @endphp
 
-        @if($canEdit)
-        <button class="action-btn-table edit-btn" title="Edit User">
+        <button class="action-btn-table edit-btn"
+            {{ !$canEdit ? 'disabled' : '' }}
+            title="{{ $canEdit ? 'Edit User' : 'Aksi tidak diizinkan' }}">
             <i class="fas fa-edit"></i> Edit
         </button>
-        @endif
+
         <button class="action-btn-table delete-btn"
-            {{-- Tambahkan 'disabled' jika $canDelete adalah false --}}
             {{ !$canDelete ? 'disabled' : '' }}
-            {{-- Ganti judul tombolnya juga biar informatif --}}
             title="{{ $canDelete ? 'Hapus User' : 'Aksi tidak diizinkan' }}">
             <i class="fas fa-trash"></i> Hapus
         </button>

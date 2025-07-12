@@ -2172,6 +2172,7 @@
                 const renderTable = (suratList) => {
                     const userRole = '{{ auth()->user()->role }}';
                     const isSuperAdmin = userRole === 'super_admin';
+                    const isAdmin = userRole === 'admin';
 
                     if (!suratList || suratList.length === 0) {
                         ui.tableBody.innerHTML = `<div class="products-row"><div class="product-cell" style="flex: 1; text-align: center; padding: 2rem;">Tidak ada data surat ditemukan.</div></div>`;
@@ -2194,7 +2195,7 @@
                             icon: 'fa-download',
                             text: 'Download',
                             title: 'Download PDF',
-                            condition: true,
+                            condition: isAdmin || isSuperAdmin,
                             type: 'link'
                         }, {
                             name: 'detail',
@@ -2596,33 +2597,36 @@
                     fetchSurat();
                 });
 
-                document.getElementById('openAddSuratModalButton').addEventListener('click', () => {
-                    resetForm(ui.suratForm);
-                    document.getElementById('suratModalTitle').textContent = 'Tambah Surat Serah Terima';
-                    document.getElementById('suratModalIcon').className = 'fas fa-plus-square modal-header-icon';
-                    document.getElementById('submitSuratBtn').textContent = 'Simpan';
-                    document.getElementById('surat_id').value = '';
-                    document.getElementById('search_barang').disabled = false;
+                const openAddSuratModalButton = document.getElementById('openAddSuratModalButton');
+                if (openAddSuratModalButton) {
+                    openAddSuratModalButton.addEventListener('click', () => {
+                        resetForm(ui.suratForm);
+                        document.getElementById('suratModalTitle').textContent = 'Tambah Surat Serah Terima';
+                        document.getElementById('suratModalIcon').className = 'fas fa-plus-square modal-header-icon';
+                        document.getElementById('submitSuratBtn').textContent = 'Simpan';
+                        document.getElementById('surat_id').value = '';
+                        document.getElementById('search_barang').disabled = false;
 
-                    const noSuratInput = document.getElementById('no_surat_auto');
-                    noSuratInput.value = '';
-                    noSuratInput.placeholder = 'Memuat nomor...';
+                        const noSuratInput = document.getElementById('no_surat_auto');
+                        noSuratInput.value = '';
+                        noSuratInput.placeholder = 'Memuat nomor...';
 
-                    fetch("{{ route('surat.getProspectiveNomor') }}")
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.nomor_surat) {
-                                noSuratInput.value = data.nomor_surat;
-                            } else {
+                        fetch("{{ route('surat.getProspectiveNomor') }}")
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.nomor_surat) {
+                                    noSuratInput.value = data.nomor_surat;
+                                } else {
+                                    noSuratInput.placeholder = 'Gagal memuat nomor';
+                                }
+                            })
+                            .catch(() => {
                                 noSuratInput.placeholder = 'Gagal memuat nomor';
-                            }
-                        })
-                        .catch(() => {
-                            noSuratInput.placeholder = 'Gagal memuat nomor';
-                        });
+                            });
 
-                    openModal(ui.suratModal);
-                });
+                        openModal(ui.suratModal);
+                    });
+                }
 
                 [ui.suratModal, ui.detailSuratModal].forEach(modal => {
                     if (modal) {

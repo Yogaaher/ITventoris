@@ -42,7 +42,7 @@ class SuratController extends Controller
 
         // Kita akan passing $surats kosong saja ke view, karena JS akan fetch data
         return view('SerahTerimaPage', [
-            'surats' => [], // Dikosongkan agar load awal cepat
+            'surats' => [],
             'searchKeyword' => $request->input('search', ''),
         ]);
     }

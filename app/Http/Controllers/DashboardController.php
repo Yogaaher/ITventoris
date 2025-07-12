@@ -431,6 +431,47 @@ class DashboardController extends Controller
         }
     }
 
+    public function editTrack(Track $track)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+        $barang = Barang::with('perusahaan')->where('serial_number', $track->serial_number)->first();
+        return response()->json(['success' => true, 'track' => $track, 'barang' => $barang]);
+    }
+
+    public function updateTrack(Request $request, Track $track)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        $rules = [
+            'username' => 'required|string|max:255',
+            'status' => 'required|string|in:digunakan,diperbaiki,dipindah,non aktif,tersedia',
+            'keterangan' => 'required|string',
+            'tanggal_awal' => 'required|date',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $track->update($request->only(['username', 'status', 'keterangan', 'tanggal_awal']));
+        return response()->json(['success' => true, 'message' => 'Riwayat berhasil diperbarui.']);
+    }
+
+    public function destroyTrack(Track $track)
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+        
+        $track->delete();
+        return response()->json(['success' => true, 'message' => 'Riwayat berhasil dihapus.']);
+    }
+
     public function edit(Barang $barang)
     {
         if (!auth()->user()->isSuperAdmin()) {

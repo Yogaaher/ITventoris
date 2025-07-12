@@ -31,6 +31,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
     Route::get('/history/user/{serial_number}', [DashboardController::class, 'getUserHistoryBySerialNumber'])->name('history.user.serial_number');
 
+    Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');
+    Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');
+
+    // --- Rute yang berhubungan dengan pengambilan data untuk halaman view-only
+    Route::get('/surat/search', [SuratController::class, 'searchRealtime'])->name('surat.search');
+    Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
+    Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
+    Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
+
     // === GRUP KHUSUS UNTUK ADMIN & SUPER ADMIN ===
     Route::middleware('is_admin')->group(function () {
 
@@ -41,32 +50,27 @@ Route::middleware('auth')->group(function () {
         Route::get('/barang/{barang}/edit', [DashboardController::class, 'edit'])->name('barang.edit');
         Route::put('/barang/{barang}', [DashboardController::class, 'update'])->name('barang.update');
         Route::delete('/barang/{barang}', [DashboardController::class, 'destroy'])->name('barang.destroy');
-
-        // --- Manajemen Perusahaan ---
-        Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');
+        Route::get('/track/{track}/edit', [DashboardController::class, 'editTrack']);
+        Route::put('/track/{track}', [DashboardController::class, 'updateTrack']);
+        Route::delete('/track/{track}', [DashboardController::class, 'destroyTrack']);
 
         // --- Aksi untuk Perusahaan (semua via AJAX) ---
-        // --- Aksi untuk Perusahaan (semua via AJAX) ---
-        Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
         Route::post('/companies', [PerusahaanPageController::class, 'store'])->name('companies.store');
         Route::get('/companies/{company}/edit', [PerusahaanPageController::class, 'edit'])->name('companies.edit');
         Route::put('/companies/{company}', [PerusahaanPageController::class, 'update'])->name('companies.update');
         Route::delete('/companies/{company}', [PerusahaanPageController::class, 'destroy'])->name('companies.destroy');
 
         // --- Aksi untuk Jenis Barang (semua via AJAX) ---
-        Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
         Route::post('/item-types', [JenisBarangController::class, 'store'])->name('item-types.store');
         Route::get('/item-types/{item_type}/edit', [JenisBarangController::class, 'edit'])->name('item-types.edit');
         Route::put('/item-types/{item_type}', [JenisBarangController::class, 'update'])->name('item-types.update');
         Route::delete('/item-types/{item_type}', [JenisBarangController::class, 'destroy'])->name('item-types.destroy');
 
         // --- Manajemen Surat ---
-        Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');
         Route::get('/surat/get-next-nomor', [SuratController::class, 'getProspectiveNomor'])->name('surat.getProspectiveNomor');
-        Route::get('/surat/search', [SuratController::class, 'searchRealtime'])->name('surat.search');
         Route::get('/surat/find-barang', [SuratController::class, 'findBarang'])->name('surat.find-barang');
         Route::get('/surat/download/{id}', [SuratController::class, 'downloadPdf'])->name('surat.download.pdf');
-        Route::resource('surat', SuratController::class)->except(['index'])->middleware('is_admin'); // Menggunakan resource controller
+        Route::resource('surat', SuratController::class)->except(['index', 'show'])->middleware('is_admin');
 
         // --- Manajemen User ---
         Route::get('/users/{user}/edit', [ManagePageController::class, 'edit'])->name('users.edit');
