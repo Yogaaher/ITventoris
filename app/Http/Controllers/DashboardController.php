@@ -156,26 +156,15 @@ class DashboardController extends Controller
         });
 
         $summaryQuery = clone $baseQueryBuilder;
+
         $itemCounts = $summaryQuery
-            ->select('jenis_barang_id', DB::raw('count(*) as total'))
-            ->groupBy('jenis_barang_id')
-            ->pluck('total', 'jenis_barang_id');
+            ->select('jenis_barangs.nama_jenis', DB::raw('count(barang.id) as total'))
+            ->groupBy('jenis_barangs.nama_jenis')
+            ->pluck('total', 'jenis_barangs.nama_jenis');
 
-        foreach ($itemCounts as $jenisId => $count) {
-            $jenisBarang = $allJenisBarang->find($jenisId);
-            if ($jenisBarang && isset($inventorySummary[$jenisBarang->nama_jenis])) {
-                $inventorySummary[$jenisBarang->nama_jenis]->count = $count;
-            }
-        }
-
-        if ($filterJenisBarangInput) {
-            $filteredJenisModel = $allJenisBarang->find($filterJenisBarangInput);
-            if ($filteredJenisModel) {
-                foreach ($inventorySummary as $nama => $data) {
-                    if ($nama !== $filteredJenisModel->nama_jenis) {
-                        $data->count = 0;
-                    }
-                }
+        foreach ($itemCounts as $namaJenis => $count) {
+            if (isset($inventorySummary[$namaJenis])) {
+                $inventorySummary[$namaJenis]->count = $count;
             }
         }
 
@@ -268,7 +257,26 @@ class DashboardController extends Controller
         $barangsPaginator = $mainQuery->select('ranked_barang.*', 'barang.*')->paginate($perPage);
         $barangsPaginator->appends($request->except('page'));
 
-        $inventorySummaryAjax = $this->calculateInventorySummary(clone $queryBuilder, $request->input('filter_jenis_barang'));
+        $summaryQueryBuilder = Barang::query()
+            ->leftJoin('jenis_barangs', 'barang.jenis_barang_id', '=', 'jenis_barangs.id');
+
+        if ($request->filled('search_no_asset')) {
+            $searchKeyword = $request->input('search_no_asset');
+            $summaryQueryBuilder->where(function ($query) use ($searchKeyword) {
+                $query->where('barang.no_asset', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('barang.serial_number', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('barang.merek', 'like', '%' . $searchKeyword . '%');
+            });
+        } else {
+            if ($request->filled('filter_perusahaan')) {
+                $summaryQueryBuilder->where('barang.perusahaan_id', $request->input('filter_perusahaan'));
+            }
+            if ($request->filled('filter_jenis_barang')) {
+                $summaryQueryBuilder->where('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
+            }
+        }
+
+        $inventorySummaryAjax = $this->calculateInventorySummary($summaryQueryBuilder, null);
 
         if ($request->ajax()) {
             $transformedData = $barangsPaginator->getCollection()->map(function ($barang) {

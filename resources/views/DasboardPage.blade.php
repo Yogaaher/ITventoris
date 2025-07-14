@@ -228,10 +228,28 @@
                     /* === CSS UNTUK SUMMARY BOX INVENTARIS === */
                     .inventory-summary-container {
                         display: flex;
-                        flex-wrap: wrap;
                         gap: 16px;
                         margin-bottom: 20px;
-                        padding: 0 4px;
+                        padding: 10px 4px 16px 4px;
+                        flex-wrap: nowrap;
+                        overflow-x: auto;
+                        -webkit-overflow-scrolling: touch;
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+
+                    .inventory-summary-container::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    .inventory-summary-container::-webkit-scrollbar-track {
+                        background: var(--app-content-secondary-color);
+                        border-radius: 4px;
+                    }
+
+                    .inventory-summary-container::-webkit-scrollbar-thumb {
+                        background-color: var(--action-color);
+                        border-radius: 4px;
                     }
 
                     .summary-box {
@@ -240,10 +258,15 @@
                         padding: 20px 15px;
                         border-radius: 8px;
                         text-align: center;
-                        flex: 1 1 150px;
-                        min-width: 120px;
+                        flex: 0 0 180px;
+                        min-width: 180px;
+                        min-height: 110px;
                         box-shadow: var(--filter-shadow);
-                        transition: transform 0.2s ease-in-out;
+                        transition: transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
                     }
 
                     .summary-box:hover {
@@ -275,6 +298,11 @@
                     .summary-box-count {
                         font-size: 2.4rem;
                         font-weight: bold;
+                    }
+
+                    /* CSS untuk menyembunyikan duplikasi saat filter aktif */
+                    .filter-active .conveyor-clone {
+                        display: none !important;
                     }
 
                     /* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
@@ -2302,14 +2330,13 @@
                         }
 
                         .summary-box {
-                            display: grid;
-                            grid-template-columns: min-content 1fr;
-                            grid-template-rows: auto auto;
-                            gap: 0 16px;
+                            flex: 0 0 160px;
+                            min-width: 160px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
                             align-items: center;
-                            text-align: left;
-                            padding: 12px 16px;
-                            flex-basis: calc(50% - 8px);
+                            padding: 16px 12px;
                         }
 
                         .summary-box-icon {
@@ -3037,14 +3064,14 @@
                             {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
                             <div class="inventory-summary-container">
                                 @foreach($inventorySummary as $namaJenis => $data)
-                                <div class="summary-box">
+                                @php
+                                $slug = Str::slug($namaJenis);
+                                @endphp
+                                <div class="summary-box" data-type="{{ $slug }}">
                                     <div class="summary-box-icon">
                                         <i class="{{ $data->icon }}"></i>
                                     </div>
                                     <div class="summary-box-type">{{ $namaJenis }}</div>
-                                    @php
-                                    $slug = Str::slug($namaJenis);
-                                    @endphp
                                     <div class="summary-box-count" id="summary-count-{{ $slug }}">{{ $data->count }}</div>
                                 </div>
                                 @endforeach
@@ -3410,7 +3437,7 @@
 
                             async function handleOpenSerahTerimaModal(event) {
                                 const assetId = event.currentTarget.dataset.assetId;
-                                
+
                                 try {
                                     const response = await fetch(`/barang/detail/${assetId}`);
                                     const result = await response.json();
@@ -3428,10 +3455,10 @@
                                     const modalTitle = serahModal.querySelector('.morph-modal-title span');
 
                                     modalTitle.innerHTML = '<i class="fas fa-exchange-alt"></i> Serah Terima Aset';
-                                    
+
                                     serahForm.reset();
-                                    
-                                    document.getElementById('serahTerimaTrackId').value = ''; 
+
+                                    document.getElementById('serahTerimaTrackId').value = '';
                                     document.getElementById('serahTerimaAssetId').value = assetId;
                                     document.getElementById('serahTerimaSerialNumber').value = barang.serial_number;
                                     document.getElementById('serahTerimaInfoNamaAset').textContent = barang.merek;
@@ -3482,7 +3509,7 @@
                                         if (data.success) {
                                             const track = data.track;
                                             const barang = data.barang;
-                                            
+
                                             const serahModal = document.getElementById('serahTerimaAsetModal');
                                             const serahForm = document.getElementById('serahTerimaAsetForm');
                                             const modalTitle = serahModal.querySelector('.morph-modal-title span');
@@ -3497,7 +3524,7 @@
                                             document.getElementById('serahTerimaInfoNamaAset').textContent = barang.merek;
                                             document.getElementById('serahTerimaInfoSN').textContent = barang.serial_number;
                                             document.getElementById('serahTerimaInfoPerusahaan').textContent = barang.perusahaan.nama_perusahaan;
-                                            
+
                                             document.getElementById('serahTerimaTanggalAwal').value = track.tanggal_awal;
                                             document.getElementById('serahTerimaTanggalAwal').readOnly = false;
 
@@ -3516,7 +3543,7 @@
                             }
 
                             function openUserHistoryModal(serialNumber, deviceName, company) {
-                                const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
+                                const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
                                 const historyModal = document.getElementById('userHistoryModal');
                                 const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
                                 const historyModalDeviceNameEl = document.getElementById('historyModalDeviceName');
@@ -3548,25 +3575,25 @@
 
                                 historyModal.style.display = 'flex';
 
-                            fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data && data.success && Array.isArray(data.history)) {
-                                        if (data.history.length > 0) {
-                                            let tableRowsHTML = '';
-                                            data.history.forEach(item => {
-                                                let actionButtonsCell = '';
-                                                if (IS_SUPER_ADMIN) {
-                                                    actionButtonsCell = `
+                                fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data && data.success && Array.isArray(data.history)) {
+                                            if (data.history.length > 0) {
+                                                let tableRowsHTML = '';
+                                                data.history.forEach(item => {
+                                                    let actionButtonsCell = '';
+                                                    if (IS_SUPER_ADMIN) {
+                                                        actionButtonsCell = `
                                                     <td class="cell-history-aksi">
                                                         <div class="action-buttons-container">
                                                             <button class="action-btn-table-history edit-btn-history" data-track-id="${item.id}" title="Edit Riwayat"><i class="fas fa-edit"></i></button>
                                                             <button class="action-btn-table-history remove-btn-history" data-track-id="${item.id}" title="Hapus Riwayat"><i class="fas fa-trash-alt"></i></button>
                                                         </div>
                                                     </td>`;
-                                                }
-                                                
-                                                tableRowsHTML += `
+                                                    }
+
+                                                    tableRowsHTML += `
                                                 <tr data-track-id="${item.id}">
                                                     <td class="cell-history-user" title="${escapeHtml(item.username || '-')}">${escapeHtml(item.username || '-')}</td>
                                                     <td class="cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</td>
@@ -3575,13 +3602,13 @@
                                                     <td class="cell-history-keterangan" title="${escapeHtml(item.keterangan || '-')}">${escapeHtml(item.keterangan || '-')}</td>
                                                     ${actionButtonsCell}
                                                 </tr>`;
-                                            });
-                                            historyTableBodyEl.innerHTML = tableRowsHTML;
-                                        } else {
-                                            historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center;">Tidak ada riwayat pengguna.</td></tr>`;
+                                                });
+                                                historyTableBodyEl.innerHTML = tableRowsHTML;
+                                            } else {
+                                                historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center;">Tidak ada riwayat pengguna.</td></tr>`;
+                                            }
                                         }
-                                    }
-                                })
+                                    })
                                     .catch(error => {
                                         console.error('Error fetching user history:', error);
                                         historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:red;">Gagal memuat riwayat.</td></tr>`;
@@ -3592,7 +3619,7 @@
                             // DOMContentLoaded: INSIALISASI EVENT LISTENERS DAN FUNGSI YANG BERGANTUNG DOM
                             // ==============================================================================
                             document.addEventListener('DOMContentLoaded', () => {
-                                const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
+                                const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
                                 let currentHistoryRefreshFunction = null;
                                 const productTableRowsContainer = document.getElementById('productTableRowsContainer');
                                 const paginationContainer = document.getElementById('realtimePaginationContainer');
@@ -3648,6 +3675,13 @@
                                 const closeEditAssetModalBtn = document.getElementById('closeEditAssetModalBtn');
                                 const cancelEditAssetModalBtn = document.getElementById('cancelEditAssetModalBtn');
                                 const submitEditAssetBtn = document.getElementById('submitEditAssetBtn');
+
+                                let conveyorInterval = null;
+                                let scrollEndTimer = null;
+                                let isProgrammaticScroll = false;
+                                let isConveyorPausedByUser = false;
+                                let isFilterActive = false;
+                                const conveyorContainer = document.querySelector('.inventory-summary-container');
 
                                 const closeEditAssetModal = () => {
                                     if (editAssetModal) editAssetModal.classList.remove('show');
@@ -3790,21 +3824,125 @@
                                     });
                                 }
 
-                                const userHistoryTableContainer = document.getElementById('userHistoryTableContainer');
-                                    if (userHistoryTableContainer) {
-                                        userHistoryTableContainer.addEventListener('click', function(event) {
-                                            const editButton = event.target.closest('.edit-btn-history');
-                                            const removeButton = event.target.closest('.remove-btn-history');
+                                const updateFilterState = () => {
+                                    const keyword = mainSearchInput ? mainSearchInput.value.trim() : '';
+                                    const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
+                                    const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
+                                    isFilterActive = !!(keyword || perusahaan || jenisBarang);
 
-                                            if (editButton) {
-                                                const trackId = editButton.dataset.trackId;
-                                                openEditHistoryModal(trackId);
+                                    // Tambahkan/remove class filter-active pada container
+                                    if (conveyorContainer) {
+                                        if (isFilterActive) {
+                                            conveyorContainer.classList.add('filter-active');
+                                        } else {
+                                            conveyorContainer.classList.remove('filter-active');
+                                        }
+                                    }
+                                };
+
+                                const stopConveyor = () => {
+                                    if (conveyorInterval) {
+                                        cancelAnimationFrame(conveyorInterval);
+                                        conveyorInterval = null;
+                                    }
+                                };
+
+                               const startConveyor = () => {
+                                    if (conveyorInterval || isFilterActive || !conveyorContainer || window.innerWidth < 1024) {
+                                        return;
+                                    }
+
+                                    const scrollWidth = conveyorContainer.scrollWidth;
+                                    const originalContentWidth = scrollWidth / 2;
+                                    let lastFrameTime = performance.now();
+                                    const speed = 25;
+
+                                    function animate(currentTime) {
+                                        const deltaTime = (currentTime - lastFrameTime) / 1000;
+                                        lastFrameTime = currentTime;
+
+                                        isProgrammaticScroll = true;
+                                        conveyorContainer.scrollLeft += speed * deltaTime;
+
+                                        if (conveyorContainer.scrollLeft >= originalContentWidth) {
+                                            isProgrammaticScroll = true;
+                                            conveyorContainer.scrollLeft -= originalContentWidth;
+                                        }
+                                        
+                                        conveyorInterval = requestAnimationFrame(animate);
+                                    }
+                                    conveyorInterval = requestAnimationFrame(animate);
+                                };
+
+                                const setupConveyorAnimation = () => {
+                                    if (!conveyorContainer || conveyorContainer.children.length === 0) return;
+
+                                    const originalItems = Array.from(conveyorContainer.children).filter(child => !child.classList.contains('conveyor-clone'));
+                                    conveyorContainer.querySelectorAll('.conveyor-clone').forEach(clone => clone.remove());
+                                    
+                                    if (originalItems.length > 0 && originalItems.length < 15) {
+                                        originalItems.forEach(item => {
+                                            const clone = item.cloneNode(true);
+                                            clone.classList.add('conveyor-clone');
+                                            clone.setAttribute('aria-hidden', 'true');
+                                            conveyorContainer.appendChild(clone);
+                                        });
+                                    }
+                                };
+
+                                const filterSummaryBoxes = (visibleAssetTypes = []) => {
+                                    const allSummaryBoxes = document.querySelectorAll('.inventory-summary-container .summary-box');
+
+                                    if (!isFilterActive || visibleAssetTypes.length === 0) {
+                                        allSummaryBoxes.forEach(box => {
+                                            box.style.display = 'flex';
+                                            box.style.opacity = '1';
+                                        });
+                                        return;
+                                    }
+
+                                    const visibleTypesSet = new Set(visibleAssetTypes.map(type => type.toLowerCase().replace(/ /g, '-').replace(/\//g, '')));
+
+                                    // Kelompokkan box berdasarkan tipe untuk memastikan konsistensi
+                                    const boxGroups = {};
+                                    allSummaryBoxes.forEach(box => {
+                                        const type = box.dataset.type;
+                                        if (!boxGroups[type]) {
+                                            boxGroups[type] = [];
+                                        }
+                                        boxGroups[type].push(box);
+                                    });
+
+                                    // Tampilkan/sembunyikan berdasarkan grup
+                                    Object.keys(boxGroups).forEach(type => {
+                                        const shouldShow = visibleTypesSet.has(type);
+                                        boxGroups[type].forEach(box => {
+                                            if (shouldShow) {
+                                                box.style.display = 'flex';
+                                                box.style.opacity = '1';
+                                            } else {
+                                                box.style.display = 'none';
+                                                box.style.opacity = '0';
                                             }
+                                        });
+                                    });
+                                };
 
-                                            if (removeButton) {
-                                                const trackId = removeButton.dataset.trackId;
-                                                if (confirm('Anda yakin ingin menghapus riwayat ini? Tindakan ini tidak dapat diurungkan.')) {
-                                                    fetch(`/track/${trackId}`, {
+                                const userHistoryTableContainer = document.getElementById('userHistoryTableContainer');
+                                if (userHistoryTableContainer) {
+                                    userHistoryTableContainer.addEventListener('click', function(event) {
+                                        const editButton = event.target.closest('.edit-btn-history');
+                                        const removeButton = event.target.closest('.remove-btn-history');
+
+                                        if (editButton) {
+                                            const trackId = editButton.dataset.trackId;
+                                            openEditHistoryModal(trackId);
+                                        }
+
+                                        if (removeButton) {
+                                            const trackId = removeButton.dataset.trackId;
+                                            if (confirm('Anda yakin ingin menghapus riwayat ini? Tindakan ini tidak dapat diurungkan.')) {
+                                                fetch(`/track/${trackId}`, {
                                                         method: 'DELETE',
                                                         headers: {
                                                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -3823,10 +3961,10 @@
                                                         }
                                                     })
                                                     .catch(error => console.error('Error:', error));
-                                                }
                                             }
-                                        });
-                                    }
+                                        }
+                                    });
+                                }
 
                                 function setupAssetPreview() {
                                     const perusahaanSelect = document.getElementById('perusahaan_id');
@@ -4173,6 +4311,9 @@
                                 }
 
                                 function performRealtimeSearch(page = 1) {
+                                    updateFilterState();
+                                    stopConveyor();
+
                                     if (!productTableRowsContainer) return;
                                     const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
                                     const perPage = rowsPerPageSelect ? rowsPerPageSelect.value : 10;
@@ -4207,8 +4348,14 @@
                                         .then(response => response.json())
                                         .then(responseData => {
                                             let tableRowsHtml = '';
+                                            let visibleAssetTypes = new Set();
+
                                             if (responseData.data && responseData.data.length > 0) {
                                                 responseData.data.forEach((barang) => {
+                                                    if (barang.jenis_barang) {
+                                                        visibleAssetTypes.add(barang.jenis_barang);
+                                                    }
+
                                                     const rowNumber = barang.row_number;
 
                                                     let actionButtons = `
@@ -4263,12 +4410,10 @@
                                                         <div class="product-cell cell-serial-number" data-label="Serial Number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
                                                         <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
                                                         <div class="product-cell cell-aksi" data-label="Aksi">
-                                                            <!-- Tombol untuk desktop -->
                                                             <div class="desktop-actions">
                                                                 ${actionButtons}
                                                                 ${superAdminButtons}
                                                             </div>
-                                                            <!-- Tombol untuk mobile -->
                                                             <div class="mobile-actions">
                                                                 ${mobileActionButtons}
                                                             </div>
@@ -4279,9 +4424,16 @@
                                                 tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
                                             }
                                             productTableRowsContainer.innerHTML = tableRowsHtml;
+
+                                            filterSummaryBoxes(Array.from(visibleAssetTypes));
+
                                             if (responseData.pagination) renderPaginationControls(responseData.pagination);
                                             if (responseData.inventorySummary) {
                                                 updateInventorySummary(responseData.inventorySummary);
+                                            }
+
+                                            if (!isFilterActive) {
+                                                startConveyor();
                                             }
                                         })
                                         .catch(error => {
@@ -4306,6 +4458,8 @@
 
                                 function updateInventorySummary(summaryData) {
                                     if (!summaryData) return;
+
+                                    // Reset semua box terlebih dahulu
                                     document.querySelectorAll('.summary-box-count').forEach(el => {
                                         el.textContent = '0';
                                     });
@@ -4315,14 +4469,15 @@
                                         const slug = namaJenis.toLowerCase()
                                             .replace(/ \/ /g, '-')
                                             .replace(/ /g, '-');
-                                        const elementId = `summary-count-${slug}`;
-                                        const countElement = document.getElementById(elementId);
 
-                                        if (countElement) {
-                                            countElement.textContent = data.count;
-                                        } else {
-                                            console.warn(`Elemen summary dengan ID '${elementId}' tidak ditemukan.`);
-                                        }
+                                        // Update SEMUA box dengan tipe yang sama (asli dan duplikasi)
+                                        const allBoxesOfType = document.querySelectorAll(`[data-type="${slug}"]`);
+                                        allBoxesOfType.forEach(box => {
+                                            const countElement = box.querySelector('.summary-box-count');
+                                            if (countElement) {
+                                                countElement.textContent = data.count;
+                                            }
+                                        });
                                     }
                                 }
 
@@ -4496,10 +4651,10 @@
                                 if (serahTerimaForm && submitSerahTerimaBtn) {
                                     serahTerimaForm.addEventListener('submit', function(event) {
                                         event.preventDefault();
-                                        
+
                                         const formData = new FormData(serahTerimaForm);
                                         const trackId = formData.get('track_id');
-                                        
+
                                         let url = "{{ route('aset.serahterima.store') }}";
                                         let method = 'POST';
 
@@ -4654,6 +4809,26 @@
                                         }
                                     }
                                 }
+
+                               if (conveyorContainer) {
+                                    conveyorContainer.addEventListener('scroll', () => {
+                                        if (isProgrammaticScroll) {
+                                            isProgrammaticScroll = false;
+                                            return;
+                                        }
+
+                                        stopConveyor();
+                                        clearTimeout(scrollEndTimer);
+
+                                        scrollEndTimer = setTimeout(() => {
+                                            startConveyor();
+                                        }, 2500); 
+                                    }, { passive: true });
+                                }
+
+                                setupConveyorAnimation();
+                                updateFilterState();
+                                startConveyor();
                                 initializeSidebarState();
                                 setActiveSidebarLink();
                             });
