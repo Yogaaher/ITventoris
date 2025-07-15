@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Barang extends Model
 {
+    use LogsActivity;
     protected $table = 'barang';
 
     protected $fillable = [
@@ -22,6 +24,8 @@ class Barang extends Model
         'serial_number',
         'lokasi',
         'status',
+        'kuantitas',
+        'lokasi', 
     ];
     protected static function booted()
     {

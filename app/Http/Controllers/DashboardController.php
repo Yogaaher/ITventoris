@@ -355,10 +355,10 @@ class DashboardController extends Controller
             'perusahaan_id' => 'required|exists:perusahaans,id',
             'jenis_barang_id' => 'required|exists:jenis_barangs,id',
             'merek' => 'required|string|max:255',
-            'kuantitas' => 'required|integer|min:1', // REVISI: Tambahkan validasi ini
+            'kuantitas' => 'required|integer|min:1',
             'tgl_pengadaan' => 'required|date',
             'serial_number' => 'required|string|unique:barang,serial_number|max:255',
-            'lokasi' => 'nullable|string|max:255', // REVISI: Tambahkan validasi ini
+            'lokasi' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -399,10 +399,10 @@ class DashboardController extends Controller
                 'jenis_barang_id' => $request->jenis_barang_id,
                 'no_asset' => $noAsset,
                 'merek' => $request->merek,
-                'kuantitas' => $request->kuantitas, // REVISI: Tambahkan baris ini
+                'kuantitas' => $request->kuantitas,
                 'tgl_pengadaan' => $request->tgl_pengadaan,
                 'serial_number' => $request->serial_number,
-                'lokasi' => $request->lokasi, // REVISI: Tambahkan baris ini
+                'lokasi' => $request->lokasi,
                 'status' => 'tersedia',
             ]);
 
@@ -501,7 +501,9 @@ class DashboardController extends Controller
         $validator = Validator::make($request->all(), [
             'perusahaan_id' => 'required|exists:perusahaans,id',
             'jenis_barang_id' => 'required|exists:jenis_barangs,id',
+            'no_asset' => 'required|string|max:255|unique:barang,no_asset,' . $barang->id,
             'merek' => 'required|string|max:255',
+            'kuantitas' => 'required|integer|min:1',
             'tgl_pengadaan' => 'required|date',
             'serial_number' => 'required|string|max:255|unique:barang,serial_number,' . $barang->id,
             'lokasi' => 'nullable|string|max:255',

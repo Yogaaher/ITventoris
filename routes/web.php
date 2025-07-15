@@ -8,6 +8,11 @@ use App\Http\Controllers\ManagePageController;
 use App\Http\Controllers\PerusahaanPageController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\JenisBarangController;
+use Illuminate\Support\Facades\Request;
+
+Route::get('/props', function (Request $request) {
+    dd($request);
+});
 
 Route::get('/', function () {
     return redirect()->route('login');

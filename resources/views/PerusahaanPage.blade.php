@@ -743,6 +743,7 @@
             .app-content-headerText {
                 color: var(--app-content-main-color);
                 font-size: 30px;
+                font-weight: bold;
                 line-height: 32px;
                 margin: 0;
                 padding-bottom: 20px;
@@ -1643,18 +1644,6 @@
                         </div>
                     </div>
 
-                    <div class="app-content-actions">
-                        <div class="search-bar-container">
-                            <input class="search-bar" id="searchInput" placeholder="Cari nama atau singkatan perusahaan..." type="text" autocomplete="off">
-                        </div>
-                        <div class="app-content-actions-buttons">
-                            <button type="button" id="openAddModalButton" class="action-button add-company-btn" title="Tambah Data Baru">
-                                <i class="fas fa-plus"></i>
-                                <span id="addButtonText">Tambah Perusahaan</span>
-                            </button>
-                        </div>
-                    </div>
-
                     <ul class="nav-tabs">
                         <li>
                             <button class="nav-link active" data-tab="company">
@@ -1675,6 +1664,18 @@
                             </button>
                         </li>
                     </ul>
+
+                    <div class="app-content-actions">
+                        <div class="search-bar-container">
+                            <input class="search-bar" id="searchInput" placeholder="Cari nama atau singkatan perusahaan..." type="text" autocomplete="off">
+                        </div>
+                        <div class="app-content-actions-buttons">
+                            <button type="button" id="openAddModalButton" class="action-button add-company-btn" title="Tambah Data Baru">
+                                <i class="fas fa-plus"></i>
+                                <span id="addButtonText">Tambah Perusahaan</span>
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="company-tab-pane">

@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Tambahkan ini
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class Perusahaan extends Model
 {
-    use HasFactory; // Tambahkan ini
-
-    // --- PERUBAHAN DI SINI ---
-    // Definisikan kolom yang boleh diisi
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'nama_perusahaan',
         'singkatan',

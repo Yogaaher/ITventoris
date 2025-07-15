@@ -1,4 +1,4 @@
-            <!DOCTYPE html>
+    <!DOCTYPE html>
             <html lang="id">
 
             <head>
@@ -25,6 +25,10 @@
                         background-color: rgba(0, 0, 0, 0.5);
                         justify-content: center;
                         align-items: center;
+                    }
+
+                    .summary-box.is-hidden {
+                        display: none !important;
                     }
 
                     .modal.show {
@@ -228,9 +232,8 @@
                     /* === CSS UNTUK SUMMARY BOX INVENTARIS === */
                     .inventory-summary-container {
                         display: flex;
-                        gap: 16px;
-                        margin-bottom: 20px;
-                        padding: 10px 4px 16px 4px;
+                        gap: 16px;  
+                        padding: 15px 4px 16px 4px;
                         flex-wrap: nowrap;
                         overflow-x: auto;
                         -webkit-overflow-scrolling: touch;
@@ -298,11 +301,6 @@
                     .summary-box-count {
                         font-size: 2.4rem;
                         font-weight: bold;
-                    }
-
-                    /* CSS untuk menyembunyikan duplikasi saat filter aktif */
-                    .filter-active .conveyor-clone {
-                        display: none !important;
                     }
 
                     /* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
@@ -2264,6 +2262,10 @@
                             padding-top: 16px;
                         }
 
+                        .app-container {
+                        overflow: visible;
+                    }
+
                         .app-content-headerText {
                             font-size: 1.6rem;
                             white-space: nowrap;
@@ -2329,30 +2331,62 @@
                             max-width: none;
                         }
 
-                        .summary-box {
-                            flex: 0 0 160px;
-                            min-width: 160px;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
+                        .inventory-summary-container {
+                            display: grid;
+                            grid-auto-flow: column;
+                            grid-template-rows: repeat(2, auto);
+
+                            gap: 16px;
+                            overflow-x: auto;
+                            padding: 0px 0px 5px 5px;
+                            flex-shrink: 0;
+                            margin-bottom: 0;
+
+                            -webkit-overflow-scrolling: touch;
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+
+                        .inventory-summary-container::-webkit-scrollbar {
+                            display: none;
+                        }
+
+                       .summary-box {
+                            width: calc(50vw - 24px);
+                            max-width: 180px;
+                            min-height: 90px;
+
+                            display: grid;
+                            grid-template-columns: auto 1fr;
+                            grid-template-rows: auto auto;
+                            gap: 0 12px;
+                            padding: 16px;
                             align-items: center;
-                            padding: 16px 12px;
+                            text-align: left;
+
+                            flex: none;
+                            min-width: unset;
                         }
 
                         .summary-box-icon {
                             grid-row: 1 / 3;
-                            font-size: 3rem;
+                            font-size: 2.8rem;
                             margin-bottom: 0;
+                            margin-right: 0.4rem;
+                        }
+
+                        .summary-box:hover {
+                            transform: none !important;
                         }
 
                         .summary-box-type {
                             font-size: 1.4rem;
-                            margin-bottom: 2px;
+                            margin-bottom: 0;
                             align-self: end;
                         }
 
                         .summary-box-count {
-                            font-size: 1.8rem;
+                            font-size: 2.2rem;
                             align-self: start;
                         }
 
@@ -2603,10 +2637,6 @@
                                         <dl class="info-item">
                                             <dt>No Asset:</dt>
                                             <dd id="modalNoAsset">_</dd>
-                                        </dl>
-                                        <dl class="info-item">
-                                            <dt>Merek:</dt>
-                                            <dd id="modalMerek">_</dd>
                                         </dl>
                                         <dl class="info-item">
                                             <dt>Kuantitas:</dt>
@@ -2939,6 +2969,12 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="edit_kuantitas">Kuantitas</label>
+                                    <input type="number" name="kuantitas" id="edit_kuantitas" class="form-control" required min="1">
+                                    <div class="invalid-feedback" id="edit_kuantitas_error"></div>
+                                </div>
+
+                                <div class="form-group">
                                     <label for="edit_tgl_pengadaan">Tanggal Pengadaan</label>
                                     <div class="date-input-container">
                                         <input type="date" name="tgl_pengadaan" id="edit_tgl_pengadaan" class="form-control" required>
@@ -3238,13 +3274,14 @@
                             let currentAssetIdForSerahTerima = null;
                             let debounceTimer;
                             let lastKnownUserFromDetail = '-';
+                            let currentDetailModalAssetId = null;
                             const DEBOUNCE_DELAY = 500;
 
                             function openDetailModal(barangId) {
+                                currentDetailModalAssetId = barangId; 
                                 const detailModalOverlay = document.getElementById('deviceInfoModal');
                                 if (!detailModalOverlay) return;
 
-                                // Ambil semua elemen UI yang PASTI ada
                                 const modalDeviceName = document.getElementById('modalDeviceName');
                                 const modalDeviceType = document.getElementById('modalDeviceType');
                                 const modalPerusahaan = document.getElementById('modalPerusahaan');
@@ -3257,8 +3294,6 @@
                                 const modalStatus = document.getElementById('modalStatus');
                                 const modalKeterangan = document.getElementById('modalKeterangan');
                                 const deviceImage = document.getElementById('modalDeviceImage');
-
-                                const modalMerek = document.getElementById('modalMerek');
                                 const modalKuantitas = document.getElementById('modalKuantitas');
                                 const modalLokasi = document.getElementById('modalLokasi');
 
@@ -3271,7 +3306,6 @@
                                 modalDeviceType.textContent = '_';
                                 modalPerusahaan.textContent = '_';
                                 modalNoAsset.textContent = '_';
-                                modalMerek.textContent = '_';
                                 modalKuantitas.textContent = '_';
                                 modalTglPengadaan.textContent = '_';
                                 modalSerialNumber.textContent = '_';
@@ -3294,7 +3328,6 @@
                                             modalDeviceType.textContent = barang.jenis_barang ? barang.jenis_barang.nama_jenis : 'N/A';
                                             modalPerusahaan.textContent = barang.perusahaan ? barang.perusahaan.nama_perusahaan : 'N/A';
                                             modalNoAsset.textContent = barang.no_asset || 'N/A';
-                                            modalMerek.textContent = barang.merek || 'N/A';
                                             modalKuantitas.textContent = barang.kuantitas || 'N/A';
                                             modalTglPengadaan.textContent = formatDate(barang.tgl_pengadaan);
                                             modalSerialNumber.textContent = barang.serial_number || 'N/A';
@@ -3423,12 +3456,10 @@
 
                                 if (selectedStatus === 'digunakan') {} else if (selectedStatus === 'tersedia') {
                                     serahTerimaUserInput.value = 'Team IT';
-                                    serahTerimaUserInput.readOnly = true;
                                 } else if (selectedStatus === 'diperbaiki') {
                                     serahTerimaUserInput.value = `Team IT - ${previousUser}`;
                                 } else if (selectedStatus === 'non aktif') {
                                     serahTerimaUserInput.value = 'Team IT';
-                                    serahTerimaUserInput.readOnly = true;
                                 } else if (selectedStatus === 'dipindah') {
                                     perusahaanTujuanGroup.style.display = 'block';
                                     serahTerimaPerusahaanTujuanSelect.setAttribute('required', 'required');
@@ -3437,7 +3468,7 @@
 
                             async function handleOpenSerahTerimaModal(event) {
                                 const assetId = event.currentTarget.dataset.assetId;
-
+                                
                                 try {
                                     const response = await fetch(`/barang/detail/${assetId}`);
                                     const result = await response.json();
@@ -3455,10 +3486,10 @@
                                     const modalTitle = serahModal.querySelector('.morph-modal-title span');
 
                                     modalTitle.innerHTML = '<i class="fas fa-exchange-alt"></i> Serah Terima Aset';
-
+                                    
                                     serahForm.reset();
-
-                                    document.getElementById('serahTerimaTrackId').value = '';
+                                    
+                                    document.getElementById('serahTerimaTrackId').value = ''; 
                                     document.getElementById('serahTerimaAssetId').value = assetId;
                                     document.getElementById('serahTerimaSerialNumber').value = barang.serial_number;
                                     document.getElementById('serahTerimaInfoNamaAset').textContent = barang.merek;
@@ -3509,7 +3540,7 @@
                                         if (data.success) {
                                             const track = data.track;
                                             const barang = data.barang;
-
+                                            
                                             const serahModal = document.getElementById('serahTerimaAsetModal');
                                             const serahForm = document.getElementById('serahTerimaAsetForm');
                                             const modalTitle = serahModal.querySelector('.morph-modal-title span');
@@ -3524,7 +3555,7 @@
                                             document.getElementById('serahTerimaInfoNamaAset').textContent = barang.merek;
                                             document.getElementById('serahTerimaInfoSN').textContent = barang.serial_number;
                                             document.getElementById('serahTerimaInfoPerusahaan').textContent = barang.perusahaan.nama_perusahaan;
-
+                                            
                                             document.getElementById('serahTerimaTanggalAwal').value = track.tanggal_awal;
                                             document.getElementById('serahTerimaTanggalAwal').readOnly = false;
 
@@ -3543,7 +3574,7 @@
                             }
 
                             function openUserHistoryModal(serialNumber, deviceName, company) {
-                                const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
+                                const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
                                 const historyModal = document.getElementById('userHistoryModal');
                                 const historyModalSerialNumberEl = document.getElementById('historyModalSerialNumber');
                                 const historyModalDeviceNameEl = document.getElementById('historyModalDeviceName');
@@ -3575,25 +3606,25 @@
 
                                 historyModal.style.display = 'flex';
 
-                                fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data && data.success && Array.isArray(data.history)) {
-                                            if (data.history.length > 0) {
-                                                let tableRowsHTML = '';
-                                                data.history.forEach(item => {
-                                                    let actionButtonsCell = '';
-                                                    if (IS_SUPER_ADMIN) {
-                                                        actionButtonsCell = `
+                            fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.success && Array.isArray(data.history)) {
+                                        if (data.history.length > 0) {
+                                            let tableRowsHTML = '';
+                                            data.history.forEach(item => {
+                                                let actionButtonsCell = '';
+                                                if (IS_SUPER_ADMIN) {
+                                                    actionButtonsCell = `
                                                     <td class="cell-history-aksi">
                                                         <div class="action-buttons-container">
                                                             <button class="action-btn-table-history edit-btn-history" data-track-id="${item.id}" title="Edit Riwayat"><i class="fas fa-edit"></i></button>
                                                             <button class="action-btn-table-history remove-btn-history" data-track-id="${item.id}" title="Hapus Riwayat"><i class="fas fa-trash-alt"></i></button>
                                                         </div>
                                                     </td>`;
-                                                    }
-
-                                                    tableRowsHTML += `
+                                                }
+                                                
+                                                tableRowsHTML += `
                                                 <tr data-track-id="${item.id}">
                                                     <td class="cell-history-user" title="${escapeHtml(item.username || '-')}">${escapeHtml(item.username || '-')}</td>
                                                     <td class="cell-history-tgl-awal">${formatDate(item.tanggal_awal)}</td>
@@ -3602,13 +3633,13 @@
                                                     <td class="cell-history-keterangan" title="${escapeHtml(item.keterangan || '-')}">${escapeHtml(item.keterangan || '-')}</td>
                                                     ${actionButtonsCell}
                                                 </tr>`;
-                                                });
-                                                historyTableBodyEl.innerHTML = tableRowsHTML;
-                                            } else {
-                                                historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center;">Tidak ada riwayat pengguna.</td></tr>`;
-                                            }
+                                            });
+                                            historyTableBodyEl.innerHTML = tableRowsHTML;
+                                        } else {
+                                            historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center;">Tidak ada riwayat pengguna.</td></tr>`;
                                         }
-                                    })
+                                    }
+                                })
                                     .catch(error => {
                                         console.error('Error fetching user history:', error);
                                         historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:red;">Gagal memuat riwayat.</td></tr>`;
@@ -3619,7 +3650,7 @@
                             // DOMContentLoaded: INSIALISASI EVENT LISTENERS DAN FUNGSI YANG BERGANTUNG DOM
                             // ==============================================================================
                             document.addEventListener('DOMContentLoaded', () => {
-                                const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
+                                const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
                                 let currentHistoryRefreshFunction = null;
                                 const productTableRowsContainer = document.getElementById('productTableRowsContainer');
                                 const paginationContainer = document.getElementById('realtimePaginationContainer');
@@ -3676,12 +3707,12 @@
                                 const cancelEditAssetModalBtn = document.getElementById('cancelEditAssetModalBtn');
                                 const submitEditAssetBtn = document.getElementById('submitEditAssetBtn');
 
-                                let conveyorInterval = null;
-                                let scrollEndTimer = null;
-                                let isProgrammaticScroll = false;
-                                let isConveyorPausedByUser = false;
+                                let animationFrameId = null;
                                 let isFilterActive = false;
+                                let isPausedByUser = false;
                                 const conveyorContainer = document.querySelector('.inventory-summary-container');
+                                const MOBILE_BREAKPOINT = 768;
+
 
                                 const closeEditAssetModal = () => {
                                     if (editAssetModal) editAssetModal.classList.remove('show');
@@ -3717,6 +3748,7 @@
                                                         document.getElementById('edit_jenis_barang_id').value = barang.jenis_barang_id;
                                                         document.getElementById('edit_no_asset').value = barang.no_asset;
                                                         document.getElementById('edit_merek').value = barang.merek;
+                                                        document.getElementById('edit_kuantitas').value = barang.kuantitas;
                                                         document.getElementById('edit_tgl_pengadaan').value = barang.tgl_pengadaan;
                                                         document.getElementById('edit_serial_number').value = barang.serial_number;
                                                         document.getElementById('edit_lokasi').value = barang.lokasi;
@@ -3804,6 +3836,143 @@
                                     });
                                 }
 
+                                const updateFilterState = () => {
+                                    const keyword = mainSearchInput ? mainSearchInput.value.trim() : '';
+                                    const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
+                                    const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
+                                    isFilterActive = !!(keyword || perusahaan || jenisBarang);
+                                };
+
+                                if (conveyorContainer) {
+                                    conveyorContainer.addEventListener('mouseenter', pauseConveyor);
+                                    conveyorContainer.addEventListener('mouseleave', resumeConveyor);
+                                    conveyorContainer.addEventListener('touchstart', pauseConveyor, { passive: true });
+                                    conveyorContainer.addEventListener('touchend', resumeConveyor);
+                                }
+
+                                function filterSummaryBoxes(visibleAssetTypes = []) {
+                                    const originalBoxes = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
+                                    const clonedBoxes = conveyorContainer.querySelectorAll('.summary-box.summary-box-clone');
+
+                                    updateFilterState();
+
+                                    if (isFilterActive) {
+                                        clonedBoxes.forEach(clone => clone.classList.add('is-hidden'));
+                                    }
+
+                                    if (!isFilterActive) {
+                                        originalBoxes.forEach(box => box.classList.remove('is-hidden'));
+                                        if (window.innerWidth > MOBILE_BREAKPOINT) {
+                                            clonedBoxes.forEach(clone => clone.classList.remove('is-hidden'));
+                                        } else {
+                                            clonedBoxes.forEach(clone => clone.classList.add('is-hidden'));
+                                        }
+                                        return;
+                                    }
+
+                                    const visibleTypesSet = new Set(visibleAssetTypes.map(type =>
+                                        type.toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-')
+                                    ));
+
+                                    originalBoxes.forEach(box => {
+                                        if (visibleTypesSet.has(box.dataset.type)) {
+                                            box.classList.remove('is-hidden');
+                                        } else {
+                                            box.classList.add('is-hidden');
+                                        }
+                                    });
+                                }
+
+                                function manageConveyor() {
+                                    if (animationFrameId) {
+                                        cancelAnimationFrame(animationFrameId);
+                                        animationFrameId = null;
+                                    }
+
+                                    const clones = conveyorContainer.querySelectorAll('.summary-box-clone');
+                                    clones.forEach(clone => clone.remove());
+                                    conveyorContainer.scrollLeft = 0;
+
+                                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                                        return;
+                                    }
+
+                                    const originalItems = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
+                                    if (conveyorContainer.scrollWidth <= conveyorContainer.clientWidth) {
+                                        return;
+                                    }
+
+                                    originalItems.forEach(item => {
+                                        const clone = item.cloneNode(true);
+                                        clone.classList.add('summary-box-clone');
+                                        clone.setAttribute('aria-hidden', 'true');
+                                        conveyorContainer.appendChild(clone);
+                                    });
+
+                                    const originalSetWidth = originalItems[0].offsetWidth * originalItems.length + (16 * (originalItems.length - 1));
+
+                                    let scrollPosition = 0;
+                                    const scrollSpeed = 0.5;
+
+                                    function animateScroll() {
+                                        if (!isPausedByUser && !isFilterActive) {
+                                            scrollPosition += scrollSpeed;
+                                            if (scrollPosition >= originalSetWidth) {
+                                                scrollPosition = 0;
+                                            }
+                                            conveyorContainer.scrollLeft = scrollPosition;
+                                        }
+                                        animationFrameId = requestAnimationFrame(animateScroll);
+                                    }
+                                    animateScroll();
+                                }
+
+                                function pauseConveyor() {
+                                    isPausedByUser = true;
+                                }
+
+                                function resumeConveyor() {
+                                    isPausedByUser = false;
+                                }
+
+                                if (conveyorContainer) {
+                                    conveyorContainer.addEventListener('mouseenter', pauseConveyor);
+                                    conveyorContainer.addEventListener('mouseleave', resumeConveyor);
+                                    conveyorContainer.addEventListener('touchstart', pauseConveyor, { passive: true });
+                                    conveyorContainer.addEventListener('touchend', resumeConveyor);
+                                }
+
+                                function filterSummaryBoxes(visibleAssetTypes = []) {
+                                    const originalBoxes = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
+                                    const clonedBoxes = conveyorContainer.querySelectorAll('.summary-box.summary-box-clone');
+                                    
+                                    updateFilterState();
+
+                                    if (!isFilterActive) {
+                                        originalBoxes.forEach(box => box.classList.remove('is-hidden'));
+                                        if (window.innerWidth > MOBILE_BREAKPOINT) {
+                                            clonedBoxes.forEach(clone => clone.classList.remove('is-hidden'));
+                                        } else {
+                                            clonedBoxes.forEach(clone => clone.classList.add('is-hidden'));
+                                        }
+                                        return;
+                                    }
+
+                                    clonedBoxes.forEach(box => { box.style.display = 'none'; });
+
+                                    const visibleTypesSet = new Set(visibleAssetTypes.map(type => 
+                                        type.toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-')
+                                    ));
+
+                                    originalBoxes.forEach(box => {
+                                        if (visibleTypesSet.has(box.dataset.type)) {
+                                            box.style.display = 'flex';
+                                        } else {
+                                            box.style.display = 'none';
+                                        }
+                                    });
+                                }
+
                                 // Variabel State
                                 let originalRowsHTML = '';
                                 let activeSortKey = null;
@@ -3824,125 +3993,21 @@
                                     });
                                 }
 
-                                const updateFilterState = () => {
-                                    const keyword = mainSearchInput ? mainSearchInput.value.trim() : '';
-                                    const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
-                                    const jenisBarang = filterJenisBarangSelect ? filterJenisBarangSelect.value : '';
-                                    isFilterActive = !!(keyword || perusahaan || jenisBarang);
-
-                                    // Tambahkan/remove class filter-active pada container
-                                    if (conveyorContainer) {
-                                        if (isFilterActive) {
-                                            conveyorContainer.classList.add('filter-active');
-                                        } else {
-                                            conveyorContainer.classList.remove('filter-active');
-                                        }
-                                    }
-                                };
-
-                                const stopConveyor = () => {
-                                    if (conveyorInterval) {
-                                        cancelAnimationFrame(conveyorInterval);
-                                        conveyorInterval = null;
-                                    }
-                                };
-
-                               const startConveyor = () => {
-                                    if (conveyorInterval || isFilterActive || !conveyorContainer || window.innerWidth < 1024) {
-                                        return;
-                                    }
-
-                                    const scrollWidth = conveyorContainer.scrollWidth;
-                                    const originalContentWidth = scrollWidth / 2;
-                                    let lastFrameTime = performance.now();
-                                    const speed = 25;
-
-                                    function animate(currentTime) {
-                                        const deltaTime = (currentTime - lastFrameTime) / 1000;
-                                        lastFrameTime = currentTime;
-
-                                        isProgrammaticScroll = true;
-                                        conveyorContainer.scrollLeft += speed * deltaTime;
-
-                                        if (conveyorContainer.scrollLeft >= originalContentWidth) {
-                                            isProgrammaticScroll = true;
-                                            conveyorContainer.scrollLeft -= originalContentWidth;
-                                        }
-                                        
-                                        conveyorInterval = requestAnimationFrame(animate);
-                                    }
-                                    conveyorInterval = requestAnimationFrame(animate);
-                                };
-
-                                const setupConveyorAnimation = () => {
-                                    if (!conveyorContainer || conveyorContainer.children.length === 0) return;
-
-                                    const originalItems = Array.from(conveyorContainer.children).filter(child => !child.classList.contains('conveyor-clone'));
-                                    conveyorContainer.querySelectorAll('.conveyor-clone').forEach(clone => clone.remove());
-                                    
-                                    if (originalItems.length > 0 && originalItems.length < 15) {
-                                        originalItems.forEach(item => {
-                                            const clone = item.cloneNode(true);
-                                            clone.classList.add('conveyor-clone');
-                                            clone.setAttribute('aria-hidden', 'true');
-                                            conveyorContainer.appendChild(clone);
-                                        });
-                                    }
-                                };
-
-                                const filterSummaryBoxes = (visibleAssetTypes = []) => {
-                                    const allSummaryBoxes = document.querySelectorAll('.inventory-summary-container .summary-box');
-
-                                    if (!isFilterActive || visibleAssetTypes.length === 0) {
-                                        allSummaryBoxes.forEach(box => {
-                                            box.style.display = 'flex';
-                                            box.style.opacity = '1';
-                                        });
-                                        return;
-                                    }
-
-                                    const visibleTypesSet = new Set(visibleAssetTypes.map(type => type.toLowerCase().replace(/ /g, '-').replace(/\//g, '')));
-
-                                    // Kelompokkan box berdasarkan tipe untuk memastikan konsistensi
-                                    const boxGroups = {};
-                                    allSummaryBoxes.forEach(box => {
-                                        const type = box.dataset.type;
-                                        if (!boxGroups[type]) {
-                                            boxGroups[type] = [];
-                                        }
-                                        boxGroups[type].push(box);
-                                    });
-
-                                    // Tampilkan/sembunyikan berdasarkan grup
-                                    Object.keys(boxGroups).forEach(type => {
-                                        const shouldShow = visibleTypesSet.has(type);
-                                        boxGroups[type].forEach(box => {
-                                            if (shouldShow) {
-                                                box.style.display = 'flex';
-                                                box.style.opacity = '1';
-                                            } else {
-                                                box.style.display = 'none';
-                                                box.style.opacity = '0';
-                                            }
-                                        });
-                                    });
-                                };
-
                                 const userHistoryTableContainer = document.getElementById('userHistoryTableContainer');
-                                if (userHistoryTableContainer) {
-                                    userHistoryTableContainer.addEventListener('click', function(event) {
-                                        const editButton = event.target.closest('.edit-btn-history');
-                                        const removeButton = event.target.closest('.remove-btn-history');
+                                    if (userHistoryTableContainer) {
+                                        userHistoryTableContainer.addEventListener('click', function(event) {
+                                            const editButton = event.target.closest('.edit-btn-history');
+                                            const removeButton = event.target.closest('.remove-btn-history');
 
-                                        if (editButton) {
-                                            const trackId = editButton.dataset.trackId;
-                                            openEditHistoryModal(trackId);
-                                        }
+                                            if (editButton) {
+                                                const trackId = editButton.dataset.trackId;
+                                                openEditHistoryModal(trackId);
+                                            }
 
-                                        if (removeButton) {
-                                            const trackId = removeButton.dataset.trackId;
-                                            if (confirm('Anda yakin ingin menghapus riwayat ini? Tindakan ini tidak dapat diurungkan.')) {
-                                                fetch(`/track/${trackId}`, {
+                                            if (removeButton) {
+                                                const trackId = removeButton.dataset.trackId;
+                                                if (confirm('Anda yakin ingin menghapus riwayat ini? Tindakan ini tidak dapat diurungkan.')) {
+                                                    fetch(`/track/${trackId}`, {
                                                         method: 'DELETE',
                                                         headers: {
                                                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -3961,10 +4026,10 @@
                                                         }
                                                     })
                                                     .catch(error => console.error('Error:', error));
+                                                }
                                             }
-                                        }
-                                    });
-                                }
+                                        });
+                                    }
 
                                 function setupAssetPreview() {
                                     const perusahaanSelect = document.getElementById('perusahaan_id');
@@ -4312,10 +4377,11 @@
 
                                 function performRealtimeSearch(page = 1) {
                                     updateFilterState();
-                                    stopConveyor();
+                                    isFilterActive = true; 
+                                    pauseConveyor();     
 
                                     if (!productTableRowsContainer) return;
-                                    const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
+                                    const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
                                     const perPage = rowsPerPageSelect ? rowsPerPageSelect.value : 10;
                                     const keyword = mainSearchInput ? mainSearchInput.value : '';
                                     const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
@@ -4332,6 +4398,14 @@
                                         page: page,
                                         per_page: perPage,
                                     });
+
+                                    if (isFilterActive) {
+                                        isPausedByUser = false;
+                                        isFilterActive = true; 
+                                    } else {
+                                        isFilterActive = false;
+                                        resumeConveyor(); 
+                                    }
 
                                     if (activeSortKey && activeSortDirection !== 'none') {
                                         params.append('sort_by', activeSortKey);
@@ -4431,15 +4505,30 @@
                                             if (responseData.inventorySummary) {
                                                 updateInventorySummary(responseData.inventorySummary);
                                             }
-
-                                            if (!isFilterActive) {
-                                                startConveyor();
-                                            }
                                         })
                                         .catch(error => {
                                             console.error('Error performing real-time search:', error);
                                             productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
-                                        });
+                                        })
+                                        .finally(() => {
+                                        updateFilterState();
+                                        if (!isFilterActive) {
+                                            isFilterActive = false;
+                                            resumeConveyor();
+                                        }
+                                    });
+                                }
+
+                                function debounce(func, wait) {
+                                    let timeout;
+                                    return function executedFunction(...args) {
+                                        const later = () => {
+                                            clearTimeout(timeout);
+                                            func(...args);
+                                        };
+                                        clearTimeout(timeout);
+                                        timeout = setTimeout(later, wait);
+                                    };
                                 }
 
                                 function setupAjaxPagination() {
@@ -4459,8 +4548,7 @@
                                 function updateInventorySummary(summaryData) {
                                     if (!summaryData) return;
 
-                                    // Reset semua box terlebih dahulu
-                                    document.querySelectorAll('.summary-box-count').forEach(el => {
+                                    document.querySelectorAll('.summary-box .summary-box-count').forEach(el => {
                                         el.textContent = '0';
                                     });
 
@@ -4469,15 +4557,17 @@
                                         const slug = namaJenis.toLowerCase()
                                             .replace(/ \/ /g, '-')
                                             .replace(/ /g, '-');
+                                        
+                                        const matchingBoxes = document.querySelectorAll(`.summary-box[data-type="${slug}"]`);
 
-                                        // Update SEMUA box dengan tipe yang sama (asli dan duplikasi)
-                                        const allBoxesOfType = document.querySelectorAll(`[data-type="${slug}"]`);
-                                        allBoxesOfType.forEach(box => {
-                                            const countElement = box.querySelector('.summary-box-count');
-                                            if (countElement) {
-                                                countElement.textContent = data.count;
-                                            }
-                                        });
+                                        if (matchingBoxes.length > 0) {
+                                            matchingBoxes.forEach(box => {
+                                                const countElement = box.querySelector('.summary-box-count');
+                                                if (countElement) {
+                                                    countElement.textContent = data.count;
+                                                }
+                                            });
+                                        }
                                     }
                                 }
 
@@ -4593,6 +4683,7 @@
 
                                 const closeDetailModal = () => {
                                     if (detailModalOverlayElement) detailModalOverlayElement.style.display = 'none';
+                                    currentDetailModalAssetId = null;
                                 };
                                 if (closeDetailModalButtonElement) closeDetailModalButtonElement.addEventListener('click', closeDetailModal);
                                 setupSmartModalClosure(detailModalOverlayElement, closeDetailModal);
@@ -4651,10 +4742,10 @@
                                 if (serahTerimaForm && submitSerahTerimaBtn) {
                                     serahTerimaForm.addEventListener('submit', function(event) {
                                         event.preventDefault();
-
+                                        
                                         const formData = new FormData(serahTerimaForm);
                                         const trackId = formData.get('track_id');
-
+                                        
                                         let url = "{{ route('aset.serahterima.store') }}";
                                         let method = 'POST';
 
@@ -4679,6 +4770,11 @@
                                                 if (data.success) {
                                                     alert(data.message);
                                                     closeSerahTerimaModal();
+
+                                                    if (currentDetailModalAssetId) {
+                                                        openDetailModal(currentDetailModalAssetId);
+                                                    }
+
                                                     if (currentHistoryRefreshFunction) {
                                                         currentHistoryRefreshFunction();
                                                     }
@@ -4810,27 +4906,12 @@
                                     }
                                 }
 
-                               if (conveyorContainer) {
-                                    conveyorContainer.addEventListener('scroll', () => {
-                                        if (isProgrammaticScroll) {
-                                            isProgrammaticScroll = false;
-                                            return;
-                                        }
-
-                                        stopConveyor();
-                                        clearTimeout(scrollEndTimer);
-
-                                        scrollEndTimer = setTimeout(() => {
-                                            startConveyor();
-                                        }, 2500); 
-                                    }, { passive: true });
-                                }
-
-                                setupConveyorAnimation();
+                                manageConveyor();
                                 updateFilterState();
-                                startConveyor();
                                 initializeSidebarState();
                                 setActiveSidebarLink();
+
+                                window.addEventListener('resize', debounce(manageConveyor, 250));
                             });
                         </script>
             </body>

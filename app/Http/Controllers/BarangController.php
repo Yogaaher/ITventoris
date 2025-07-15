@@ -21,6 +21,7 @@ class BarangController extends Controller
             'perusahaan_id' => 'required|exists:perusahaans,id',
             'jenis_barang_id' => 'required|exists:jenis_barangs,id',
             'merek' => 'required|string|max:255',
+            'kuantitas' => 'required|integer|min:1',
             'tgl_pengadaan' => 'required|date',
             'serial_number' => [
                 'required',
@@ -29,6 +30,7 @@ class BarangController extends Controller
                 'unique:barang,serial_number',
                 'regex:/^[a-zA-Z0-9\-\/ ]+$/'
             ],
+            'lokasi' => 'nullable|string|max:255', 
         ], [
             'serial_number.unique' => 'Serial number ini sudah terdaftar di sistem.',
             'serial_number.regex' => 'Serial number hanya boleh berisi huruf, angka, spasi, strip (-), dan garis miring (/).'
@@ -88,9 +90,11 @@ class BarangController extends Controller
                     'jenis_barang_id' => $validatedData['jenis_barang_id'],
                     'no_asset' => $noAssetFinal,
                     'merek' => $sanitizedMerek,
+                    'kuantitas' => $validatedData['kuantitas'], 
                     'tgl_pengadaan' => $validatedData['tgl_pengadaan'],
                     'serial_number' => $sanitizedSerialNumber,
-                ]);
+                    'lokasi' => $validatedData['lokasi'],
+                ]); 
 
                 return $noAssetFinal;
             });
