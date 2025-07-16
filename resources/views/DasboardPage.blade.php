@@ -2264,7 +2264,7 @@
 
                         .app-container {
                         overflow: visible;
-                    }
+                        }
 
                         .app-content-headerText {
                             font-size: 1.6rem;
@@ -2274,6 +2274,10 @@
                             min-width: 0;
                             padding-top: 20px;
                             padding-bottom: none;
+                        }
+
+                        .app-content-actions-buttons {
+                            padding: 0px 0px 0px 0px !important;
                         }
 
                         .tableView .product-cell.cell-kuantitas {

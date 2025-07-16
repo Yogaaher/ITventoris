@@ -87,7 +87,7 @@ class JenisBarangController extends Controller
         }
         $validatedData = $validator->validated();
         $validatedData['nama_jenis'] = strtoupper($validatedData['nama_jenis']);
-        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']); // <-- TAMBAH BARIS INI
+        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']);
 
         JenisBarang::create($validatedData);
 
@@ -107,7 +107,7 @@ class JenisBarangController extends Controller
         }
         $validatedData = $validator->validated();
         $validatedData['nama_jenis'] = strtoupper($validatedData['nama_jenis']);
-        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']); // <-- TAMBAH BARIS INI
+        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']);
 
         $item_type->update($validatedData);
 

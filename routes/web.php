@@ -27,24 +27,6 @@ Route::middleware('guest')->group(function () {
 // === GRUP UNTUK SEMUA USER YANG SUDAH LOGIN ===
 Route::middleware('auth')->group(function () {
 
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-    // --- Rute Dashboard & Detail (Bisa diakses semua user terotentikasi) ---
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::get('/dashboard/search-realtime', [DashboardController::class, 'searchRealtime'])->name('dashboard.search.realtime');
-    Route::get('/dashboard/export', [DashboardController::class, 'exportExcel'])->name('dashboard.export');
-    Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
-    Route::get('/history/user/{serial_number}', [DashboardController::class, 'getUserHistoryBySerialNumber'])->name('history.user.serial_number');
-
-    Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');
-    Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');
-
-    // --- Rute yang berhubungan dengan pengambilan data untuk halaman view-only
-    Route::get('/surat/search', [SuratController::class, 'searchRealtime'])->name('surat.search');
-    Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
-    Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
-    Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
-
     // === GRUP KHUSUS UNTUK ADMIN & SUPER ADMIN ===
     Route::middleware('is_admin')->group(function () {
 
@@ -71,7 +53,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/item-types/{item_type}', [JenisBarangController::class, 'update'])->name('item-types.update');
         Route::delete('/item-types/{item_type}', [JenisBarangController::class, 'destroy'])->name('item-types.destroy');
 
-        // --- Manajemen Surat ---
+        // --- Manajemen Surat ---  
         Route::get('/surat/get-next-nomor', [SuratController::class, 'getProspectiveNomor'])->name('surat.getProspectiveNomor');
         Route::get('/surat/find-barang', [SuratController::class, 'findBarang'])->name('surat.find-barang');
         Route::get('/surat/download/{id}', [SuratController::class, 'downloadPdf'])->name('surat.download.pdf');
@@ -82,4 +64,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/validate-field', [ManagePageController::class, 'validateField'])->name('users.validate.field');
         Route::resource('users', ManagePageController::class)->except(['edit'])->middleware('is_admin'); // Menggunakan resource controller
     });
+
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // --- Rute Dashboard & Detail (Bisa diakses semua user terotentikasi) ---
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard/search-realtime', [DashboardController::class, 'searchRealtime'])->name('dashboard.search.realtime');
+    Route::get('/dashboard/export', [DashboardController::class, 'exportExcel'])->name('dashboard.export');
+    Route::get('/barang/detail/{id}', [DashboardController::class, 'getDetailBarang'])->name('barang.detail');
+    Route::get('/history/user/{serial_number}', [DashboardController::class, 'getUserHistoryBySerialNumber'])->name('history.user.serial_number');
+
+    Route::get('/serah-terima', [SuratController::class, 'index'])->name('surat.index');
+    Route::get('/manajemen-data', [PerusahaanPageController::class, 'index'])->name('companies.index');
+
+    // --- Rute yang berhubungan dengan pengambilan data untuk halaman view-only
+    Route::get('/surat/search', [SuratController::class, 'searchRealtime'])->name('surat.search');
+    Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
+    Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
+    Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
 });

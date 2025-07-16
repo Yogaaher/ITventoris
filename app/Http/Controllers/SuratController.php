@@ -162,7 +162,7 @@ class SuratController extends Controller
                     ['value' => 0]
                 );
                 $nextNumber = $sequence->value + 1;
-                $nomorSurat = 'ST/IT/' . now()->format('Y/m/') . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+                $nomorSurat = 'BST/' . now()->format('Y/m/') . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
                 $sequence->value = $nextNumber;
                 $sequence->save();
                 return $nomorSurat;
@@ -278,7 +278,7 @@ class SuratController extends Controller
         );
 
         $nextNumber = $sequence->value + 1;
-        $nomorSurat = 'ST/IT/' . now()->format('Y/m/') . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $nomorSurat = 'BST/' . now()->format('Y/m/') . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
         return response()->json(['nomor_surat' => $nomorSurat]);
     }
