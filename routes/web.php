@@ -8,6 +8,7 @@ use App\Http\Controllers\ManagePageController;
 use App\Http\Controllers\PerusahaanPageController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\JenisBarangController;
+use App\Http\Controllers\MutasiController;
 use Illuminate\Support\Facades\Request;
 
 Route::get('/props', function (Request $request) {
@@ -62,7 +63,9 @@ Route::middleware('auth')->group(function () {
         // --- Manajemen User ---
         Route::get('/users/{user}/edit', [ManagePageController::class, 'edit'])->name('users.edit');
         Route::post('/users/validate-field', [ManagePageController::class, 'validateField'])->name('users.validate.field');
-        Route::resource('users', ManagePageController::class)->except(['edit'])->middleware('is_admin'); // Menggunakan resource controller
+        Route::resource('users', ManagePageController::class)->except(['edit'])->middleware('is_admin');
+
+        Route::delete('/mutasi/{mutasi}', [MutasiController::class, 'destroy'])->name('mutasi.destroy');
     });
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -82,4 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
     Route::get('/companies-data', [PerusahaanPageController::class, 'getCompanyData'])->name('companies.data');
     Route::get('/item-types-data', [JenisBarangController::class, 'index'])->name('item-types.data');
+
+    Route::get('/mutasi/data', [MutasiController::class, 'getData'])->name('mutasi.data');
+    Route::get('/mutasi/{mutasi}', [MutasiController::class, 'show'])->name('mutasi.show');
 });

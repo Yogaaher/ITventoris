@@ -35,8 +35,8 @@ class DashboardController extends Controller
         }
 
         // Filter berdasarkan jenis barang
-        if ($request->filled('filter_jenis_barang')) {
-            $queryBuilder->where('jenis_barang_id', $request->input('filter_jenis_barang'));
+        if ($request->filled('filter_jenis_barang') && is_array($request->input('filter_jenis_barang'))) {
+            $queryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
         }
 
         // Filter berdasarkan keyword pencarian (no asset, serial number, atau merek)
@@ -271,8 +271,8 @@ class DashboardController extends Controller
             if ($request->filled('filter_perusahaan')) {
                 $summaryQueryBuilder->where('barang.perusahaan_id', $request->input('filter_perusahaan'));
             }
-            if ($request->filled('filter_jenis_barang')) {
-                $summaryQueryBuilder->where('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
+            if ($request->filled('filter_jenis_barang') && is_array($request->input('filter_jenis_barang'))) {
+                $summaryQueryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
             }
         }
 
@@ -577,7 +577,7 @@ class DashboardController extends Controller
         }
 
         if ($request->input('status') === 'dipindah') {
-            // Cek jika perusahaan tujuan sama dengan perusahaan saat ini
+            $barangLama = clone $barang;
             if ($request->input('perusahaan_tujuan') == $barang->perusahaan_id) {
                 // Kirim kembali dengan pesan error spesifik
                 return response()->json([
@@ -607,7 +607,7 @@ class DashboardController extends Controller
                 $perusahaanTujuanId = $request->input('perusahaan_tujuan');
                 $perusahaanTujuan = Perusahaan::find($perusahaanTujuanId);
 
-                // --- AWAL LOGIKA BARU YANG ANDAL UNTUK PERUSAHAAN TUJUAN ---
+
 
                 // 1. Ambil atau buat counter untuk perusahaan TUJUAN. Kunci barisnya!
                 $counterTujuan = AssetCounter::lockForUpdate()
@@ -638,6 +638,17 @@ class DashboardController extends Controller
                 // Update data barang
                 $barang->perusahaan_id = $perusahaanTujuanId;
                 $barang->no_asset = $noAssetBaru;
+
+                 \App\Models\Mutasi::create([
+                    'barang_id'           => $barangLama->id,
+                    'no_asset_lama'       => $barangLama->no_asset,
+                    'perusahaan_lama_id'  => $barangLama->perusahaan_id,
+                    'pengguna_lama'       => $previousTrack->username ?? 'N/A', // Pengguna dari riwayat sebelumnya
+                    'no_asset_baru'       => $noAssetBaru,
+                    'perusahaan_baru_id'  => $perusahaanTujuanId,
+                    'pengguna_baru'       => $request->input('username'), // Pengguna baru dari form
+                    'tanggal_mutasi'      => $currentTime->toDateString(),
+                ]);
             }
 
             // Update status di tabel barang (ini tetap berjalan untuk semua status)
@@ -673,13 +684,13 @@ class DashboardController extends Controller
                 $previousTrack->save();
             }
 
-            Track::create([
+            $newTrack = Track::create([
                 'serial_number' => $barang->serial_number,
-                'username' => $request->input('username'),
-                'status' => $request->input('status'),
-                'keterangan' => $request->input('keterangan'),
-                'tanggal_awal' => $currentTime->toDateString(),
-                'tanggal_ahir' => null,
+                'username'      => $request->input('username'),
+                'status'        => $request->input('status'),
+                'keterangan'    => $request->input('keterangan'),
+                'tanggal_awal'  => $currentTime->toDateString(),
+                'tanggal_ahir'  => null,
             ]);
 
             DB::commit();
