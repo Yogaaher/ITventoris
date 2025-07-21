@@ -2424,24 +2424,26 @@
                     .summary-box {
                         width: calc(50vw - 24px);
                         max-width: 180px;
-                        min-height: 90px;
-
+                        min-height: 85px;
                         display: grid;
                         grid-template-columns: auto 1fr;
                         grid-template-rows: auto auto;
-                        gap: 0 12px;
-                        padding: 16px;
+                        gap: 2px 12px; 
+                        padding: 14px;
                         align-items: center;
                         text-align: left;
-
                         flex: none;
                         min-width: unset;
                         user-select: none;
                     }
 
+                    .summary-box.is-hidden {
+                        display: none !important;
+                    }
+
                     .summary-box-icon {
                         grid-row: 1 / 3;
-                        font-size: 2.8rem;
+                        font-size: 2.6rem;
                         margin-bottom: 0;
                         margin-right: 0.4rem;
                     }
@@ -2451,13 +2453,17 @@
                     }
 
                     .summary-box-type {
-                        font-size: 1.4rem;
+                        font-size: 1.3rem;
                         margin-bottom: 0;
                         align-self: end;
+
+                        white-space: nowrap; 
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
 
                     .summary-box-count {
-                        font-size: 2.2rem;
+                        font-size: 2.1rem;
                         align-self: start;
                     }
 
@@ -4036,28 +4042,32 @@
                             }
 
                             function filterSummaryBoxes(visibleAssetTypes = []) {
+                                const conveyorContainer = document.querySelector('.inventory-summary-container');
+                                if (!conveyorContainer) return;
+
                                 const allOriginalBoxes = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
                                 updateFilterState(); // Memastikan state filter terbaru
 
-                                // Jika filter tidak aktif, tampilkan semua box original.
+                                // Jika filter tidak aktif (tidak ada keyword, tidak ada pilihan perusahaan/jenis), tampilkan semua box.
                                 if (!isFilterActive) {
                                     allOriginalBoxes.forEach(box => {
-                                        box.style.display = 'flex'; // Atau 'grid' tergantung style asli Anda
+                                        box.classList.remove('is-hidden');
                                     });
-                                    return; // Keluar dari fungsi jika tidak ada filter
+                                    return; 
                                 }
 
-                                // Jika filter aktif, proses penyaringan
+                                // Jika filter aktif, lakukan proses penyaringan.
                                 const visibleTypesSet = new Set(visibleAssetTypes.map(type =>
                                     type.toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-')
                                 ));
 
                                 allOriginalBoxes.forEach(box => {
-                                    // Tampilkan box jika tipenya ada di dalam set yang terlihat, sembunyikan jika tidak.
+                                    // Jika tipe box ada di dalam daftar yang boleh tampil, hapus class 'is-hidden'.
                                     if (visibleTypesSet.has(box.dataset.type)) {
-                                        box.style.display = 'flex'; // Atau 'grid'
+                                        box.classList.remove('is-hidden');
                                     } else {
-                                        box.style.display = 'none';
+                                        // Jika tidak, tambahkan class 'is-hidden' untuk menyembunyikannya.
+                                        box.classList.add('is-hidden');
                                     }
                                 });
                             }
