@@ -3783,6 +3783,7 @@
                                     let animationFrameId = null;
                                     let isFilterActive = false;
                                     let isPausedByUser = false;
+                                    let scrollPosition = 0; 
                                     const conveyorContainer = document.querySelector('.inventory-summary-container');
                                     const MOBILE_BREAKPOINT = 768;
 
@@ -3967,17 +3968,14 @@
 
                                         const clones = conveyorContainer.querySelectorAll('.summary-box-clone');
                                         clones.forEach(clone => clone.remove());
-                                        conveyorContainer.scrollLeft = 0;
+                                        
+                                        scrollPosition = conveyorContainer.scrollLeft;
 
-                                        if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                                        if (window.innerWidth <= MOBILE_BREAKPOINT || conveyorContainer.scrollWidth <= conveyorContainer.clientWidth) {
                                             return;
                                         }
 
                                         const originalItems = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
-                                        if (conveyorContainer.scrollWidth <= conveyorContainer.clientWidth) {
-                                            return;
-                                        }
-
                                         originalItems.forEach(item => {
                                             const clone = item.cloneNode(true);
                                             clone.classList.add('summary-box-clone');
@@ -3985,16 +3983,14 @@
                                             conveyorContainer.appendChild(clone);
                                         });
 
-                                        const originalSetWidth = originalItems[0].offsetWidth * originalItems.length + (16 * (originalItems.length - 1));
-
-                                        let scrollPosition = 0;
+                                        const originalSetWidth = Array.from(originalItems).reduce((acc, item) => acc + item.offsetWidth + 16, 0) - 16;
                                         const scrollSpeed = 0.5;
 
                                         function animateScroll() {
                                             if (!isPausedByUser && !isFilterActive) {
                                                 scrollPosition += scrollSpeed;
                                                 if (scrollPosition >= originalSetWidth) {
-                                                    scrollPosition = 0;
+                                                    scrollPosition -= originalSetWidth; 
                                                 }
                                                 conveyorContainer.scrollLeft = scrollPosition;
                                             }
@@ -4008,6 +4004,9 @@
                                     }
 
                                     function resumeConveyor() {
+                                        if (conveyorContainer) {
+                                            scrollPosition = conveyorContainer.scrollLeft;
+                                        }
                                         isPausedByUser = false;
                                     }
 
