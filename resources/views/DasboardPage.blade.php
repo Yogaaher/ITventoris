@@ -285,6 +285,7 @@
                             font-size: 2.8rem;
                             margin-bottom: 10px;
                             color: var(--action-color);
+                            user-select: none;
                         }
 
                         html.light .summary-box-icon {
@@ -296,11 +297,13 @@
                             font-weight: 500;
                             margin-bottom: 8px;
                             text-transform: capitalize;
+                            user-select: none;
                         }
 
                         .summary-box-count {
                             font-size: 2.4rem;
                             font-weight: bold;
+                            user-select: none;
                         }
 
                         /* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
@@ -2411,6 +2414,7 @@
                                 -webkit-overflow-scrolling: touch;
                                 -ms-overflow-style: none;
                                 scrollbar-width: none;
+                                user-select: none;
                             }
 
                             .inventory-summary-container::-webkit-scrollbar {
@@ -2432,6 +2436,7 @@
 
                                 flex: none;
                                 min-width: unset;
+                                user-select: none;
                             }
 
                             .summary-box-icon {
@@ -2460,7 +2465,6 @@
                                 cursor: grabbing;
                                 cursor: -webkit-grabbing;
                                 transform: scale(1.02);
-                                user-select: none; 
                             }
 
                             .products-area-wrapper.tableView {
@@ -3971,34 +3975,27 @@
                                     };
 
                                     function filterSummaryBoxes(visibleAssetTypes = []) {
+                                        const allBoxes = conveyorContainer.querySelectorAll('.summary-box');
                                         const originalBoxes = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
-                                        const clonedBoxes = conveyorContainer.querySelectorAll('.summary-box.summary-box-clone');
-
+                                        
                                         updateFilterState();
 
-                                        if (isFilterActive) {
-                                            clonedBoxes.forEach(clone => clone.classList.add('is-hidden'));
-                                        }
-
                                         if (!isFilterActive) {
-                                            originalBoxes.forEach(box => box.classList.remove('is-hidden'));
-                                            if (window.innerWidth > MOBILE_BREAKPOINT) {
-                                                clonedBoxes.forEach(clone => clone.classList.remove('is-hidden'));
-                                            } else {
-                                                clonedBoxes.forEach(clone => clone.classList.add('is-hidden'));
-                                            }
+                                            allBoxes.forEach(box => {
+                                                box.classList.remove('is-hidden');
+                                                box.style.display = '';
+                                            });
                                             return;
                                         }
+                                        allBoxes.forEach(box => box.classList.add('is-hidden'));
 
-                                        const visibleTypesSet = new Set(visibleAssetTypes.map(type =>
+                                        const visibleTypesSet = new Set(visibleAssetTypes.map(type => 
                                             type.toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-')
                                         ));
 
                                         originalBoxes.forEach(box => {
                                             if (visibleTypesSet.has(box.dataset.type)) {
                                                 box.classList.remove('is-hidden');
-                                            } else {
-                                                box.classList.add('is-hidden');
                                             }
                                         });
                                     }
@@ -4543,16 +4540,17 @@
 
                                     function performRealtimeSearch(page = 1) {
                                         updateFilterState();
-                                        isFilterActive = true; 
-                                        pauseConveyor();     
+                                        pauseConveyor();
 
                                         if (!productTableRowsContainer) return;
+                                        
                                         const IS_SUPER_ADMIN = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
                                         const perPage = rowsPerPageSelect ? rowsPerPageSelect.value : 10;
                                         const keyword = mainSearchInput ? mainSearchInput.value : '';
                                         const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
                                         const jenisBarangCheckboxes = document.querySelectorAll('#filter_jenis_barang_container input[type="checkbox"]:checked');
                                         const jenisBarang = Array.from(jenisBarangCheckboxes).map(cb => cb.value);
+                                        
                                         productTableRowsContainer.innerHTML = '<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 40px;">Memuat data... <i class="fas fa-spinner fa-spin"></i></div></div>';
                                         if (paginationInfoText) paginationInfoText.innerHTML = '';
                                         if (paginationButtonsContainer) paginationButtonsContainer.innerHTML = '';
@@ -4565,13 +4563,6 @@
                                         });
 
                                         jenisBarang.forEach(id => params.append('filter_jenis_barang[]', id));
-                                        if (isFilterActive) {
-                                            isPausedByUser = false;
-                                            isFilterActive = true; 
-                                        } else {
-                                            isFilterActive = false;
-                                            resumeConveyor(); 
-                                        }
 
                                         if (activeSortKey && activeSortDirection !== 'none') {
                                             params.append('sort_by', activeSortKey);
@@ -4579,107 +4570,61 @@
                                         }
 
                                         fetch(`{{ route('dashboard.search.realtime') }}?${params.toString()}`, {
-                                                method: 'GET',
-                                                headers: {
-                                                    'X-Requested-With': 'XMLHttpRequest',
-                                                    'Accept': 'application/json'
-                                                }
-                                            })
-                                            .then(response => response.json())
-                                            .then(responseData => {
-                                                let tableRowsHtml = '';
-                                                let visibleAssetTypes = new Set();
+                                            method: 'GET',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Accept': 'application/json'
+                                            }
+                                        })
+                                        .then(response => response.json())
+                                        .then(responseData => {
+                                            let tableRowsHtml = '';
+                                            let visibleAssetTypes = new Set();
 
-                                                if (responseData.data && responseData.data.length > 0) {
-                                                    responseData.data.forEach((barang) => {
-                                                        if (barang.jenis_barang) {
-                                                            visibleAssetTypes.add(barang.jenis_barang);
-                                                        }
+                                            if (responseData.data && responseData.data.length > 0) {
+                                                responseData.data.forEach((barang) => {
+                                                    if (barang.jenis_barang) {
+                                                        visibleAssetTypes.add(barang.jenis_barang);
+                                                    }
+                                                    const rowNumber = barang.row_number;
+                                                    let superAdminButtons = IS_SUPER_ADMIN ? 
+                                                        `<button class="action-btn-table edit-btn-asset" data-id="${barang.id}" title="Edit Aset"><i class="fas fa-edit"></i><span>Edit</span></button>
+                                                        <button class="action-btn-table remove-btn-asset" data-id="${barang.id}" title="Hapus Aset"><i class="fas fa-trash-alt"></i><span>Hapus</span></button>` : '';
 
-                                                        const rowNumber = barang.row_number;
+                                                    tableRowsHtml += `
+                                                    <div class="products-row" data-id="${barang.id}">
+                                                        <div class="product-cell cell-no">${rowNumber}</div>
+                                                        <div class="product-cell cell-perusahaan" data-label="Perusahaan" title="${escapeHtml(barang.perusahaan_nama || 'N/A')}">${escapeHtml(barang.perusahaan_nama || 'N/A')}</div>
+                                                        <div class="product-cell cell-jenis-barang" data-label="Jenis Barang" title="${escapeHtml(barang.jenis_barang || 'N/A')}">${escapeHtml(barang.jenis_barang || 'N/A')}</div>
+                                                        <div class="product-cell cell-no-asset" data-label="No Asset" title="${escapeHtml(barang.no_asset || '')}">${escapeHtml(barang.no_asset || '')}</div>
+                                                        <div class="product-cell cell-merek" data-label="Merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
+                                                        <div class="product-cell cell-tgl-pengadaan" data-label="Tgl. Pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
+                                                        <div class="product-cell cell-serial-number" data-label="Serial Number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
+                                                        <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
+                                                        <div class="product-cell cell-aksi">
+                                                            <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset"><i class="fas fa-info-circle"></i><span>Detail</span></button>
+                                                            ${superAdminButtons}
+                                                        </div>
+                                                    </div>`;
+                                                });
+                                            } else {
+                                                tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
+                                            }
+                                            productTableRowsContainer.innerHTML = tableRowsHtml;
+                                            
+                                            filterSummaryBoxes(Array.from(visibleAssetTypes));
 
-                                                        let actionButtons = `
-                                                        <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
-                                                            <i class="fas fa-info-circle"></i>
-                                                            <span>Detail</span>
-                                                        </button>`;
-
-                                                        let superAdminButtons = '';
-                                                        if (IS_SUPER_ADMIN) {
-                                                            superAdminButtons = `
-                                                            <button class="action-btn-table edit-btn-asset" data-id="${barang.id}" title="Edit Aset">
-                                                                <i class="fas fa-edit"></i>
-                                                                <span>Edit</span>
-                                                            </button>
-                                                            <button class="action-btn-table remove-btn-asset" data-id="${barang.id}" title="Hapus Aset">
-                                                                <i class="fas fa-trash-alt"></i>
-                                                                <span>Hapus</span>
-                                                            </button>`;
-                                                        }
-
-                                                        let mobileActionButtons = `
-                                                        <div class="action-buttons-wrapper">
-                                                            <button class="action-btn-table detail-btn-table-js" data-id="${barang.id}" title="Detail Aset">
-                                                                <i class="fas fa-info-circle"></i>
-                                                                <span>Detail</span>
-                                                            </button>`;
-
-                                                        if (IS_SUPER_ADMIN) {
-                                                            mobileActionButtons += `
-                                                            <div class="action-buttons-split">
-                                                                <button class="action-btn-table edit-btn-asset" data-id="${barang.id}" title="Edit Aset">
-                                                                    <i class="fas fa-edit"></i>
-                                                                    <span>Edit</span>
-                                                                </button>
-                                                                <button class="action-btn-table remove-btn-asset" data-id="${barang.id}" title="Hapus Aset">
-                                                                    <i class="fas fa-trash-alt"></i>
-                                                                    <span>Hapus</span>
-                                                                </button>
-                                                            </div>`;
-                                                        }
-                                                        mobileActionButtons += `</div>`;
-
-                                                        tableRowsHtml += `
-                                                        <div class="products-row" data-id="${barang.id}">
-                                                            <div class="product-cell cell-no">${rowNumber}</div>
-                                                            <div class="product-cell cell-perusahaan" data-label="Perusahaan" title="${escapeHtml(barang.perusahaan_nama || 'N/A')}">${escapeHtml(barang.perusahaan_nama || 'N/A')}</div>
-                                                            <div class="product-cell cell-jenis-barang" data-label="Jenis Barang" title="${escapeHtml(barang.jenis_barang || 'N/A')}">${escapeHtml(barang.jenis_barang || 'N/A')}</div>
-                                                            <div class="product-cell cell-no-asset" data-label="No Asset" title="${escapeHtml(barang.no_asset || '')}">${escapeHtml(barang.no_asset || '')}</div>
-                                                            <div class="product-cell cell-merek" data-label="Merek" title="${escapeHtml(barang.merek || '')}">${escapeHtml(barang.merek || '')}</div>
-                                                            <div class="product-cell cell-tgl-pengadaan" data-label="Tgl. Pengadaan">${formatDate(barang.tgl_pengadaan)}</div>
-                                                            <div class="product-cell cell-serial-number" data-label="Serial Number" title="${escapeHtml(barang.serial_number || '')}">${escapeHtml(barang.serial_number || '')}</div>
-                                                            <div class="product-cell cell-lokasi" data-label="Lokasi">${escapeHtml(barang.lokasi || 'N/A')}</div>
-                                                            <div class="product-cell cell-aksi" data-label="Aksi">
-                                                                <div class="desktop-actions">
-                                                                    ${actionButtons}
-                                                                    ${superAdminButtons}
-                                                                </div>
-                                                                <div class="mobile-actions">
-                                                                    ${mobileActionButtons}
-                                                                </div>
-                                                            </div>
-                                                        </div>`;
-                                                    });
-                                                } else {
-                                                    tableRowsHtml = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px;">Tidak ada data aset ditemukan.</div></div>`;
-                                                }
-                                                productTableRowsContainer.innerHTML = tableRowsHtml;
-
-                                                filterSummaryBoxes(Array.from(visibleAssetTypes));
-
-                                                if (responseData.pagination) renderPaginationControls(responseData.pagination);
-                                                if (responseData.inventorySummary) {
-                                                    updateInventorySummary(responseData.inventorySummary);
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Error performing real-time search:', error);
-                                                productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
-                                            })
-                                            .finally(() => {
-                                            updateFilterState();
+                                            if (responseData.pagination) renderPaginationControls(responseData.pagination);
+                                            if (responseData.inventorySummary) updateInventorySummary(responseData.inventorySummary);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error performing real-time search:', error);
+                                            productTableRowsContainer.innerHTML = `<div class="products-row"><div class="product-cell" style="text-align:center; flex-basis:100%; padding: 20px; color:red;">Gagal memuat data.</div></div>`;
+                                        })
+                                        .finally(() => {
+                                            updateFilterState(); 
                                             if (!isFilterActive) {
-                                                isFilterActive = false;
+                                                manageConveyor();
                                                 resumeConveyor();
                                             }
                                         });

@@ -475,7 +475,7 @@ class DashboardController extends Controller
         if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
         }
-        
+
         $track->delete();
         return response()->json(['success' => true, 'message' => 'Riwayat berhasil dihapus.']);
     }
@@ -639,7 +639,7 @@ class DashboardController extends Controller
                 $barang->perusahaan_id = $perusahaanTujuanId;
                 $barang->no_asset = $noAssetBaru;
 
-                 \App\Models\Mutasi::create([
+                \App\Models\Mutasi::create([
                     'barang_id'           => $barangLama->id,
                     'no_asset_lama'       => $barangLama->no_asset,
                     'perusahaan_lama_id'  => $barangLama->perusahaan_id,
