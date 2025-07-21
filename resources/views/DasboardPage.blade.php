@@ -2417,7 +2417,7 @@
                                 display: none;
                             }
 
-                        .summary-box {
+                            .summary-box {
                                 width: calc(50vw - 24px);
                                 max-width: 180px;
                                 min-height: 90px;
@@ -2454,6 +2454,13 @@
                             .summary-box-count {
                                 font-size: 2.2rem;
                                 align-self: start;
+                            }
+
+                            .inventory-summary-container.active {
+                                cursor: grabbing;
+                                cursor: -webkit-grabbing;
+                                transform: scale(1.02);
+                                user-select: none; 
                             }
 
                             .products-area-wrapper.tableView {
@@ -3146,7 +3153,7 @@
                                         <span></span>
                                         <span></span>
                                     </button>
-                                    <h1 class="app-content-headerText">Data Aset Inventaris</h1>
+                                    <h1 class="app-content-headerText">Data Aset</h1>
                                     <div class="app-content-header-actions-right"> {{-- Wrapper baru untuk tombol kanan atas --}}
                                         <button class="mode-switch action-button" title="Switch Theme"> {{-- Tambahkan class action-button --}}
                                             <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" height="20" viewBox="0 0 24 24"> {{-- Ukuran ikon bisa disesuaikan --}}
@@ -3163,7 +3170,6 @@
                                     </div>
                                 </div>
 
-                                {{-- +++ AWAL BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
                                 <div class="inventory-summary-container">
                                     @foreach($inventorySummary as $namaJenis => $data)
                                     @php
@@ -3178,9 +3184,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                {{-- +++ AKHIR BAGIAN BARU UNTUK SUMMARY BOX +++ --}}
 
-                                {{-- FORM FILTER DAN TOMBOL AKSI --}}
                                 <form action="{{ route('dashboard.index') }}" method="GET" id="filterForm">
                                     <div class="app-content-actions">
 
@@ -3911,6 +3915,52 @@
                                         });
                                     }
 
+                                    function addDragAndWheelScroll() {
+                                        const slider = document.querySelector('.inventory-summary-container');
+                                        if (!slider) return;
+
+                                        let isDown = false;
+                                        let startX;
+                                        let scrollLeft;
+
+                                        slider.addEventListener('mousedown', (e) => {
+                                            if (e.target.closest('a, button')) return;
+                                            isDown = true;
+                                            slider.classList.add('active');
+                                            startX = e.pageX - slider.offsetLeft;
+                                            scrollLeft = slider.scrollLeft;
+                                            pauseConveyor();
+                                        });
+
+                                        slider.addEventListener('mouseleave', () => {
+                                            isDown = false;
+                                            slider.classList.remove('active');
+                                        });
+
+                                        slider.addEventListener('mouseup', () => {
+                                            isDown = false;
+                                            slider.classList.remove('active');
+                                        });
+
+                                        slider.addEventListener('mousemove', (e) => {
+                                            if (!isDown) return;
+                                            e.preventDefault();
+                                            const x = e.pageX - slider.offsetLeft;
+                                            const walk = (x - startX) * 2;
+                                            slider.scrollLeft = scrollLeft - walk;
+                                        });
+
+                                        slider.addEventListener('wheel', (e) => {
+                                            if (e.deltaX !== 0) {
+                                                return;
+                                            }
+                                            if (slider.scrollWidth > slider.clientWidth) {
+                                                e.preventDefault();
+                                                slider.scrollLeft += e.deltaY;
+                                            }
+                                        }, { passive: false });
+                                    }
+
                                     const updateFilterState = () => {
                                         const keyword = mainSearchInput ? mainSearchInput.value.trim() : '';
                                         const perusahaan = filterPerusahaanSelect ? filterPerusahaanSelect.value : '';
@@ -3919,13 +3969,6 @@
                                         // Sekarang, isFilterActive akan bernilai true jika salah satu dari tiga filter ini aktif
                                         isFilterActive = !!(keyword || perusahaan || jenisBarangAktif);
                                     };
-
-                                    if (conveyorContainer) {
-                                        conveyorContainer.addEventListener('mouseenter', pauseConveyor);
-                                        conveyorContainer.addEventListener('mouseleave', resumeConveyor);
-                                        conveyorContainer.addEventListener('touchstart', pauseConveyor, { passive: true });
-                                        conveyorContainer.addEventListener('touchend', resumeConveyor);
-                                    }
 
                                     function filterSummaryBoxes(visibleAssetTypes = []) {
                                         const originalBoxes = conveyorContainer.querySelectorAll('.summary-box:not(.summary-box-clone)');
@@ -4022,6 +4065,7 @@
                                         const clonedBoxes = conveyorContainer.querySelectorAll('.summary-box.summary-box-clone');
                                         
                                         updateFilterState();
+
 
                                         if (!isFilterActive) {
                                             originalBoxes.forEach(box => box.classList.remove('is-hidden'));
@@ -5044,6 +5088,7 @@
                                     }
 
                                     manageConveyor();
+                                    addDragAndWheelScroll();
                                     updateFilterState();
                                     initializeSidebarState();
                                     setActiveSidebarLink();
