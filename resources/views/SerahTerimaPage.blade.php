@@ -2216,6 +2216,7 @@
                     document.addEventListener('DOMContentLoaded', () => {
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
                         const isSuperAdmin = {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }};
+                        const isAdmin = {{ auth()->user()->isAdmin() ? 'true' : 'false' }};
 
                         const config = {
                             serahTerima: {
@@ -2370,11 +2371,15 @@
 
                         const renderSerahTerimaRow = (surat, number) => {
                             const merek = surat.merek || 'N/A';
-                            let actions = `<a href="/surat/download/${surat.id}" class="action-btn-table download-btn" title="Download PDF"><i class="fas fa-download"></i></a>
-                                    <button class="action-btn-table detail-btn" data-id="${surat.id}" title="Lihat Detail"><i class="fas fa-info-circle"></i></button>`;
+                            let actions = `<button class="action-btn-table detail-btn" data-id="${surat.id}" title="Lihat Detail"><i class="fas fa-info-circle"></i></button>`;
+
+                            if (isAdmin || isSuperAdmin) {
+                                actions = `<a href="/surat/download/${surat.id}" class="action-btn-table download-btn" title="Download PDF" target="_blank" rel="noopener noreferrer"><i class="fas fa-download"></i></a>` + actions;
+                            }
+
                             if (isSuperAdmin) {
                                 actions += `<button class="action-btn-table edit-btn" data-id="${surat.id}" title="Edit Surat"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn-table delete-btn" data-id="${surat.id}" title="Hapus Surat"><i class="fas fa-trash-alt"></i></button>`;
+                                            <button class="action-btn-table delete-btn" data-id="${surat.id}" title="Hapus Surat"><i class="fas fa-trash-alt"></i></button>`;
                             }
                             return `
                             <div class="product-cell cell-no">${number}</div>
@@ -2711,7 +2716,10 @@
 
                             const conf = config[currentTab];
                             ui.searchInput.placeholder = conf.searchPlaceholder;
-                            document.getElementById('openAddSuratModalButton').style.display = conf.addButtonVisible ? 'flex' : 'none';
+                            const addButton = document.getElementById('openAddSuratModalButton'); 
+                            if (addButton) {
+                                addButton.style.display = conf.addButtonVisible ? 'flex' : 'none';
+                            }
 
                             currentPage = 1;
                             ui.searchInput.value = '';
@@ -3035,33 +3043,6 @@
                                     });
                             }
                         });
-
-                        document.querySelector('.nav-tabs').addEventListener('click', (e) => {
-                            const navButton = e.target.closest('.nav-link');
-                            if (!navButton || navButton.classList.contains('active')) return;
-
-                            currentTab = navButton.dataset.tab;
-
-                            document.querySelectorAll('.nav-link').forEach(link => {
-                                const isActive = link === navButton;
-                                link.classList.toggle('active', isActive);
-                                link.style.opacity = isActive ? '1' : '0.7';
-                                link.style.borderBottomColor = isActive ? 'var(--action-color)' : 'transparent';
-                            });
-
-                            document.querySelectorAll('.tab-pane').forEach(pane => {
-                                pane.style.display = (pane.id === `${currentTab}-tab-pane`) ? 'block' : 'none';
-                            });
-
-                            const conf = config[currentTab];
-                            ui.searchInput.placeholder = conf.searchPlaceholder;
-                            document.getElementById('openAddSuratModalButton').style.display = conf.addButtonVisible ? 'flex' : 'none';
-
-                            currentPage = 1;
-                            ui.searchInput.value = '';
-                            fetchData();
-                        });
-
 
                         document.querySelector('.tab-content').addEventListener('click', (e) => {
                             const conf = config[currentTab];

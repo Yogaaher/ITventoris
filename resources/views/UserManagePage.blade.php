@@ -408,7 +408,6 @@
                     display: flex;
                     overflow: hidden;
                     box-shadow: var(--filter-shadow);
-                    max-width: 2000px;
                     margin: 0 auto;
                 }
 

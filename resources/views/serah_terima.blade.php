@@ -129,6 +129,18 @@
         .clear {
             clear: both;
         }
+
+        .footer {
+            position: fixed; 
+            bottom: -1cm;
+            left: 0cm; 
+            right: 0cm;
+            height: 1cm; 
+            text-align: center; 
+            font-size: 9pt;
+            color: #888;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -251,6 +263,10 @@
             <p class="text-bold">{{ $penerima_nama ?? '..............................' }}</p>
         </div>
         <div class="clear"></div>
+    </div>
+
+    <div class="footer">
+        <p>Downloaded at http://asset.scuto.co.id/</p>
     </div>
 
 </body>

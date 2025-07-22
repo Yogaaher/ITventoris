@@ -233,7 +233,7 @@
                 .inventory-summary-container {
                     display: flex;
                     gap: 16px;
-                    padding: 15px 4px 16px 4px;
+                    padding: 2rem;
                     flex-wrap: nowrap;
                     overflow-x: auto;
                     -webkit-overflow-scrolling: touch;
@@ -258,12 +258,15 @@
                 .summary-box {
                     background-color: var(--app-content-secondary-color);
                     color: var(--app-content-main-color);
-                    padding: 20px 15px;
+                    padding: 2rem 1rem;
                     border-radius: 8px;
                     text-align: center;
+                    
+
                     flex: 0 0 180px;
                     min-width: 180px;
-                    min-height: 110px;
+                    min-height: 120px;
+
                     box-shadow: var(--filter-shadow);
                     transition: transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
                     display: flex;
@@ -283,7 +286,8 @@
 
                 .summary-box-icon {
                     font-size: 2.8rem;
-                    margin-bottom: 10px;
+                    margin-bottom: 1rem;
+                    margin-top: 1rem;
                     color: var(--action-color);
                     user-select: none;
                 }
@@ -295,7 +299,7 @@
                 .summary-box-type {
                     font-size: 1.4rem;
                     font-weight: 500;
-                    margin-bottom: 8px;
+                    margin-bottom: 1rem;
                     text-transform: capitalize;
                     user-select: none;
                 }
@@ -304,6 +308,7 @@
                     font-size: 2.4rem;
                     font-weight: bold;
                     user-select: none;
+                    margin-bottom: 1rem;
                 }
 
                 /* === AKHIR CSS UNTUK SUMMARY BOX INVENTARIS === */
@@ -394,7 +399,6 @@
                     display: flex;
                     overflow: hidden;
                     box-shadow: var(--filter-shadow);
-                    max-width: 2000px;
                     margin: 0 auto;
                 }
 
@@ -2428,7 +2432,7 @@
                         display: grid;
                         grid-template-columns: auto 1fr;
                         grid-template-rows: auto auto;
-                        gap: 2px 12px; 
+                        gap: 2px 12px;
                         padding: 14px;
                         align-items: center;
                         text-align: left;
@@ -2457,7 +2461,7 @@
                         margin-bottom: 0;
                         align-self: end;
 
-                        white-space: nowrap; 
+                        white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
@@ -3358,6 +3362,7 @@
                         // ==============================================================================
                         // VARIABEL GLOBAL & FUNGSI HELPER YANG BISA DIAKSES DARI MANA SAJA
                         // ==============================================================================
+                        const IS_SUPER_ADMIN = {{auth() -> user() -> isSuperAdmin() ? 'true' : 'false'}};
                         let currentAssetIdForSerahTerima = null;
                         let debounceTimer;
                         let lastKnownUserFromDetail = '-';
@@ -4053,7 +4058,7 @@
                                     allOriginalBoxes.forEach(box => {
                                         box.classList.remove('is-hidden');
                                     });
-                                    return; 
+                                    return;
                                 }
 
                                 // Jika filter aktif, lakukan proses penyaringan.
@@ -4604,7 +4609,7 @@
                                     })
                                     .finally(() => {
                                         updateFilterState();
-                                        manageConveyor(); 
+                                        manageConveyor();
                                         if (!isFilterActive) {
                                             resumeConveyor();
                                         } else {
