@@ -11,7 +11,6 @@ class PerusahaanPageController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil data awal hanya untuk tab perusahaan
         $companies = Perusahaan::query()->oldest()->paginate(20);
 
         return view('PerusahaanPage', [
@@ -85,7 +84,7 @@ class PerusahaanPageController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
         $validatedData = $validator->validated();
-        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']); // <-- TAMBAH BARIS INI
+        $validatedData['singkatan'] = strtoupper($validatedData['singkatan']);
         Perusahaan::create($validatedData);
         return response()->json(['success' => 'Perusahaan berhasil ditambahkan.']);
     }
@@ -114,7 +113,7 @@ class PerusahaanPageController extends Controller
             $validatedData = $validator->validated();
 
             $company->nama_perusahaan = $validatedData['nama_perusahaan'];
-            $company->singkatan = strtoupper($validatedData['singkatan']); // <-- BARIS INI DIUBAH
+            $company->singkatan = strtoupper($validatedData['singkatan']);
             $company->save();
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Gagal update perusahaan: ' . $e->getMessage());

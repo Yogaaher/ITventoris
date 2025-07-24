@@ -140,7 +140,6 @@
             transform: translateY(-3px);
         }
 
-        /* ===== CSS BARU UNTUK IKON MATA ===== */
         .password-wrapper {
             position: relative;
         }
@@ -174,24 +173,15 @@
 
         .error-message {
             display: flex;
-            /* Menggunakan flexbox untuk mensejajarkan ikon dan teks */
             align-items: center;
             background-color: rgba(239, 68, 68, 0.15);
-            /* Warna merah lebih soft dengan transparansi */
             color: #fca5a5;
-            /* Warna teks merah terang yang cocok dengan background */
             padding: 12px 16px;
-            /* Padding lebih kecil (tinggi 12px, lebar 16px) */
             border: 1px solid rgba(239, 68, 68, 0.3);
-            /* Border semi-transparan */
             border-radius: 8px;
             margin-bottom: 1.25rem;
-            /* Margin bawah sedikit dikurangi */
             font-size: 0.9rem;
-            /* Font lebih kecil */
             font-weight: 400;
-
-            /* Animasi halus saat muncul */
             animation: fadeInDown 0.4s ease-out;
         }
 
@@ -199,9 +189,7 @@
             width: 20px;
             height: 20px;
             margin-right: 10px;
-            /* Jarak antara ikon dan teks */
             flex-shrink: 0;
-            /* Mencegah ikon menyusut */
         }
 
         @keyframes fadeInDown {
@@ -278,11 +266,9 @@
 
             @if ($errors->any())
             <div class="error-message">
-                {{-- Ikon Peringatan (SVG) --}}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                {{-- Teks Pesan Error --}}
                 <span>{{ $errors->first() }}</span>
             </div>
             @endif
@@ -292,7 +278,6 @@
     </div>
 
     <script>
-        // === LOGIKA UNTUK MENAMPILKAN/SEMBUNYIKAN PASSWORD ===
         const togglePasswordButton = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('icon-eye');

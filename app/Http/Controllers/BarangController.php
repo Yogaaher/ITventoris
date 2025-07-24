@@ -40,10 +40,7 @@ class BarangController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Ambil semua data yang sudah divalidasi
         $validatedData = $validator->validated();
-
-        // Lakukan sanitasi pada field yang berupa string bebas
         $sanitizedMerek = strip_tags($validatedData['merek']);
         $sanitizedSerialNumber = strip_tags($validatedData['serial_number']);
         if (empty($sanitizedSerialNumber)) {
@@ -55,9 +52,7 @@ class BarangController extends Controller
         }
 
         try {
-            // SOLUSI: Tambahkan variabel yang dibutuhkan ke dalam klausa `use`
             $newAssetNumber = DB::transaction(function () use ($validatedData, $sanitizedMerek, $sanitizedSerialNumber) {
-                // Gunakan data dari $validatedData yang lebih aman
                 $perusahaan = Perusahaan::find($validatedData['perusahaan_id']);
                 $jenisBarang = JenisBarang::find($validatedData['jenis_barang_id']);
 
@@ -67,24 +62,16 @@ class BarangController extends Controller
                         ['nomor_terakhir' => 0]
                     );
 
-                // 2. Increment nomor
                 $nomorBaru = $counter->nomor_terakhir + 1;
-
-                // 3. Simpan nomor baru kembali ke database
                 $counter->nomor_terakhir = $nomorBaru;
                 $counter->save();
-
-                // 4. Format nomor (padding)
                 $eeee = str_pad($nomorBaru, 4, '0', STR_PAD_LEFT);
-
                 $aaa = $perusahaan->singkatan;
                 $bbb = $jenisBarang->singkatan;
                 $cccc = date('Y', strtotime($validatedData['tgl_pengadaan']));
                 $dd = date('m', strtotime($validatedData['tgl_pengadaan']));
-
                 $noAssetFinal = "{$aaa}/{$bbb}/{$cccc}/{$dd}/{$eeee}";
 
-                // Gunakan variabel yang sudah di-pass dan disanitasi
                 Barang::create([
                     'perusahaan_id' => $validatedData['perusahaan_id'],
                     'jenis_barang_id' => $validatedData['jenis_barang_id'],
@@ -100,7 +87,6 @@ class BarangController extends Controller
             });
             return response()->json(['success' => "Aset berhasil ditambahkan dengan No: {$newAssetNumber}!"], 201);
         } catch (\Exception $e) {
-            // Tambahkan logging error agar lebih mudah di-debug
             Log::error('Gagal menyimpan aset: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menyimpan aset. Terjadi kesalahan pada server.'], 500);
         }

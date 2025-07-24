@@ -17,10 +17,6 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class DashboardController extends Controller
 {
-    /**
-     * Method privat untuk membangun query dasar barang berdasarkan filter.
-     * Digunakan oleh index() dan searchRealtime().
-     */
     private function getBarangQuery(Request $request)
     {
         $queryBuilder = Barang::query()
@@ -29,17 +25,14 @@ class DashboardController extends Controller
             ->leftJoin('jenis_barangs', 'barang.jenis_barang_id', '=', 'jenis_barangs.id')
             ->with(['perusahaan', 'jenisBarang']);
 
-        // Filter berdasarkan perusahaan
         if ($request->filled('filter_perusahaan')) {
             $queryBuilder->where('perusahaan_id', $request->input('filter_perusahaan'));
         }
 
-        // Filter berdasarkan jenis barang
         if ($request->filled('filter_jenis_barang') && is_array($request->input('filter_jenis_barang'))) {
             $queryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
         }
 
-        // Filter berdasarkan keyword pencarian (no asset, serial number, atau merek)
         if ($request->filled('search_no_asset')) {
             $searchKeyword = $request->input('search_no_asset');
             $queryBuilder->where(function ($query) use ($searchKeyword) {
@@ -140,10 +133,6 @@ class DashboardController extends Controller
         return $writer->toBrowser();
     }
 
-    /**
-     * Method privat untuk menghitung summary inventaris.
-     * Digunakan oleh index() dan bisa juga oleh searchRealtime() jika summary diupdate via AJAX.
-     */
     private function calculateInventorySummary($baseQueryBuilder, $filterJenisBarangInput)
     {
         $allJenisBarang = JenisBarang::orderBy('nama_jenis', 'asc')->get();
@@ -171,34 +160,18 @@ class DashboardController extends Controller
         return $inventorySummary;
     }
 
-
-    /**
-     * Menampilkan halaman utama dashboard (load awal).
-     */
     public function index(Request $request)
     {
-        // Dapatkan query builder dasar dengan semua filter dari request
         $queryBuilder = $this->getBarangQuery($request);
-
-        // Ambil nilai filter untuk dikirim ke view
         $perPage = $request->input('per_page', 10);
-
         $searchKeyword = $request->input('search_no_asset');
         $filterPerusahaan = $request->input('filter_perusahaan');
         $filterJenisBarang = $request->input('filter_jenis_barang');
-
-        // Clone query untuk tabel utama sebelum paginasi
         $tableQuery = clone $queryBuilder;
         $barangs = $tableQuery->orderBy('id', 'asc')->paginate($perPage);
-        // Pastikan paginasi mempertahankan query string filter
         $barangs->appends($request->query());
-
-        // Ambil opsi untuk dropdown filter (tidak terpengaruh filter aktif)
         $perusahaanOptions = Perusahaan::orderBy('nama_perusahaan')->get();
         $jenisBarangOptions = JenisBarang::orderBy('nama_jenis')->get();
-
-
-        // Hitung summary inventaris berdasarkan query builder yang sudah difilter
         $inventorySummary = $this->calculateInventorySummary($queryBuilder, $filterJenisBarang);
 
         return view('DasboardPage', compact(
@@ -211,11 +184,6 @@ class DashboardController extends Controller
             'filterJenisBarang'
         ));
     }
-
-    /**
-     * Menangani pencarian real-time via AJAX.
-     */
-    // File: app/Http/Controllers/DashboardController.php
 
     public function searchRealtime(Request $request)
     {
@@ -310,8 +278,6 @@ class DashboardController extends Controller
         return response('This endpoint is intended for AJAX requests only.', 400);
     }
 
-
-    // ... (method getDetailBarang, getUserHistoryBySerialNumber, storeSerahTerimaAset tetap sama) ...
     public function getDetailBarang(Request $request, $id)
     {
         try {
@@ -333,10 +299,10 @@ class DashboardController extends Controller
                     'jenis_barang_id' => $barang->jenis_barang_id,
                     'no_asset' => $barang->no_asset,
                     'merek' => $barang->merek,
-                    'kuantitas' => $barang->kuantitas, // REVISI: Tambahkan baris ini
+                    'kuantitas' => $barang->kuantitas,
                     'tgl_pengadaan' => $barang->tgl_pengadaan,
                     'serial_number' => $barang->serial_number,
-                    'lokasi' => $barang->lokasi, // REVISI: Tambahkan baris ini
+                    'lokasi' => $barang->lokasi,
                     'status' => $barang->status,
                     'perusahaan' => $barang->perusahaan,
                     'jenis_barang' => $barang->jenisBarang,
@@ -543,7 +509,6 @@ class DashboardController extends Controller
 
     public function storeSerahTerimaAset(Request $request)
     {
-        // PASTIKAN $rules DIDEFINISIKAN DI SINI, SEBELUM VALIDATOR
         $rules = [
             'serial_number' => 'required|string|exists:barang,serial_number',
             'username' => 'required|string|max:255',
@@ -557,7 +522,6 @@ class DashboardController extends Controller
             'perusahaan_tujuan.required_if' => 'Perusahaan tujuan wajib diisi jika status aset adalah Dipindah.',
         ];
 
-        // PASTIKAN VARIABEL YANG DIGUNAKAN DI SINI ADALAH $rules (DENGAN 's')
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -579,7 +543,6 @@ class DashboardController extends Controller
         if ($request->input('status') === 'dipindah') {
             $barangLama = clone $barang;
             if ($request->input('perusahaan_tujuan') == $barang->perusahaan_id) {
-                // Kirim kembali dengan pesan error spesifik
                 return response()->json([
                     'success' => false,
                     'errors' => [
@@ -590,7 +553,6 @@ class DashboardController extends Controller
         }
 
         $newStatus = $request->input('status');
-        // $currentTime = null; // Tidak perlu diinisialisasi null jika akan di-assign Carbon::now()
 
         DB::beginTransaction();
         try {
@@ -602,40 +564,25 @@ class DashboardController extends Controller
                 return response()->json(['success' => false, 'message' => 'Data barang tidak ditemukan.'], 404);
             }
 
-            // --- LOGIKA UTAMA PERPINDAHAN ASET ---
             if ($request->input('status') === 'dipindah') {
                 $perusahaanTujuanId = $request->input('perusahaan_tujuan');
                 $perusahaanTujuan = Perusahaan::find($perusahaanTujuanId);
-
-
-
-                // 1. Ambil atau buat counter untuk perusahaan TUJUAN. Kunci barisnya!
                 $counterTujuan = AssetCounter::lockForUpdate()
                     ->firstOrCreate(
                         ['perusahaan_id' => $perusahaanTujuanId],
                         ['nomor_terakhir' => 0]
                     );
 
-                // 2. Increment nomor
                 $nomorBaru = $counterTujuan->nomor_terakhir + 1;
-
-                // 3. Simpan nomor baru kembali ke database
                 $counterTujuan->nomor_terakhir = $nomorBaru;
                 $counterTujuan->save();
-
-                // 4. Format nomor (padding)
                 $eeee = str_pad($nomorBaru, 4, '0', STR_PAD_LEFT);
-
-                // --- AKHIR LOGIKA BARU ---
-
-                // Bagian ini tetap sama
                 $aaa = $perusahaanTujuan->singkatan;
                 $bbb = $barang->jenisBarang->singkatan;
                 $cccc = date('Y');
                 $dd = date('m');
                 $noAssetBaru = "{$aaa}/{$bbb}/{$cccc}/{$dd}/{$eeee}";
 
-                // Update data barang
                 $barang->perusahaan_id = $perusahaanTujuanId;
                 $barang->no_asset = $noAssetBaru;
 
@@ -643,20 +590,16 @@ class DashboardController extends Controller
                     'barang_id'           => $barangLama->id,
                     'no_asset_lama'       => $barangLama->no_asset,
                     'perusahaan_lama_id'  => $barangLama->perusahaan_id,
-                    'pengguna_lama'       => $previousTrack->username ?? 'N/A', // Pengguna dari riwayat sebelumnya
+                    'pengguna_lama'       => $previousTrack->username ?? 'N/A',
                     'no_asset_baru'       => $noAssetBaru,
                     'perusahaan_baru_id'  => $perusahaanTujuanId,
-                    'pengguna_baru'       => $request->input('username'), // Pengguna baru dari form
+                    'pengguna_baru'       => $request->input('username'),
                     'tanggal_mutasi'      => $currentTime->toDateString(),
                 ]);
             }
 
-            // Update status di tabel barang (ini tetap berjalan untuk semua status)
             $barang->status = $request->input('status');
             $barang->save();
-            // --- AKHIR LOGIKA UTAMA ---
-
-            // Proses update tabel 'track' (tetap sama)
             $previousTrack = Track::where('serial_number', $barang->serial_number)
                 ->whereNull('tanggal_ahir')
                 ->orderBy('tanggal_awal', 'desc')
@@ -664,11 +607,7 @@ class DashboardController extends Controller
                 ->first();
 
             if ($previousTrack) {
-                // --- TAMBAHKAN VALIDASI DI SINI ---
                 $tanggalAwalPrevious = Carbon::parse($previousTrack->tanggal_awal);
-
-                // Cek apakah tanggal sekarang ($currentTime) lebih dulu dari tanggal terima sebelumnya.
-                // Ini jarang terjadi, tapi bisa karena kesalahan setting jam server.
                 if ($currentTime->lessThan($tanggalAwalPrevious)) {
                     DB::rollBack();
                     return response()->json([
@@ -678,7 +617,6 @@ class DashboardController extends Controller
                         ]
                     ], 422);
                 }
-                // --- AKHIR VALIDASI ---
 
                 $previousTrack->tanggal_ahir = $currentTime->toDateString();
                 $previousTrack->save();
