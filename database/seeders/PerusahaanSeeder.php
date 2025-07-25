@@ -8,17 +8,10 @@ use Illuminate\Support\Facades\Schema;
 
 class PerusahaanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Praktik terbaik: nonaktifkan foreign key check saat truncate dan seeding
         Schema::disableForeignKeyConstraints();
-        
-        // Kosongkan tabel untuk menghindari duplikasi jika seeder dijalankan ulang
         DB::table('perusahaans')->truncate();
-
         DB::table('perusahaans')->insert([
             ['id' => 1, 'nama_perusahaan' => 'PT SCUTO INDONESIA', 'singkatan' => 'SCO', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 2, 'nama_perusahaan' => 'CV PERISAI DISTRIBUSI', 'singkatan' => 'PDI', 'created_at' => now(), 'updated_at' => now()],
@@ -36,7 +29,6 @@ class PerusahaanSeeder extends Seeder
             ['id' => 14, 'nama_perusahaan' => 'PT SCT MOTOR INDONESIA', 'singkatan' => 'SCT', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 15, 'nama_perusahaan' => 'PT SCUTO TOTAL OTO', 'singkatan' => 'STO', 'created_at' => now(), 'updated_at' => now()],
         ]);
-
         Schema::enableForeignKeyConstraints();
     }
 }

@@ -14,16 +14,18 @@ class MutasiController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->whereHas('barang', function ($q) use ($search) {
-                $q->where('serial_number', 'like', "%{$search}%")
-                    ->orWhere('merek', 'like', "%{$search}%")
-                    ->orWhere('no_asset', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->orWhereHas('barang', function ($q_barang) use ($search) {
+                    $q_barang->where('serial_number', 'like', "%{$search}%")
+                        ->orWhere('merek', 'like', "%{$search}%")
+                        ->orWhere('no_asset', 'like', "%{$search}%");
+                });
+                $q->orWhere('no_asset_lama', 'like', "%{$search}%")
+                ->orWhere('no_asset_baru', 'like', "%{$search}%");
             });
         }
-
         $perPage = $request->input('per_page', 10);
         $mutasiData = $query->latest('tanggal_mutasi')->paginate($perPage);
-
         return response()->json($mutasiData);
     }
 

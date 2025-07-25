@@ -17,6 +17,10 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class DashboardController extends Controller
 {
+    /**
+     * Method privat untuk membangun query dasar barang berdasarkan filter.
+     * Digunakan oleh index() dan searchRealtime().
+     */
     private function getBarangQuery(Request $request)
     {
         $queryBuilder = Barang::query()
@@ -25,14 +29,17 @@ class DashboardController extends Controller
             ->leftJoin('jenis_barangs', 'barang.jenis_barang_id', '=', 'jenis_barangs.id')
             ->with(['perusahaan', 'jenisBarang']);
 
+        // Filter berdasarkan perusahaan
         if ($request->filled('filter_perusahaan')) {
             $queryBuilder->where('perusahaan_id', $request->input('filter_perusahaan'));
         }
 
+        // Filter berdasarkan jenis barang
         if ($request->filled('filter_jenis_barang') && is_array($request->input('filter_jenis_barang'))) {
             $queryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
         }
 
+        // Filter berdasarkan keyword pencarian (no asset, serial number, atau merek)
         if ($request->filled('search_no_asset')) {
             $searchKeyword = $request->input('search_no_asset');
             $queryBuilder->where(function ($query) use ($searchKeyword) {
@@ -47,7 +54,6 @@ class DashboardController extends Controller
     public function exportExcel(Request $request)
     {
         $queryBuilder = $this->getBarangQuery($request);
-
         $sortableColumns = [
             'perusahaan'     => 'perusahaans.nama_perusahaan',
             'jenis_barang'   => 'jenis_barangs.nama_jenis',
@@ -68,27 +74,22 @@ class DashboardController extends Controller
         } elseif (array_key_exists($sortBy, $sortableColumns)) {
             $queryBuilder->orderBy($sortableColumns[$sortBy], $direction);
         }
-
+        
         $barangs = $queryBuilder->with(['perusahaan', 'jenisBarang', 'tracks'])->get();
-        $fileName = 'Laporan_Aset_Inventaris_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+
+        if ($barangs->isEmpty()) {
+            return back()->with('error', 'Tidak ada data untuk diekspor sesuai filter yang dipilih.');
+        }
+        
+        $fileName = 'Laporan_Aset_Scuto_' . Carbon::now()->format('Ymd_His') . '.xlsx';
         $writer = SimpleExcelWriter::streamDownload($fileName);
 
-        $writer->addHeader([
-            'No Asset',
-            'Perusahaan',
-            'Jenis Barang',
-            'Merek',
-            'Kuantitas',
-            'Tanggal Pengadaan',
-            'Serial Number',
-            'Lokasi',
-            'Status Aset Terkini',
-            'Pengguna (Riwayat)',
-            'Status (Riwayat)',
-            'Tanggal Terima',
-            'Tanggal Kembali',
-            'Keterangan (Riwayat)',
-        ]);
+        $header = [
+            'No Asset', 'Perusahaan', 'Jenis Barang', 'Merek', 'Kuantitas', 'Tanggal Pengadaan',
+            'Serial Number', 'Lokasi', 'Status Aset Terkini', 'Pengguna (Riwayat)', 'Status (Riwayat)',
+            'Tanggal Terima', 'Tanggal Kembali', 'Keterangan (Riwayat)',
+        ];
+        $writer->addHeader($header);
 
         foreach ($barangs as $barang) {
             if ($barang->tracks->isNotEmpty()) {
@@ -121,18 +122,14 @@ class DashboardController extends Controller
                     $barang->serial_number,
                     $barang->lokasi ?? '-',
                     $barang->status,
-                    '-',
-                    '-',
-                    '-',
-                    '-',
-                    'Belum ada riwayat serah terima',
+                    '-', '-', '-', '-', 'Belum ada riwayat serah terima',
                 ]);
             }
         }
 
         return $writer->toBrowser();
     }
-
+    
     private function calculateInventorySummary($baseQueryBuilder, $filterJenisBarangInput)
     {
         $allJenisBarang = JenisBarang::orderBy('nama_jenis', 'asc')->get();
@@ -160,18 +157,34 @@ class DashboardController extends Controller
         return $inventorySummary;
     }
 
+
+    /**
+     * Menampilkan halaman utama dashboard (load awal).
+     */
     public function index(Request $request)
     {
+        // Dapatkan query builder dasar dengan semua filter dari request
         $queryBuilder = $this->getBarangQuery($request);
+
+        // Ambil nilai filter untuk dikirim ke view
         $perPage = $request->input('per_page', 10);
+
         $searchKeyword = $request->input('search_no_asset');
         $filterPerusahaan = $request->input('filter_perusahaan');
         $filterJenisBarang = $request->input('filter_jenis_barang');
+
+        // Clone query untuk tabel utama sebelum paginasi
         $tableQuery = clone $queryBuilder;
         $barangs = $tableQuery->orderBy('id', 'asc')->paginate($perPage);
+        // Pastikan paginasi mempertahankan query string filter
         $barangs->appends($request->query());
+
+        // Ambil opsi untuk dropdown filter (tidak terpengaruh filter aktif)
         $perusahaanOptions = Perusahaan::orderBy('nama_perusahaan')->get();
         $jenisBarangOptions = JenisBarang::orderBy('nama_jenis')->get();
+
+
+        // Hitung summary inventaris berdasarkan query builder yang sudah difilter
         $inventorySummary = $this->calculateInventorySummary($queryBuilder, $filterJenisBarang);
 
         return view('DasboardPage', compact(
@@ -278,6 +291,8 @@ class DashboardController extends Controller
         return response('This endpoint is intended for AJAX requests only.', 400);
     }
 
+
+    // ... (method getDetailBarang, getUserHistoryBySerialNumber, storeSerahTerimaAset tetap sama) ...
     public function getDetailBarang(Request $request, $id)
     {
         try {
@@ -299,10 +314,10 @@ class DashboardController extends Controller
                     'jenis_barang_id' => $barang->jenis_barang_id,
                     'no_asset' => $barang->no_asset,
                     'merek' => $barang->merek,
-                    'kuantitas' => $barang->kuantitas,
+                    'kuantitas' => $barang->kuantitas, // REVISI: Tambahkan baris ini
                     'tgl_pengadaan' => $barang->tgl_pengadaan,
                     'serial_number' => $barang->serial_number,
-                    'lokasi' => $barang->lokasi,
+                    'lokasi' => $barang->lokasi, // REVISI: Tambahkan baris ini
                     'status' => $barang->status,
                     'perusahaan' => $barang->perusahaan,
                     'jenis_barang' => $barang->jenisBarang,
@@ -582,7 +597,6 @@ class DashboardController extends Controller
                 $cccc = date('Y');
                 $dd = date('m');
                 $noAssetBaru = "{$aaa}/{$bbb}/{$cccc}/{$dd}/{$eeee}";
-
                 $barang->perusahaan_id = $perusahaanTujuanId;
                 $barang->no_asset = $noAssetBaru;
 

@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('perusahaans', function (Blueprint $table) {
-            $table->id(); // Ini akan menjadi 'id_perusahaan' kita
+            $table->id();
             $table->string('nama_perusahaan');
-            $table->string('singkatan', 10)->unique(); // e.g., SCT, SCO
+            $table->string('singkatan', 10)->unique();
             $table->timestamps();
         });
     }

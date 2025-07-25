@@ -24,4 +24,4 @@
 <div class="products-row" style="justify-content: center; padding: 2rem; text-align: center; width: 100%;">
     Tidak ada data perusahaan yang ditemukan.
 </div>
-@endforelse
+@endforelse 

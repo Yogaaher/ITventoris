@@ -14,10 +14,7 @@ class TrackSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
         DB::table('track')->truncate();
-
         $users = ['andi', 'budi', 'citra', 'dina', 'eko', 'fajar', 'gina', 'hadi', 'tamu', 'bagas', 'agung', 'sari', 'rini'];
-        
-        // Sesuaikan nama 'key' dengan nama jenis barang di database Anda
         $kerusakanPerJenis = [
             'Laptop' => ['layar tidak menyala', 'baterai cepat habis', 'keyboard error', 'port USB rusak', 'tidak bisa menyala', 'touchpad bermasalah'],
             'PC/AIO' => ['power supply rusak', 'layar tidak tampil', 'motherboard bermasalah', 'RAM error', 'HDD/SSD gagal baca'],
@@ -26,52 +23,39 @@ class TrackSeeder extends Seeder
             'Proyektor' => ['tidak ada tampilan', 'lampu mati', 'overheating', 'gambar buram', 'port HDMI rusak'],
             'Others' => ['kabel putus', 'konektor rusak', 'tidak terdeteksi', 'perangkat mati total'],
         ];
-
-        // Eager load relasi untuk performa yang lebih baik
         $barangs = Barang::with('jenisBarang')->get();
         $tracks = [];
-
         foreach ($barangs as $barang) {
             $jumlahUserUntukBarangIni = rand(1, 4);
             $userTerpilihUntukBarangIni = collect($users)->random($jumlahUserUntukBarangIni)->values();
-            
             $currentTanggal = Carbon::parse($barang->tgl_pengadaan)->startOfDay();
-
             for ($i = 0; $i < $jumlahUserUntukBarangIni; $i++) {
                 $username = $userTerpilihUntukBarangIni[$i];
                 $isLastUser = ($i == $jumlahUserUntukBarangIni - 1);
-                
                 $tanggalAwal = $currentTanggal->copy();
                 $statusSaatIni = 'digunakan';
-
-                // Pastikan tanggal awal tidak di masa depan
                 if ($tanggalAwal->isFuture()) {
-                    continue; // Lewati jika pengadaan barang di masa depan
+                    continue;
                 }
-                
                 $tanggalAkhir = null;
                 if (!$isLastUser) {
                     $durasiPenggunaanBulan = rand(3, 12);
                     $tanggalAkhir = $tanggalAwal->copy()->addMonths($durasiPenggunaanBulan)->subDay();
                     $currentTanggal = $tanggalAkhir->copy()->addDay();
-                    
                     if (rand(1, 5) == 1) {
                         $statusSaatIni = collect(['diperbaiki', 'dipindah'])->random();
                     }
                 } else {
-                    // Logika untuk user terakhir
-                    $statusSaatIni = $barang->status; // Status terakhir mengikuti status barang
+                    $statusSaatIni = $barang->status;
                     if ($statusSaatIni === 'non aktif' || $statusSaatIni === 'diperbaiki') {
                         $tanggalAkhir = $tanggalAwal->copy()->addMonths(rand(6, 15));
                         if ($tanggalAkhir->isFuture()) {
                             $tanggalAkhir = now()->subDay();
                         }
                     } else {
-                        $tanggalAkhir = null; // Masih digunakan atau tersedia
+                        $tanggalAkhir = null;
                     }
                 }
-                
-                // Final check untuk tanggal akhir
                 if ($tanggalAkhir && $tanggalAkhir->greaterThan(now())) {
                     $tanggalAkhir = now()->subDay();
                 }
@@ -79,7 +63,7 @@ class TrackSeeder extends Seeder
                     $tanggalAkhir = $tanggalAwal->copy()->addMonth();
                 }
 
-                $jenisBarangNama = $barang->jenisBarang->nama_jenis ?? 'Others'; // Ambil nama jenis barang dari relasi
+                $jenisBarangNama = $barang->jenisBarang->nama_jenis ?? 'Others';
                 
                 $keterangan = "Status aset saat dipegang oleh $username.";
                 if ($statusSaatIni == 'diperbaiki') {
@@ -105,10 +89,7 @@ class TrackSeeder extends Seeder
                 ];
             }
         }
-        
-        // Insert semua data track sekaligus untuk performa lebih baik
         DB::table('track')->insert($tracks);
-
         Schema::enableForeignKeyConstraints();
     }
 }

@@ -11,7 +11,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Membuat Akun Super Admin
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@example.com',
@@ -19,8 +18,6 @@ class UserSeeder extends Seeder
             'role' => 'super_admin',
             'email_verified_at' => now(),
         ]);
-
-        // Membuat Akun Admin
         User::create([
             'name' => 'Admin Utama',
             'email' => 'admin@example.com',
@@ -28,8 +25,6 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'email_verified_at' => now(),
         ]);
-
-        // Membuat Akun User Biasa
         User::create([
             'name' => 'User Biasa Satu',
             'email' => 'user@example.com',

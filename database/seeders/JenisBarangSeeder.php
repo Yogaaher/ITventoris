@@ -8,18 +8,11 @@ use Illuminate\Support\Facades\Schema;
 
 class JenisBarangSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run(): void
     {
-        // Pastikan tabel dikosongkan untuk menghindari duplikat jika seeder dijalankan ulang
         Schema::disableForeignKeyConstraints();
         DB::table('jenis_barangs')->truncate();
         Schema::enableForeignKeyConstraints();
-
         DB::table('jenis_barangs')->insert([
             [
                 'id' => 1,

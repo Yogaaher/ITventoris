@@ -14,6 +14,8 @@ export default defineConfig({
                 'resources/js/perusahaan.js',
                 'resources/css/serah_terima.css',
                 'resources/js/serah_terima.js',
+                'resources/css/usermanage.css',
+                'resources/js/usermanage.js',
             ],
             refresh: true,
         }),

@@ -10,15 +10,10 @@ use Illuminate\Support\Str;
 
 class BarangSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         Schema::disableForeignKeyConstraints();
         DB::table('barang')->truncate();
-
-        // Data master untuk generate barang
         $perusahaan = DB::table('perusahaans')->get()->keyBy('id');
         $jenisBarangMapping = [
             1 => ['nama' => 'Laptop', 'kode' => 'LTP'],
@@ -40,21 +35,14 @@ class BarangSeeder extends Seeder
 
         $statuses = ['digunakan', 'tersedia', 'diperbaiki', 'non aktif'];
         $barangData = [];
-        $assetCounters = []; // Untuk nomor urut asset
-
-        for ($i = 0; $i < 30; $i++) { // Membuat 30 data barang
+        $assetCounters = [];
+        for ($i = 0; $i < 30; $i++) {
             $perusahaanId = $perusahaan->keys()->random();
             $perusahaanSingkatan = $perusahaan[$perusahaanId]->singkatan;
-            
             $jenisBarangId = array_rand($jenisBarangMapping);
             $jenisBarang = $jenisBarangMapping[$jenisBarangId];
-            
             $merek = $merekPerJenis[$jenisBarangId][array_rand($merekPerJenis[$jenisBarangId])];
-            
-            // Generate tanggal pengadaan dalam 4 tahun terakhir
             $tglPengadaan = now()->subYears(rand(0, 4))->subMonths(rand(0, 11))->subDays(rand(0, 28));
-            
-            // Generate nomor asset yang unik
             $year = $tglPengadaan->year;
             $month = str_pad($tglPengadaan->month, 2, '0', STR_PAD_LEFT);
             $counterKey = "{$perusahaanSingkatan}/{$year}";
@@ -63,20 +51,18 @@ class BarangSeeder extends Seeder
                 $assetCounters[$counterKey] = 1;
             }
             $sequence = str_pad($assetCounters[$counterKey]++, 4, '0', STR_PAD_LEFT);
-
             $barangData[] = [
                 'perusahaan_id' => $perusahaanId,
                 'jenis_barang_id' => $jenisBarangId,
                 'no_asset' => "{$perusahaanSingkatan}/{$jenisBarang['kode']}/{$year}/{$month}/{$sequence}",
                 'merek' => $merek,
                 'tgl_pengadaan' => $tglPengadaan->toDateString(),
-                'serial_number' => Str::upper(Str::random(10)), // Serial number acak
+                'serial_number' => Str::upper(Str::random(10)),
                 'status' => $statuses[array_rand($statuses)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
-
         DB::table('barang')->insert($barangData);
         Schema::enableForeignKeyConstraints();
     }
