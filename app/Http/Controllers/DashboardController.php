@@ -330,72 +330,6 @@ class DashboardController extends Controller
         }
     }
 
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'perusahaan_id' => 'required|exists:perusahaans,id',
-            'jenis_barang_id' => 'required|exists:jenis_barangs,id',
-            'merek' => 'required|string|max:255',
-            'kuantitas' => 'required|integer|min:1',
-            'tgl_pengadaan' => 'required|date',
-            'serial_number' => 'required|string|unique:barang,serial_number|max:255',
-            'lokasi' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-
-        DB::beginTransaction();
-        try {
-            $perusahaan = Perusahaan::find($request->perusahaan_id);
-            $jenisBarang = JenisBarang::find($request->jenis_barang_id);
-
-            if (!$perusahaan || !$jenisBarang) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Perusahaan atau Jenis Barang tidak ditemukan.'], 404);
-            }
-
-            $counter = AssetCounter::lockForUpdate()
-                ->firstOrCreate(
-                    ['perusahaan_id' => $request->perusahaan_id],
-                    ['nomor_terakhir' => 0]
-                );
-
-            $nomorTerakhir = $counter->nomor_terakhir + 1;
-            $counter->nomor_terakhir = $nomorTerakhir;
-            $counter->save();
-
-            $noAsset = sprintf(
-                "%s/%s/%s/%s/%s",
-                $perusahaan->singkatan,
-                $jenisBarang->singkatan,
-                Carbon::parse($request->tgl_pengadaan)->format('Y'),
-                Carbon::parse($request->tgl_pengadaan)->format('m'),
-                str_pad($nomorTerakhir, 4, '0', STR_PAD_LEFT)
-            );
-
-            $barang = Barang::create([
-                'perusahaan_id' => $request->perusahaan_id,
-                'jenis_barang_id' => $request->jenis_barang_id,
-                'no_asset' => $noAsset,
-                'merek' => $request->merek,
-                'kuantitas' => $request->kuantitas,
-                'tgl_pengadaan' => $request->tgl_pengadaan,
-                'serial_number' => $request->serial_number,
-                'lokasi' => $request->lokasi,
-                'status' => 'tersedia',
-            ]);
-
-            DB::commit();
-            return response()->json(['success' => true, 'message' => 'Aset berhasil ditambahkan.', 'data' => $barang], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error adding new asset: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString());
-            return response()->json(['success' => false, 'message' => 'Gagal menambahkan aset: ' . $e->getMessage()], 500);
-        }
-    }
-
     public function getUserHistoryBySerialNumber(Request $request, $serial_number)
     {
         try {
@@ -495,7 +429,7 @@ class DashboardController extends Controller
         }
 
         try {
-            $barang->update($request->all());
+            $barang->update($validator->validated());
             return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui.']);
         } catch (\Exception $e) {
             Log::error('Error updating asset: ' . $e->getMessage());
@@ -567,8 +501,6 @@ class DashboardController extends Controller
             }
         }
 
-        $newStatus = $request->input('status');
-
         DB::beginTransaction();
         try {
             $currentTime = Carbon::now();
@@ -577,6 +509,28 @@ class DashboardController extends Controller
             if (!$barang) {
                 DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Data barang tidak ditemukan.'], 404);
+            }
+
+            $previousTrack = Track::where('serial_number', $barang->serial_number)
+                ->whereNull('tanggal_ahir')
+                ->orderBy('tanggal_awal', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($previousTrack) {
+                $tanggalAwalPrevious = Carbon::parse($previousTrack->tanggal_awal);
+                if ($currentTime->lessThan($tanggalAwalPrevious)) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'errors' => [
+                            'keterangan' => ['Tanggal serah terima tidak bisa lebih awal dari tanggal penerimaan sebelumnya.']
+                        ]
+                    ], 422);
+                }
+
+                $previousTrack->tanggal_ahir = $currentTime->toDateString();
+                $previousTrack->save();
             }
 
             if ($request->input('status') === 'dipindah') {
@@ -614,27 +568,6 @@ class DashboardController extends Controller
 
             $barang->status = $request->input('status');
             $barang->save();
-            $previousTrack = Track::where('serial_number', $barang->serial_number)
-                ->whereNull('tanggal_ahir')
-                ->orderBy('tanggal_awal', 'desc')
-                ->orderBy('id', 'desc')
-                ->first();
-
-            if ($previousTrack) {
-                $tanggalAwalPrevious = Carbon::parse($previousTrack->tanggal_awal);
-                if ($currentTime->lessThan($tanggalAwalPrevious)) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'errors' => [
-                            'keterangan' => ['Tanggal serah terima tidak bisa lebih awal dari tanggal penerimaan sebelumnya.']
-                        ]
-                    ], 422);
-                }
-
-                $previousTrack->tanggal_ahir = $currentTime->toDateString();
-                $previousTrack->save();
-            }
 
             $newTrack = Track::create([
                 'serial_number' => $barang->serial_number,

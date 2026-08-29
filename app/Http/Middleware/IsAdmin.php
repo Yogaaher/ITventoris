@@ -21,6 +21,10 @@ class IsAdmin
             return $next($request);
         }
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['error' => 'Anda tidak memiliki izin untuk mengakses halaman tersebut.'], 403);
+        }
+
         return redirect()->route('dashboard.index')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman tersebut.');
     }
 }

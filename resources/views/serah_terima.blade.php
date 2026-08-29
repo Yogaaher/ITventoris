@@ -236,7 +236,7 @@
     </table>
 
     <p style="margin-top: 20px;">
-        Untuk selanjutnya <span class="text-bold">PIHAK KEDUA</span> selaku pemegan Inventaris tersebut berkewajiban untuk mematuhi hal-hal sebagai berikut :
+        Untuk selanjutnya <span class="text-bold">PIHAK KEDUA</span> selaku pemegang Inventaris tersebut berkewajiban untuk mematuhi hal-hal sebagai berikut :
     </p>
 
     <ol class="kewajiban-list">

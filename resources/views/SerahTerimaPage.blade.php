@@ -289,7 +289,7 @@
                         </div>      
 
                         <div class="detail-section">
-                            <h3>Perusaan Baru</h3>
+                            <h3>Perusahaan Baru</h3>
                             <dl class="detail-item">
                                 <dt>No Asset:</dt>
                                 <dd id="detailMutasiAssetBaru"></dd>
@@ -322,45 +322,45 @@
                                 <h3>Data Penerima</h3>
                                 <dl class="detail-item">
                                     <dt>Nama:</dt>
-                                    <dd id="detailNamaPenerima"></dd>
+                                    <dd id="detailNamaPenerima">-</dd>
                                 </dl>
                                 <dl class="detail-item">
                                     <dt>NIK:</dt>
-                                    <dd id="detailNikPenerima"></dd>
+                                    <dd id="detailNikPenerima">-</dd>
                                 </dl>
                                 <dl class="detail-item">
                                     <dt>Jabatan:</dt>
-                                    <dd id="detailJabatanPenerima"></dd>
+                                    <dd id="detailJabatanPenerima">-</dd>
                                 </dl>
                             </div>
                             <div class="detail-section">
                                 <h3>Data Pemberi</h3>
                                 <dl class="detail-item">
                                     <dt>Nama:</dt>
-                                    <dd id="detailNamaPemberi"></dd>
+                                    <dd id="detailNamaPemberi">-</dd>
                                 </dl>
                                 <dl class="detail-item">
                                     <dt>NIK:</dt>
-                                    <dd id="detailNikPemberi"></dd>
+                                    <dd id="detailNikPemberi">-</dd>
                                 </dl>
                                 <dl class="detail-item">
                                     <dt>Jabatan:</dt>
-                                    <dd id="detailJabatanPemberi"></dd>
+                                    <dd id="detailJabatanPemberi">-</dd>
                                 </dl>
                             </div>
                             <div class="detail-section">
                                 <h3>Informasi Lainnya</h3>
                                 <dl class="detail-item">
                                     <dt>No. Surat:</dt>
-                                    <dd id="detailNoSurat"></dd>
+                                    <dd id="detailNoSurat">-</dd>
                                 </dl>
                                 <dl class="detail-item">
                                     <dt>Penanggung Jawab:</dt>
-                                    <dd id="detailPenanggungJawab"></dd>
+                                    <dd id="detailPenanggungJawab">-</dd>
                                 </dl>
                                 <dl class="detail-item" style="align-items: flex-start;">
                                     <dt>Keterangan:</dt>
-                                    <dd id="detailKeterangan" style="white-space: pre-wrap;"></dd>
+                                    <dd id="detailKeterangan" style="white-space: pre-wrap;">-</dd>
                                 </dl>
                             </div>
                             <div class="detail-section">
@@ -368,28 +368,28 @@
                                 <div class="detail-barang-box">
                                     <div style="display: flex; align-items: center; gap: 2rem; width: 100%; border-bottom: 1px solid var(--table-border); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
                                         <div class="detail-barang-icon">
-                                            <i class="fas ${iconClass}"></i>
+                                            <i id="detailSuratIcon" class="fas fa-box"></i>
                                         </div>
                                         <div class="detail-barang-info">
-                                            <div class="header">${surat.barang?.merek || 'N/A'}</div>
-                                            <div class="subheader">${surat.barang?.jenis_barang?.nama_jenis || 'N/A'}</div>
+                                            <div class="header" id="detailSuratMerek">-</div>
+                                            <div class="subheader" id="detailSuratJenis">-</div>
                                         </div>
                                     </div>
                                     <dl class="detail-item">
                                         <dt>Perusahaan:</dt>
-                                        <dd>${surat.barang?.perusahaan?.nama_perusahaan || 'N/A'}</dd>
+                                        <dd id="detailSuratPerusahaan">-</dd>
                                     </dl>
                                     <dl class="detail-item">
                                         <dt>No Asset:</dt>
-                                        <dd>${surat.barang?.no_asset || 'N/A'}</dd>
+                                        <dd id="detailSuratNoAsset">-</dd>
                                     </dl>
                                     <dl class="detail-item">
                                         <dt>Tgl. Pengadaan:</dt>
-                                        <dd>${formatDate(surat.barang?.tgl_pengadaan) || 'N/A'}</dd>
+                                        <dd id="detailSuratTglPengadaan">-</dd>
                                     </dl>
                                     <dl class="detail-item">
                                         <dt>Serial Number:</dt>
-                                        <dd>${surat.barang?.serial_number || 'N/A'}</dd>
+                                        <dd id="detailSuratSerialNumber">-</dd>
                                     </dl>
                                 </div>
                             </div>

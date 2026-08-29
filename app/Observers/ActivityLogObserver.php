@@ -14,19 +14,30 @@ class ActivityLogObserver
         $newValues = null;
         $oldValues = null;
 
+        $hidden = $model->getHidden();
+
         if ($action === 'created') {
             $newValues = $model->getAttributes();
+            if (!empty($hidden)) {
+                $newValues = array_diff_key($newValues, array_flip($hidden));
+            }
         }
 
         if ($action === 'updated') {
             $newValues = $model->getChanges();
             unset($newValues['updated_at']);
+            if (!empty($hidden)) {
+                $newValues = array_diff_key($newValues, array_flip($hidden));
+            }
             if (empty($newValues)) return;
             $oldValues = array_intersect_key($model->getOriginal(), $newValues);
         }
 
         if ($action === 'deleted') {
             $oldValues = $model->getAttributes();
+            if (!empty($hidden)) {
+                $oldValues = array_diff_key($oldValues, array_flip($hidden));
+            }
         }
 
         DB::table('activity_logs')->insert([

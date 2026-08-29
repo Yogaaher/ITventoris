@@ -150,7 +150,7 @@
                                         <option value="" disabled selected>Pilih Role</option>
                                         <option value="user">User</option>
                                         <option value="admin">Admin</option>
-                                        <option vsalue="super_admin">Super Admin</option>
+                                        <option value="super_admin">Super Admin</option>
                                         @else
                                         <option value="user" selected>User</option>
                                         @endif

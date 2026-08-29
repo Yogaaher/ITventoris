@@ -24,8 +24,6 @@ class Barang extends Model
         'serial_number',
         'lokasi',
         'status',
-        'kuantitas',
-        'lokasi', 
     ];
     protected static function booted()
     {
