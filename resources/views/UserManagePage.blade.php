@@ -131,21 +131,21 @@
                             <form id="addUserForm" novalidate>
                                 @csrf
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="name">Username</label>
-                                    <input type="text" name="name" id="name" required autocomplete="off">
+                                    <input type="text" name="name" id="name" required autocomplete="off" placeholder="Masukan Username">
                                     <div class="invalid-feedback" id="name_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="email">Alamat Email</label>
-                                    <input type="email" name="email" id="email" required autocomplete="off">
+                                    <input type="email" name="email" id="email" required autocomplete="off" placeholder="contoh@email.com">
                                     <div class="invalid-feedback" id="email_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="add_role">Role</label>
-                                    <select name="role" id="add_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
+                                    <select name="role" id="add_role" class="form-control" required>
                                         @if(auth()->user()->isSuperAdmin())
                                         <option value="" disabled selected>Pilih Role</option>
                                         <option value="user">User</option>
@@ -158,10 +158,10 @@
                                     <div class="invalid-feedback" id="role_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="password">Password</label>
                                     <div class="password-wrapper">
-                                        <input type="password" name="password" id="password" required>
+                                        <input type="password" name="password" id="password" required placeholder="Minimal 6 karakter">
                                         <span class="toggle-password" data-target="password">
                                             <i class="fas fa-eye"></i>
                                         </span>
@@ -169,15 +169,14 @@
                                     <div class="invalid-feedback" id="password_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="password_confirmation">Konfirmasi Password</label>
                                     <div class="password-wrapper">
-                                        <input type="password" name="password_confirmation" id="password_confirmation" required>
+                                        <input type="password" name="password_confirmation" id="password_confirmation" required placeholder="Ulangi password">
                                         <span class="toggle-password" data-target="password_confirmation">
                                             <i class="fas fa-eye"></i>
                                         </span>
                                     </div>
-                                    {{-- Konfirmasi password tidak perlu pesan error sendiri --}}
                                 </div>
                             </form>
                         </div>
@@ -205,7 +204,7 @@
                                 @method('PUT')
                                 <input type="hidden" id="edit_user_id" name="user_id">
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="edit_email">
                                         Alamat Email @if(!auth()->user()->isSuperAdmin())(Tidak dapat diubah)@endif
                                     </label>
@@ -213,15 +212,15 @@
                                     <div class="invalid-feedback" id="edit_email_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="edit_name">Username</label>
                                     <input type="text" name="name" id="edit_name" required>
                                     <div class="invalid-feedback" id="edit_name_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="edit_role">Role</label>
-                                    <select name="role" id="edit_role" class="form-control" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--table-border); border-radius: 6px; background-color: var(--app-bg); color: var(--app-content-main-color); font-size: 1.5rem;">
+                                    <select name="role" id="edit_role" class="form-control" required>
                                         <option value="" disabled>Pilih Role</option>
                                         <option value="user">User</option>
                                         <option value="admin">Admin</option>
@@ -230,7 +229,7 @@
                                     <div class="invalid-feedback" id="edit_role_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="edit_password">Password Baru (Kosongkan jika tidak ingin diubah)</label>
                                     <div class="password-wrapper">
                                         <input type="password" name="password" id="edit_password" autocomplete="new-password">
@@ -239,7 +238,7 @@
                                     <div class="invalid-feedback" id="edit_password_error"></div>
                                 </div>
 
-                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <div class="form-group">
                                     <label for="edit_password_confirmation">Konfirmasi Password Baru</label>
                                     <div class="password-wrapper">
                                         <input type="password" name="password_confirmation" id="edit_password_confirmation" autocomplete="new-password">

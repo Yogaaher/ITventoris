@@ -9,10 +9,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-iconpicker/1.10.0/css/bootstrap-iconpicker.min.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link rel="icon" href="{{ asset('img/Scuto-logo.svg') }}" type="image/x-icon">
         @vite(['resources/css/perusahaan.css', 'resources/js/perusahaan.js'])
     </head>
@@ -166,17 +164,17 @@
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Tutup modal">×</button>
                         </div>
                         <div class="morph-modal-body">
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
                                 <label for="nama" id="namaLabel">Nama Lengkap</label>
                                 <input type="text" name="nama" id="nama" required autocomplete="off" placeholder="Masukkan nama...">
                                 <div class="invalid-feedback" data-error-for="nama"></div>
                             </div>
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <div class="form-group">
                                 <label for="singkatan">Singkatan</label>
                                 <input type="text" name="singkatan" id="singkatan" required autocomplete="off" placeholder="MAX">
                                 <div class="invalid-feedback" data-error-for="singkatan"></div>
                             </div>
-                            <div class="form-group" id="icon-form-group" style="margin-bottom: 1.5rem; display: none;">
+                            <div class="form-group" id="icon-form-group" style="display: none;">
                                 <label for="icon">Pilih Icon</label>
                                 <button type="button" class="btn btn-secondary iconpicker-component" id="icon-picker-button">
                                     <i class="fas fa-fw fa-heart"></i>

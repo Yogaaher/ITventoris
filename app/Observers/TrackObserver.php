@@ -27,27 +27,38 @@ class TrackObserver
 
     /**
      * Handle the Track "updated" event.
-     * (Opsional, jika Anda mengizinkan status di track diubah setelah dibuat)
+     * Jika track yang diubah adalah track terbaru, sinkronkan statusnya ke barang.
      */
     public function updated(Track $track): void
     {
-        // Jika ada kemungkinan status di track diubah dan itu harus tercermin
-        // sebagai status TERKINI, maka logika serupa bisa diterapkan di sini.
-        // Namun, biasanya track adalah history, jadi 'created' lebih relevan.
-
-        // Jika Anda ingin update barang.status HANYA JIKA track yang diupdate adalah track TERBARU
-        // maka logikanya akan lebih kompleks. Untuk sekarang, kita fokus pada 'created'.
-        // Contoh sederhana jika setiap update track harus update barang:
-        // $barang = $track->barang; // Asumsi relasi barang() sudah ada di Track model
-        // if ($barang && $barang->status !== $track->status) {
-        //     // Cek apakah ini track terbaru sebelum update
-        //     $latestTrackForBarang = $barang->latestTrack()->first();
-        //     if ($latestTrackForBarang && $latestTrackForBarang->id === $track->id) {
-        //          $barang->status = $track->status;
-        //          $barang->saveQuietly();
-        //     }
-        // }
+        $barang = Barang::where('serial_number', $track->serial_number)->first();
+        if ($barang) {
+            $latestTrack = Track::where('serial_number', $track->serial_number)->latest('id')->first();
+            if ($latestTrack && $latestTrack->id === $track->id && $barang->status !== $track->status) {
+                $barang->status = $track->status;
+                $barang->saveQuietly();
+            }
+        }
     }
 
-    // ... (deleted, restored methods jika diperlukan)
+    /**
+     * Handle the Track "deleted" event.
+     * Jika track terbaru dihapus, kembalikan status barang ke track sebelumnya atau 'tersedia'.
+     */
+    public function deleted(Track $track): void
+    {
+        $barang = Barang::where('serial_number', $track->serial_number)->first();
+        if ($barang) {
+            $latestTrack = Track::where('serial_number', $track->serial_number)->latest('id')->first();
+            if ($latestTrack) {
+                if ($barang->status !== $latestTrack->status) {
+                    $barang->status = $latestTrack->status;
+                    $barang->saveQuietly();
+                }
+            } else {
+                $barang->status = 'tersedia';
+                $barang->saveQuietly();
+            }
+        }
+    }
 }

@@ -39,13 +39,24 @@ class DashboardController extends Controller
             $queryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
         }
 
+        // Filter berdasarkan status aset
+        if ($request->filled('filter_status')) {
+            $filterStatus = $request->input('filter_status');
+            if (is_array($filterStatus)) {
+                $queryBuilder->whereIn('barang.status', $filterStatus);
+            } else {
+                $queryBuilder->where('barang.status', $filterStatus);
+            }
+        }
+
         // Filter berdasarkan keyword pencarian (no asset, serial number, atau merek)
         if ($request->filled('search_no_asset')) {
             $searchKeyword = $request->input('search_no_asset');
             $queryBuilder->where(function ($query) use ($searchKeyword) {
                 $query->where('no_asset', 'like', '%' . $searchKeyword . '%')
                     ->orWhere('serial_number', 'like', '%' . $searchKeyword . '%')
-                    ->orWhere('merek', 'like', '%' . $searchKeyword . '%');
+                    ->orWhere('merek', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('lokasi', 'like', '%' . $searchKeyword . '%');
             });
         }
         return $queryBuilder;
@@ -172,6 +183,7 @@ class DashboardController extends Controller
         $searchKeyword = $request->input('search_no_asset');
         $filterPerusahaan = $request->input('filter_perusahaan');
         $filterJenisBarang = $request->input('filter_jenis_barang');
+        $filterStatus = $request->input('filter_status');
 
         // Clone query untuk tabel utama sebelum paginasi
         $tableQuery = clone $queryBuilder;
@@ -194,7 +206,8 @@ class DashboardController extends Controller
             'inventorySummary',
             'searchKeyword',
             'filterPerusahaan',
-            'filterJenisBarang'
+            'filterJenisBarang',
+            'filterStatus'
         ));
     }
 
@@ -254,6 +267,14 @@ class DashboardController extends Controller
             }
             if ($request->filled('filter_jenis_barang') && is_array($request->input('filter_jenis_barang'))) {
                 $summaryQueryBuilder->whereIn('barang.jenis_barang_id', $request->input('filter_jenis_barang'));
+            }
+            if ($request->filled('filter_status')) {
+                $filterStatus = $request->input('filter_status');
+                if (is_array($filterStatus)) {
+                    $summaryQueryBuilder->whereIn('barang.status', $filterStatus);
+                } else {
+                    $summaryQueryBuilder->where('barang.status', $filterStatus);
+                }
             }
         }
 

@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         modalTglPengembalian.textContent = track.tanggal_ahir
                             ? formatDate(track.tanggal_ahir)
                             : "-";
-                        modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${
+                        modalStatus.innerHTML = `<span style="font-weight: 600;">${
                             track.status || "N/A"
                         }</span>`;
                         modalKeterangan.textContent =
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         lastKnownUserFromDetail = "-";
                         modalTglPenyerahan.textContent = "-";
                         modalTglPengembalian.textContent = "-";
-                        modalStatus.innerHTML = `<span style="font-weight: bold; color: var(--color-accent);">${
+                        modalStatus.innerHTML = `<span style="font-weight: 600;">${
                             barang.status || "N/A"
                         }</span>`;
                         modalKeterangan.textContent =
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     const btnUpdateAset = document.querySelector(
-                        "#deviceInfoModal .btn-action.btn-update"
+                        "#deviceInfoModal .btn-update"
                     );
                     if (btnUpdateAset) {
                         const currentStatus = track
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         iconFromDb = barang.jenis_barang.icon;
                     }
                     deviceImage.className = `device-image ${iconFromDb}`;
-                    detailModalOverlay.style.display = "flex";
+                    openModalElement(detailModalOverlay);
                 } else {
                     alert(data.error || "Data tidak ditemukan.");
                     modalDeviceName.textContent = "Error";
@@ -288,12 +288,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const serahModal = document.getElementById("serahTerimaAsetModal");
             const serahForm = document.getElementById("serahTerimaAsetForm");
-            const modalTitle = serahModal.querySelector(
-                ".morph-modal-title span"
-            );
+            const modalTitle = serahModal.querySelector(".modal-title");
+            const modalIcon = serahModal.querySelector(".modal-header-icon");
 
-            modalTitle.innerHTML =
-                '<i class="fas fa-exchange-alt"></i> Serah Terima Aset';
+            if (modalTitle) modalTitle.textContent = "Serah Terima Aset";
+            if (modalIcon) modalIcon.className = "fas fa-exchange-alt modal-header-icon";
 
             serahForm.reset();
 
@@ -331,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("noAssetBaruPreviewGroup").style.display =
                 "none";
 
-            serahModal.style.display = "flex";
+            openModalElement(serahModal);
         } catch (error) {
             console.error("Gagal membuka modal serah terima:", error);
             alert("Terjadi kesalahan saat membuka form serah terima.");
@@ -364,12 +363,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     const serahForm = document.getElementById(
                         "serahTerimaAsetForm"
                     );
-                    const modalTitle = serahModal.querySelector(
-                        ".morph-modal-title span"
-                    );
+                    const modalTitle = serahModal.querySelector(".modal-title");
+                    const modalIcon = serahModal.querySelector(".modal-header-icon");
 
-                    modalTitle.innerHTML =
-                        '<i class="fas fa-edit"></i> Edit Riwayat Aset';
+                    if (modalTitle) modalTitle.textContent = "Edit Riwayat Aset";
+                    if (modalIcon) modalIcon.className = "fas fa-edit modal-header-icon";
 
                     serahForm.reset();
                     document.getElementById("serahTerimaTrackId").value =
@@ -405,7 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "perusahaanTujuanGroup"
                     ).style.display = "none";
 
-                    serahModal.style.display = "flex";
+                    openModalElement(serahModal);
                 } else {
                     alert(data.message || "Gagal mengambil data riwayat.");
                 }
@@ -439,6 +437,8 @@ document.addEventListener("DOMContentLoaded", () => {
         historyModalCompanyEl.textContent = company || "N/A";
         historyTableBodyEl.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center;">Memuat riwayat... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
 
+        openModalElement(historyModal);
+
         let headerRow = `
                 <tr>
                     <th class="cell-history-user">Pengguna</th>
@@ -452,8 +452,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         headerRow += `</tr>`;
         historyTableHeaderEl.innerHTML = headerRow;
-
-        historyModal.style.display = "flex";
 
         fetch(`/history/user/${encodeURIComponent(serialNumber)}`)
             .then((response) => response.json())
@@ -515,6 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "realtimePaginationContainer"
     );
     const filterPerusahaanSelect = document.getElementById("filter_perusahaan");
+    const filterStatusSelect = document.getElementById("filter_status");
     const filterJenisBarangSelect = document.getElementById(
         "filter_jenis_barang"
     );
@@ -810,11 +809,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const perusahaan = filterPerusahaanSelect
             ? filterPerusahaanSelect.value
             : "";
+        const status = filterStatusSelect ? filterStatusSelect.value : "";
         const jenisBarangAktif =
             document.querySelectorAll(
                 '#filter_jenis_barang_container input[type="checkbox"]:checked'
             ).length > 0;
-        isFilterActive = !!(keyword || perusahaan || jenisBarangAktif);
+        isFilterActive = !!(keyword || perusahaan || status || jenisBarangAktif);
     };
 
     function manageConveyor() {
@@ -1371,6 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const perusahaan = filterPerusahaanSelect
                 ? filterPerusahaanSelect.value
                 : "";
+            const status = filterStatusSelect ? filterStatusSelect.value : "";
             
             const jenisBarangCheckboxes = document.querySelectorAll(
                 '#filter_jenis_barang_container input[type="checkbox"]:checked'
@@ -1385,6 +1386,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (perusahaan) {
                 params.append("filter_perusahaan", perusahaan);
+            }
+            if (status) {
+                params.append("filter_status", status);
             }
             jenisBarang.forEach(id => params.append("filter_jenis_barang[]", id));
 
@@ -1401,16 +1405,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openModalElement(modalElement, formToReset = null) {
         if (modalElement) {
+            modalElement.style.removeProperty("display");
             modalElement.classList.add("show");
+            document.body.classList.add("modal-open");
             if (formToReset) {
                 formToReset.reset();
-            }
-            if (formToReset) {
                 formToReset
                     .querySelectorAll(".invalid-feedback")
                     .forEach((el) => (el.textContent = ""));
                 formToReset
-                    .querySelectorAll(".form-control.is-invalid")
+                    .querySelectorAll(".form-control.is-invalid, .is-invalid")
                     .forEach((el) => el.classList.remove("is-invalid"));
             }
         }
@@ -1437,6 +1441,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function closeModalElement(modalElement) {
         if (modalElement) {
             modalElement.classList.remove("show");
+            modalElement.style.removeProperty("display");
+            if (!document.querySelector(".modal.show")) {
+                document.body.classList.remove("modal-open");
+            }
         }
     }
 
@@ -1478,6 +1486,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const perusahaan = filterPerusahaanSelect
             ? filterPerusahaanSelect.value
             : "";
+        const status = filterStatusSelect ? filterStatusSelect.value : "";
         const jenisBarangCheckboxes = document.querySelectorAll(
             '#filter_jenis_barang_container input[type="checkbox"]:checked'
         );
@@ -1497,6 +1506,10 @@ document.addEventListener("DOMContentLoaded", () => {
             page: page,
             per_page: perPage,
         });
+
+        if (status) {
+            params.append("filter_status", status);
+        }
 
         jenisBarang.forEach((id) => params.append("filter_jenis_barang[]", id));
 
@@ -1641,13 +1654,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!filterPerusahaanSelect || !resetFilterInMenuBtn || !filterToggleButton) return;
 
         const perusahaanAktif = filterPerusahaanSelect.value !== "";
+        const statusAktif = filterStatusSelect ? filterStatusSelect.value !== "" : false;
         const jenisBarangAktif =
             document.querySelectorAll(
                 '#filter_jenis_barang_container input[type="checkbox"]:checked'
             ).length > 0;
         const keywordAktif = mainSearchInput ? mainSearchInput.value.trim() !== "" : false;
 
-        const isAnyFilterActive = perusahaanAktif || jenisBarangAktif || keywordAktif;
+        const isAnyFilterActive = perusahaanAktif || statusAktif || jenisBarangAktif || keywordAktif;
 
         resetFilterInMenuBtn.disabled = !isAnyFilterActive;
         if (isAnyFilterActive) {
@@ -1695,6 +1709,12 @@ document.addEventListener("DOMContentLoaded", () => {
             checkAndUpdateFilterStates();
         });
     }
+    if (filterStatusSelect) {
+        filterStatusSelect.addEventListener("change", () => {
+            performRealtimeSearch(1);
+            checkAndUpdateFilterStates();
+        });
+    }
     if (filterJenisBarangSelect) {
         filterJenisBarangSelect.addEventListener("change", () => {
             performRealtimeSearch(1);
@@ -1705,6 +1725,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (resetFilterInMenuBtn) {
         resetFilterInMenuBtn.addEventListener("click", () => {
             if (filterPerusahaanSelect) filterPerusahaanSelect.value = "";
+            if (filterStatusSelect) filterStatusSelect.value = "";
             if (window.resetJenisBarangFilter) {
                 window.resetJenisBarangFilter();
             }
@@ -1718,6 +1739,23 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    const allDashboardModals = [
+        addAssetModal,
+        editAssetModal,
+        detailModalOverlayElement,
+        serahTerimaAsetModalElement,
+        userHistoryModalElement,
+    ];
+
+    allDashboardModals.forEach((modal) => {
+        if (modal) {
+            modal.querySelectorAll(".close-button").forEach((btn) => {
+                btn.addEventListener("click", () => closeModalElement(modal));
+            });
+            setupSmartModalClosure(modal, () => closeModalElement(modal));
+        }
+    });
 
     if (openAddAssetModalButton && addAssetModal) {
         openAddAssetModalButton.addEventListener("click", () =>
@@ -1748,7 +1786,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 data.success ||
                                 "Aset berhasil ditambahkan."
                         );
-                        closeModalElement(addAssetModal);
+                        closeModalElement(addAssetModalElement);
                         performRealtimeSearch();
                     } else if (data.errors) {
                         displayValidationErrorsOnForm(
@@ -1780,84 +1818,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const closeModalAddAsset = () => closeModalElement(addAssetModal);
-    if (openAddAssetModalButton)
-        openAddAssetModalButton.addEventListener("click", () =>
-            openModalElement(addAssetModal, addAssetForm)
-        );
-    if (closeAddAssetModalBtn)
-        closeAddAssetModalBtn.addEventListener("click", () =>
-            closeModalElement(addAssetModal)
-        );
-    if (cancelAddAssetModalBtn)
-        cancelAddAssetModalBtn.addEventListener("click", () =>
-            closeModalElement(addAssetModal)
-        );
-    setupSmartModalClosure(addAssetModal, () =>
-        closeModalElement(addAssetModal)
-    );
-
-    const closeDetailModal = () => {
-        if (detailModalOverlayElement)
-            detailModalOverlayElement.style.display = "none";
-        currentDetailModalAssetId = null;
-    };
-    if (closeDetailModalButtonElement)
-        closeDetailModalButtonElement.addEventListener(
-            "click",
-            closeDetailModal
-        );
-    setupSmartModalClosure(detailModalOverlayElement, closeDetailModal);
-
-    const closeSerahTerimaModal = () => {
-        if (serahTerimaAsetModalElement)
-            serahTerimaAsetModalElement.style.display = "none";
-    };
-    if (cancelSerahTerimaBtn)
-        cancelSerahTerimaBtn.addEventListener("click", closeSerahTerimaModal);
-    setupSmartModalClosure(serahTerimaAsetModalElement, closeSerahTerimaModal);
-
-    const closeUserHistoryModal = () => {
-        if (userHistoryModalElement)
-            userHistoryModalElement.style.display = "none";
-    };
-    if (closeUserHistoryBtn)
-        closeUserHistoryBtn.addEventListener("click", closeUserHistoryModal);
-    setupSmartModalClosure(userHistoryModalElement, closeUserHistoryModal);
-
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
-            if (addAssetModal.classList.contains("show"))
-                closeModalElement(addAssetModal);
-            if (detailModalOverlayElement.style.display === "flex")
-                closeDetailModal();
-            if (serahTerimaAsetModalElement.style.display === "flex")
-                closeSerahTerimaModal();
-            if (userHistoryModalElement.style.display === "flex")
-                closeUserHistoryModal();
+            const activeModal = document.querySelector(".modal.show");
+            if (activeModal) {
+                closeModalElement(activeModal);
+            }
         }
     });
 
-    setupSmartModalClosure(
-        serahTerimaAsetModalElement,
-        (el) => (el.style.display = "none")
-    );
     if (serahTerimaStatusSelect) {
         serahTerimaStatusSelect.addEventListener(
             "change",
             handleSerahTerimaStatusChange
         );
     }
-    if (closeSerahTerimaBtn)
-        closeSerahTerimaBtn.addEventListener("click", () => {
-            if (serahTerimaAsetModalElement)
-                serahTerimaAsetModalElement.style.display = "none";
-        });
-    if (cancelSerahTerimaBtn)
-        cancelSerahTerimaBtn.addEventListener("click", () => {
-            if (serahTerimaAsetModalElement)
-                serahTerimaAsetModalElement.style.display = "none";
-        });
 
     if (serahTerimaForm && submitSerahTerimaBtn) {
         serahTerimaForm.addEventListener("submit", function (event) {
@@ -1891,7 +1866,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then((data) => {
                     if (data.success) {
                         alert(data.message);
-                        closeSerahTerimaModal();
+                        closeModalElement(serahTerimaAsetModalElement);
 
                         if (currentDetailModalAssetId) {
                             openDetailModal(currentDetailModalAssetId);
@@ -1917,12 +1892,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         });
     }
-
-    if (closeUserHistoryBtn)
-        closeUserHistoryBtn.addEventListener("click", () => {
-            if (userHistoryModalElement)
-                userHistoryModalElement.style.display = "none";
-        });
 
     if (filterToggleButton && filterMenu) {
         filterToggleButton.addEventListener("click", function (event) {
